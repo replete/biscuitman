@@ -1,7 +1,10 @@
-# Biscuitman.js, Lightweight Consent Manager
+# biscuitman.js 🍪 Lightweight Consent Manager
 ![screenshot of main UI](media/readmebanner.webp)
 
+#### [View demo](https://replete.github.io/biscuitman)
+
 I didn't feel good about sending 100KB+ for a simple cookie consent solution so I wrote my own in vanilla JS. It's around 4kB compressed with brotli. The goal was to make something small and versatile _enough_ that I could drop it on my optimized sites for basic analytics that wouldn't break the rules.
+
 
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
@@ -12,6 +15,7 @@ I didn't feel good about sending 100KB+ for a simple cookie consent solution so 
 - Works without CSS (thanks to `<dialog>` and `<details>`)
 - Mobile-first
 - Modern browsers: No support for IE
+- Not production-ready until 1.0
 
 ![screenshot of main UI](media/ui.webp)
 

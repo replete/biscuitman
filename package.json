@@ -22,5 +22,6 @@
   "bugs": {
     "url": "https://github.com/replete/biscuitman/issues"
   },
-  "funding": "https://buymeacoffee.com/replete"
+  "funding": "https://buymeacoffee.com/replete",
+  "homepage": "https://replete.github.io/biscuitman"
 }
