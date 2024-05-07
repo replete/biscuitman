@@ -1,0 +1,17 @@
+{
+  "name": "biscuitman",
+  "version": "0.0.1",
+  "description": "Lightweight client-side cookie consent manager with consent dependency hooks and script injection",
+  "main": "biscuitman.js",
+  "scripts": {
+    "dev": "browser-sync start -s --cwd -w",
+    "build": "node ./build.mjs"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.4.17",
+    "browser-sync": "^3.0.2",
+    "lightningcss": "^1.24.1"
+  },
+  "author": "replete",
+  "license": "MIT"
+}

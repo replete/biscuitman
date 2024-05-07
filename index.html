@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Biscuitman.js development test</title>
+	<style>
+		@import url(biscuitman.css);
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #f5f5f5;
+		}
+		header {
+			min-height:35vw;
+			display:flex;
+			flex-direction:column;
+			justify-content:flex-end;
+			background: url(media/readmebanner.webp) no-repeat center 50% #7E745D;
+			background-size:cover;
+			background-blend-mode: multiply;
+			color: #fff;
+			padding: 30px 20px;
+			text-align: center;
+			text-shadow: 2px 2px 4px rgba(0,0,0,.75);
+			margin: 0 auto;
+		}
+		h1 {
+			font-size:5vw
+		}
+		.container {
+			max-width: 800px;
+			margin: 20px auto;
+			padding: 0 20px;
+		}
+		p {
+			line-height: 1.6;
+		}
+		img {
+			max-width: 100%;
+			height: auto;
+			display: block;
+			margin: 20px auto;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>biscuitman.js sandbox</h1>
+		<div>
+			<button onclick="bmInvalidateConsent()">Invalidate consent</button>
+			<button onclick="bmUpdateConsent()">Update consent</button>
+		</div>
+		<pre id="pre"></pre>
+		<script>
+			window.setInterval(()=>{
+				pre.textContent = (localStorage.getItem('myconsent') ||'').replaceAll(',',',\n')
+			},1000)
+		</script>
+	</header>
+	<div class="container">
+		<p>Biscuits, the beloved treats that accompany tea time, snack breaks, and dessert cravings. In this comprehensive guide, we delve into the world of biscuits, exploring their history, varieties, and cultural significance.</p>
+
+		<h2>History of Biscuits</h2>
+		<p>The origins of biscuits trace back centuries, with evidence of early biscuit-like snacks dating back to ancient civilizations. However, the modern biscuit, as we know it today, evolved during the Middle Ages in Europe. Initially, biscuits were hard, dry baked goods made primarily from flour, water, and sometimes sugar.</p>
+		<p>Over time, biscuit recipes diversified, incorporating various ingredients such as butter, eggs, and flavorings. The Industrial Revolution further transformed biscuit production, enabling mass manufacturing and distribution.</p>
+
+		<h2>Popular Biscuit Varieties</h2>
+		<h3>Rich Tea</h3>
+		<p>Rich tea biscuits are renowned for their delicate texture and subtle sweetness. Originating in the United Kingdom, rich tea biscuits are often enjoyed dunked in tea, coffee, or hot chocolate. These biscuits are commonly round-shaped with pin-prick patterns on the surface.</p>
+
+		<h3>Hobnobs</h3>
+		<p>Hobnobs, a staple in British biscuit assortments, boast a hearty oat flavor and a satisfying crunch. These biscuits are distinguishable by their rough texture and thick consistency, making them ideal for dunking or enjoying on their own.</p>
+
+		<h3>Custard Creams</h3>
+		<p>Custard creams are classic sandwich biscuits consisting of two layers of biscuit with a creamy, custard-flavored filling in between. With their nostalgic appeal and comforting taste, custard creams are a favorite among both children and adults.</p>
+
+		<h3>Bourbons</h3>
+		<p>Bourbons are distinctive chocolate sandwich biscuits featuring a dark chocolate-flavored filling sandwiched between two chocolate biscuits. Named after the French royal house of Bourbon, these biscuits offer a rich and indulgent treat for chocolate lovers.</p>
+
+		<h3>Jaffa Cakes</h3>
+		<p>While technically not biscuits but often included in biscuit assortments, Jaffa Cakes are a beloved snack consisting of a sponge cake base topped with a layer of orange-flavored jelly and coated in chocolate. The combination of tangy orange and rich chocolate makes Jaffa Cakes a delightful treat for any occasion.</p>
+	</div>
+
+	<!-- analytics scripts -->
+	<script data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" type="text/plain" id="js-analytics-gtm">
+		/* 
+			Normally <script> tags with src property will not evaluate embedded script content,
+			but in this scenario you might want some code to run after a file has loaded,
+			so biscuitman handles this for you:
+
+			If a biscuitman inactive script (text/plain) has both src AND embedded script content
+			like the one you are readiing now, biscuitman will inject the embedded script as separate
+			adjacent script tag after the parent script has loaded and executed.
+		*/
+		console.log('This javascript is injected into a new adjacent <script> tag only after the src script has loaded');
+		console.log(google_tag_manager) // only available once loaded
+	</script>
+	<script data-consent="analytics" type="text/plain" id="js-analytics-gtm-after">
+		console.log('This script runs as soon as analytics consent is granted')
+	</script>
+	<script id="js-analytics-statcounter-setup">
+		// not handled by biscuitman
+		var sc_project=9999999
+		var sc_invisible=1
+		var sc_security="beefbeef"
+		var sc_https=1
+	</script>
+	<script data-consent="analytics" async src="https://statcounter.com/counter/counter.js" type="text/plain" id="js-analytics-statcounter"></script>
+
+	<script id="js-analytics-misc" data-consent="analytics" type="text/plain">
+		console.log('This embedded script will be inserted when analytics consent is granted')
+	</script>
+
+	<!-- biscuitman config, unless its a one-page site serve this from biscuitman-config.js -->
+	<script>
+		biscuitman = {
+			msg: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic.',
+			info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
+Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
+While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
+			sections: ['essential','functional','analytics','performance','advertisement','uncategorized'],
+			essentialTitle: 'Essential',
+			essentialMessage: 'Essential cookies are reuired for basic site functionality',
+			functionalTitle: 'Functional',
+			functionalMessage: 'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
+			analyticsTitle: 'Analytics',
+			analyticsMessage: 'Analytical cookies allow us to understand visitor interactions with the website, offering insights into metrics like visitor count, bounce rate, and traffic source',
+			analyticsCookies: {
+				'_ga': 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
+				'_ga_*': 'Google Analytics uses this cookie for storing page view count'
+			},
+			performanceTitle: 'Performance',
+			performanceMessage: 'Performance cookies allow us to understand critical website performance indicators, contributing to an enhanced user experience for visitors',
+			advertisementTitle: 'Advertisement',
+			advertisementMessage: 'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
+			uncategorizedTitle: 'Uncategorized',
+			uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
+			acceptNonEU: true
+		}
+	</script>
+	<!-- biscuitman must be after biscuitman config and data-consent scripts -->
+	<script src="biscuitman.js"></script>
+
+</body>
+</html>
