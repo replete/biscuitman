@@ -1,6 +1,9 @@
 import fs from 'node:fs'
 import swc from '@swc/core'
 import {transform} from 'lightningcss'
+const {name, version, repository} = JSON.parse(fs.readFileSync('./package.json'))
+
+const comment = `/*! ${name} ${version} ${repository.url.replace('.git','')} */`
 
 const css = fs.readFileSync('biscuitman.css', 'utf8')
 let { code } = transform({
@@ -8,7 +11,7 @@ let { code } = transform({
 	minify: true,
 	sourceMap: false
 })
-fs.writeFileSync('biscuitman.min.css', code)
+fs.writeFileSync('biscuitman.min.css', comment + code)
 console.log('Written biscuitman.min.css')
 
 const js = fs.readFileSync('biscuitman.js', 'utf8')
@@ -29,14 +32,13 @@ swc.transform(js, {
   })
   .then(({code, map}) => {
 	const codeWithoutWhitespace = code.replace(/[\n\t]/g, '')
-	fs.writeFileSync('biscuitman.min.js', codeWithoutWhitespace)
+	fs.writeFileSync('biscuitman.min.js', comment + codeWithoutWhitespace)
 	console.log('Written biscuitman.min.js')
 	writeJsAll(codeWithoutWhitespace)
   });
 
   function writeJsAll(js) {
-	fs.writeFileSync('biscuitman.withcss.min.js', js + 
+	fs.writeFileSync('biscuitman.withcss.min.js', comment + js + 
 		`;((d)=>{let c=d.createElement('style');c.textContent=\`${code}\`;d.documentElement.appendChild(c)})(document);`)
 	console.log('Written biscuitman.min.css.js')
   }
-  

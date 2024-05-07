@@ -1,8 +1,9 @@
 {
   "name": "biscuitman",
-  "version": "0.0.1",
-  "description": "Lightweight client-side cookie consent manager with consent dependency hooks and script injection",
-  "main": "biscuitman.js",
+  "version": "0.2.0",
+  "description": "Lightweight client-side cookie consent manager with dependency hooks and script injection",
+  "browser": "biscuitman.js",
+  "keywords": ["privacy", "cookie", "cookies", "trackers" ,"cookie-consent", "gdpr", "consents", "consent-manager"],
   "scripts": {
     "dev": "browser-sync start -s --cwd -w",
     "build": "node ./build.mjs"
@@ -13,5 +14,13 @@
     "lightningcss": "^1.24.1"
   },
   "author": "replete",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/replete/biscuitman.git"
+  },
+  "bugs": {
+    "url": "https://github.com/replete/biscuitman/issues"
+  },
+  "funding": "https://buymeacoffee.com/replete"
 }
