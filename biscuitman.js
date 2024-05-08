@@ -1,6 +1,6 @@
 ((d, w)=>{
 	const bm = 'biscuitman'
-	const ui = d.createElement('div')
+	const ui = d.createElement('aside')
 	let dialog
 
 	const defaults = {
@@ -42,53 +42,53 @@
 				let message = o[`${section}Message`]
 				let cookies = o[`${section}Cookies`]
 				let cookiesHtml = cookies
-					? Object.entries(cookies).map(([k, v]) => `<div class="bm-s-item"><b>${k}</b><span>${v}</span></div>`).join('')
-					: `<div class="bm-s-item">${o.noCookiesLabel}</div>`
+					? Object.entries(cookies).map(([k, v]) => `<p class="bm-s-item"><b>${k}</b><span>${v}</span></p>`).join('')
+					: `<p class="bm-s-item">${o.noCookiesLabel}</p>`
 				html += `
-<div class="bm-s">
+<section>
 	<details>
 		<summary>
 			<b class="bm-s-title">${title}</b>
-			<label class="bm-tgl" for="${bm}__${section}">
-				<input type="checkbox" id="${bm}__${section}" ${isDisabled} ${isChecked} data-s="${section}"/>
+			<label for="${bm}_${section}">
+				<input type="checkbox" id="${bm}_${section}" ${isDisabled} ${isChecked} data-s="${section}"/>
 			</label>
-			<div class="bm-s-msg">${message}</div>
+			<p class="bm-s-msg">${message}</p>
 		</summary>
-		<div class="bm-s-main">${cookiesHtml}</div>
+		${cookiesHtml}
 	</details>
-</div>`})
+</section>`})
 			return html
 		}
 		ui.id = bm
 		ui.classList.add(bm)
 		ui.innerHTML = `
-<div class="bm-wrap">
+<article>
 	<div class="bm-front">
 		<b class="bm-title">${o.title}</b>
-		<div class="bm-msg">${o.msg}</div>
+		<p class="bm-msg">${o.msg}</p>
 	</div>
-	<div class="bm-btns">
-		<button id="${bm}_accept" class="primary">${o.acceptLabel}</button>
-		<button id="${bm}_settings">${o.settingsLabel}</button>
-		<button id="${bm}_reject">${o.rejectLabel}</button>
-	</div>
-</div>
+	<nav>
+		<button data-id="accept">${o.acceptLabel}</button>
+		<button data-id="settings">${o.settingsLabel}</button>
+		<button data-id="reject">${o.rejectLabel}</button>
+	</nav>
+</article>
 <dialog>
 	<div class="bm-wrap">
 		<b class="bm-title">${o.settingsTitle}</b>
-		<button id="${bm}_close" class="bm-cl">×</button>
+		<button data-id="close">×</button>
 		<div class="bm-main">
-			<div class="bm-msg">${o.msg}</div>
-			<div class="bm-info">${wrapInfo(o.info)}</div>
+			<p class="bm-msg">${o.msg}</p>
+			<p class="bm-info">${wrapInfo(o.info)}</p>
 			${addSections()}
 		</div>
-		<div class="bm-btns">
-			<button id="${bm}_accept2" class="primary">${o.acceptLabel}</button>
-			<button id="${bm}_save">${o.saveLabel}</button>
-			<button id="${bm}_reject2">${o.rejectLabel}</button>
-		</div>
+		<nav>
+			<button data-id="accept">${o.acceptLabel}</button>
+			<button data-id="save">${o.saveLabel}</button>
+			<button data-id="reject">${o.rejectLabel}</button>
+		</nav>
 	</div>
-</dialog>`.trim()
+</dialog>`
 		ui.querySelectorAll('button').forEach(b => b.addEventListener('click', buttonHandler))
 		dialog = ui.querySelector('dialog')
 		dialog.addEventListener('close', closeModalHandler)
@@ -98,15 +98,13 @@
 	}
 
 	function buttonHandler(e) {
-		const id = e.target.id.replace(`${bm}_`,'')
+		id = e.target.dataset.id
 		switch (id) {
-			case 'accept':
-			case 'accept2': saveConsent(true); break;
+			case 'accept': saveConsent(true); break;
 			case 'close': dialog.close(); break;
 			case 'settings': openModal(); break;
 			case 'save': saveConsent(); break;
-			case 'reject':
-			case 'reject2': saveConsent(false); break;
+			case 'reject': saveConsent(false); break;
 			default: break
 		}
 		dispatch('buttonPress', {id})

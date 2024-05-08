@@ -3,7 +3,16 @@
   "version": "0.2.1",
   "description": "Lightweight client-side cookie consent manager with dependency hooks and script injection",
   "browser": "biscuitman.js",
-  "keywords": ["privacy", "cookie", "cookies", "trackers" ,"cookie-consent", "gdpr", "consents", "consent-manager"],
+  "keywords": [
+    "privacy",
+    "cookie",
+    "cookies",
+    "trackers",
+    "cookie-consent",
+    "gdpr",
+    "consents",
+    "consent-manager"
+  ],
   "scripts": {
     "dev": "browser-sync start -s --cwd -w",
     "build": "node ./build.mjs"
@@ -11,6 +20,7 @@
   "devDependencies": {
     "@swc/core": "^1.4.17",
     "browser-sync": "^3.0.2",
+    "browserslist": "^4.23.0",
     "lightningcss": "^1.24.1"
   },
   "author": "replete",
