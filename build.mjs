@@ -15,8 +15,8 @@ let { code } = transform({
 	targets: browserslistToTargets(browserslist(browserlistString)),
 	include: Features.Nesting
 })
-fs.writeFileSync('biscuitman.min.css', comment + code)
-console.log('Written biscuitman.min.css')
+fs.writeFileSync('dist/biscuitman.min.css', comment + code)
+console.log('Wrote dist/biscuitman.min.css')
 
 const js = fs.readFileSync('biscuitman.js', 'utf8')
 swc.transform(js, {
@@ -38,13 +38,13 @@ swc.transform(js, {
   })
   .then(({code, map}) => {
 	const codeWithoutWhitespace = code.replace(/[\n\t]/g, '')
-	fs.writeFileSync('biscuitman.min.js', comment + codeWithoutWhitespace)
-	console.log('Written biscuitman.min.js')
+	fs.writeFileSync('dist/biscuitman.min.js', comment + codeWithoutWhitespace)
+	console.log('Wrote dist/biscuitman.min.js')
 	writeJsWithCss(codeWithoutWhitespace)
   });
 
   function writeJsWithCss(js) {
-	fs.writeFileSync('biscuitman.withcss.min.js', comment + js + 
+	fs.writeFileSync('dist/biscuitman.withcss.min.js', comment + js + 
 		`;((d)=>{let c=d.createElement('style');c.textContent=\`${code}\`;d.documentElement.appendChild(c)})(document);`)
-	console.log('Written biscuitman.min.css.js')
+	console.log('Wrote dist/biscuitman.withcss.min.js')
   }

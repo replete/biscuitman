@@ -9,16 +9,39 @@
 		enableMore: true,
 		sections: ['essential'],
 		title: 'Your privacy matters',
-		msg: 'We use cookies',
-		settingsLabel: 'Settings',
-		rejectLabel: 'Reject All',
-		acceptLabel: 'Accept All',
-		saveLabel: 'Save My Settings',
+		message: 'We use cookies',
+		settings: 'Settings',
+		reject: 'Reject All',
+		accept: 'Accept All',
+		save: 'Save My Settings',
 		settingsTitle: 'My Consent Settings',
 		info: '',
-		moreLabel: 'Show more',
-		noCookiesLabel: 'No cookies to display',
-		acceptNonEU: false
+		more: '(Show more)',
+		noCookies: 'No cookies to display',
+		acceptNonEU: false,
+// 		message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
+// 		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
+// Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
+// While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
+// 		linkText: 'Privacy Policy',
+// 		linkURL: 'https://domain.com/privacy-policy',
+// 		sections: ['essential','functional','analytics','performance','advertisement','uncategorized'],
+// 		essentialTitle: 'Essential',
+// 		essentialMessage: 'Essential cookies are required for basic site functionality',
+// 		functionalTitle: 'Functional',
+// 		functionalMessage: 'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
+// 		analyticsTitle: 'Analytics',
+// 		analyticsMessage: 'Analytical cookies allow us to understand visitor interactions with the website, offering insights into metrics like visitor count, bounce rate, and traffic source',
+// 		analyticsCookies: {
+// 			'_ga': 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
+// 			'_ga_*': 'Google Analytics uses this cookie for storing page view count'
+// 		},
+// 		performanceTitle: 'Performance',
+// 		performanceMessage: 'Performance cookies allow us to understand critical website performance indicators, contributing to an enhanced user experience for visitors',
+// 		advertisementTitle: 'Advertisement',
+// 		advertisementMessage: 'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
+// 		uncategorizedTitle: 'Uncategorized',
+// 		uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
 	}
 
 	// read user options from 'biscuitman' global object
@@ -26,69 +49,65 @@
 
 	// Apply UI and bind events
 	function render() {
-		const wrapInfo = (text) => text.split('\n').map((line, i, arr) => {
-			let more = (arr.length > 1 && o.enableMore && i == 0) 
-				? `<a class="more" href="javascript:void(0)">${o.moreLabel}</a>` : ''
-			return `<span>${line}${more}</span>`}).join('')
-		const addSections = () => {
-			let html = ''
-			o.sections.forEach(section => {
+		ui.classList.add(bm)
+		ui.style = 'position:fixed;background:#fff;bottom:0' // critical css
+		ui.innerHTML = `
+<article>
+	<b>${o.title}</b>
+	<p>${o.message}</p>
+	<nav>
+		<button data-id="accept">${o.accept}</button>
+		<button data-id="settings">${o.settings}</button>
+		<button data-id="reject">${o.reject}</button>
+	</nav>
+</article>
+<dialog>
+	<div class="bm-dialog">
+		<b>${o.settingsTitle}</b>
+		<button data-id="close">×</button>
+		<div class="bm-sections">
+			<p><span>${o.message}</span></p>
+			<p>${
+				o.info.split('\n').map((line, i, arr) => {
+					let more = (arr.length > 1 && o.enableMore && i == 0) 
+						? `<a class="more" href="javascript:void(0)">${o.more}</a>` 
+						: ''
+					return `<span>${line}${more}</span>`
+				}).join('')
+			}
+			</p>
+			${o.sections.map(section => {
 				let hasConsent = w[o.global][section]
 				let isEssential = section === 'essential'
 				let isDisabled = isEssential ? 'disabled' : ''
 				let isChecked = isEssential ? 'checked' : ''
 				if (hasConsent !== undefined) isChecked = hasConsent ? 'checked' : ''
-				let title = o[`${section}Title`]
-				let message = o[`${section}Message`]
 				let cookies = o[`${section}Cookies`]
-				let cookiesHtml = cookies
-					? Object.entries(cookies).map(([k, v]) => `<p class="bm-s-item"><b>${k}</b><span>${v}</span></p>`).join('')
-					: `<p class="bm-s-item">${o.noCookiesLabel}</p>`
-				html += `
-<section>
-	<details>
-		<summary>
-			<b class="bm-s-title">${title}</b>
-			<label for="${bm}_${section}">
-				<input type="checkbox" id="${bm}_${section}" ${isDisabled} ${isChecked} data-s="${section}"/>
-			</label>
-			<p class="bm-s-msg">${message}</p>
-		</summary>
-		${cookiesHtml}
-	</details>
-</section>`})
-			return html
-		}
-		ui.id = bm
-		ui.classList.add(bm)
-		ui.innerHTML = `
-<article>
-	<div class="bm-front">
-		<b class="bm-title">${o.title}</b>
-		<p class="bm-msg">${o.msg}</p>
-	</div>
-	<nav>
-		<button data-id="accept">${o.acceptLabel}</button>
-		<button data-id="settings">${o.settingsLabel}</button>
-		<button data-id="reject">${o.rejectLabel}</button>
-	</nav>
-</article>
-<dialog>
-	<div class="bm-wrap">
-		<b class="bm-title">${o.settingsTitle}</b>
-		<button data-id="close">×</button>
-		<div class="bm-main">
-			<p class="bm-msg">${o.msg}</p>
-			<p class="bm-info">${wrapInfo(o.info)}</p>
-			${addSections()}
+				return `
+			<section>
+				<details>
+					<summary>
+						<b>${o[`${section}Title`]}</b>
+						<label for="${bm}_${section}">
+							<input type="checkbox" id="${bm}_${section}" ${isDisabled} ${isChecked} data-s="${section}"/>
+						</label>
+						<p>${o[`${section}Message`]}</p>
+					</summary>
+					${cookies
+						? Object.entries(cookies).map(([k, v]) => `<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('')
+						: `<dl><dd>${o.noCookies}</dd></dl>`
+					}
+				</details>
+			</section>`
+			}).join('')}
 		</div>
 		<nav>
-			<button data-id="accept">${o.acceptLabel}</button>
-			<button data-id="save">${o.saveLabel}</button>
-			<button data-id="reject">${o.rejectLabel}</button>
+			<button data-id="accept">${o.accept}</button>
+			<button data-id="save">${o.save}</button>
+			<button data-id="reject">${o.reject}</button>
 		</nav>
 	</div>
-</dialog>`
+</dialog>`.replaceAll('{link}',`<a href="${o.linkURL}">${o.linkText}</a>`)
 		ui.querySelectorAll('button').forEach(b => b.addEventListener('click', buttonHandler))
 		dialog = ui.querySelector('dialog')
 		dialog.addEventListener('close', closeModalHandler)

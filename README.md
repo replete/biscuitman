@@ -3,39 +3,30 @@
 
 #### [View demo](https://replete.github.io/biscuitman)
 
-I didn't feel good about sending 100KB+ for a simple cookie consent solution so I wrote my own in vanilla JS. It's around 4kB compressed with brotli. The goal was to make something small and versatile _enough_ that I could drop it on my optimized sites for basic analytics that wouldn't break the rules.
+I didn't feel good about sending 100KB+ for a simple cookie consent solution so I wrote my own in vanilla JS. It's around <5kB compressed with brotli.
+
+The goal was to make something as small as possible and versatile enough that I could drop it on my optimized sites for basic analytics.
 
 
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
-- optionally shows user specific cookie details
+- Optionally shows user specific cookie details
 - Fully customizable strings so you can serve localized strings if you want
-- Simple configuration
-- Injects scripts when consent is granted (`<script data-consent="analytics" type="text/plain" src="..."></script>`)
+- Simple flat configuration object
+- Injects scripts when granular consent is granted (`<script data-consent="analytics" type="text/plain" src="..."></script>`)
 - Works without CSS (thanks to `<dialog>` and `<details>`)
 - Mobile-first
-- Modern browsers: No support for IE
-- Not production-ready until 1.0
+- Browser support: >= 2% browserlist (No IE support)
+  - Written with latest CSS / JS features and targetted to >= 2% using browserlist
 
 ![screenshot of main UI](media/ui.webp)
 
-### Next
-
-Probably need to drop [CSS Nesting]() for now based on mobile browser support only recently arriving. In a year or so we should be able to use it more reliably. So that's the next thing.
-
-- [ ] Support more mobile browsers by processing use of [CSS Nesting](https://caniuse.com/?search=CSS%20Nesting)
-- [ ] Determine exact browser support
-- ...
-
 ## How to use
 ```html
-<!-- optional: Include critical CSS to ensure biscuitman works if CSS Nesting is not supported -->
-<style>.biscuitman{position:fixed;bottom:0;left:0;background:#fff}</style>
-
 <!-- 
-    1. Add data-consent="{section}" and type="text/plain" properties
-    (if you want to only load them upon consent)
-    (the ids aren't used at the moment, but is probably a good idea)
+    1. Add data-consent="{sectionString}" and type="text/plain" properties
+    (if you want to only load them upon consent of a section)
+    (the ids are optional)
 -->
 <script data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" type="text/plain" id="js-analytics-gtm"></script>
 <script data-consent="analytics" type="text/plain" id="js-analytics-gtm-after">
@@ -53,10 +44,13 @@ Probably need to drop [CSS Nesting]() for now based on mobile browser support on
 <script>
     // You must specify the copy in this object as the main library does not include defaults (seemed pointless)
     biscuitman = {
-        msg: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic.',
+        message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
 Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
 While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
+        // {link} inside any string will be replaced with an <a> link using:
+        linkText: 'Privacy Policy',
+        linkURL: 'https://domain.com/privacy-policy',
         // Have as many or few sections as you like, only include <name>{Title|Message|Cookies} properties if you use them. This is a key property.
         sections: ['essential','functional','analytics','advertisement','uncategorized'],
         // Essential is the only special section, it is hardcoded to be disabled in the UI
@@ -90,7 +84,7 @@ While you have the option to enable or disable some or all of these cookies, not
 ```
 
 ## Notes
-This is a brand new pre-1.0 project and needs more testing and iteration, and isn't going to suit all circumstances yet.
+This is a brand new pre-1.0 project and needs more testing and iteration, and isn't going to suit all circumstances yet, although I'm using it on live sites.
 
 There are number of features we might want to add, such as forcing the popup to show and not allow use of the site until consent choice is made.
 
