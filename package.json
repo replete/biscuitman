@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "dev": "browser-sync start -s --cwd -w",
-    "build": "node ./build.mjs"
+    "build": "node ./build.mjs",
+    "checksize": "brotli -c dist/biscuitman.withcss.min.js | wc -c"
   },
   "devDependencies": {
     "@swc/core": "^1.4.17",
