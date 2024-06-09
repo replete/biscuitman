@@ -102,7 +102,8 @@
 		}
 
 		&[disabled] {
-			display: none
+			display: none;
+			/* This rule is for the 'force' option */
 		}
 
 		&:hover {
@@ -353,6 +354,12 @@
 				right:var(--gap);
 				right:0;
 			}
+		}
+
+		&:has(:focus-within) {
+			/* Show focus outline correctly correctly with keyboard focus */
+			outline: auto;
+			outline-color:highlight; /* in Chrome the wrong colour is shown, this should make more sense */
 		}
 
 		&:has([disabled]:checked) {
