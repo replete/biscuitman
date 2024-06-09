@@ -1,6 +1,6 @@
 {
   "name": "biscuitman",
-  "version": "0.3",
+  "version": "0.3.1",
   "description": "Lightweight client-side cookie consent manager with dependency hooks and script injection",
   "browser": "biscuitman.js",
   "keywords": [

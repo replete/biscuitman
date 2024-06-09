@@ -101,6 +101,10 @@
 			padding:10px;
 		}
 
+		&[disabled] {
+			display: none
+		}
+
 		&:hover {
 			opacity:0.8;
 		}

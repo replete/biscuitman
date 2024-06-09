@@ -6,6 +6,7 @@
 	const defaults = {
 		storageKey: 'myconsent',
 		global: 'Consent',
+		force:false,
 		enableMore: true,
 		sections: ['essential'],
 		title: 'Your privacy matters',
@@ -64,7 +65,7 @@
 <dialog>
 	<div class="bm-dialog">
 		<b>${o.settingsTitle}</b>
-		<button data-id="close">×</button>
+		<button data-id="close"${o.force ? ' disabled' : ''}>×</button>
 		<div class="bm-sections">
 			<p><span>${o.message}</span></p>
 			<p>${
@@ -111,6 +112,7 @@
 		ui.querySelectorAll('button').forEach(b => b.addEventListener('click', buttonHandler))
 		dialog = ui.querySelector('dialog')
 		dialog.addEventListener('close', closeModalHandler)
+		dialog.addEventListener('cancel', cancelModalHandler)
 		const moreLink = ui.querySelector('.more');
 		if (moreLink) moreLink.addEventListener('click', moreLink.remove)
 		d.body.appendChild(ui)
@@ -131,6 +133,10 @@
 
 	function closeModalHandler() {
 		dispatch('closeModal')
+	}
+
+	function cancelModalHandler(e) {
+		if (o.force) e.preventDefault()
 	}
 
 	function openModal() {
@@ -210,14 +216,8 @@
 		});
 	}
 
-	// Startup
-
+	// Load consent
 	w[o.global] = readConsent() || {} 
-
-	if (w[o.global].consentTime) {
-		displayUI(false)
-		insertScripts()
-	}
 
 	// Optionally auto-accept consent if timezone is not EU
 	const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -229,6 +229,16 @@
 
 	// Initiate UI
 	render()
+
+	// Consent logic
+	if (w[o.global].consentTime) {
+		displayUI(false)
+		// Consent exists, initiate scripts:
+		insertScripts()
+	} else if (o.force) {
+		// Force consent choice
+		openModal()
+	}
 
 	// Helper global methods 
 	// <a onclick="bmUpdateConsent()" href="javascript:void(0)">Update Consent Preferences</a>
