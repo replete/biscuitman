@@ -8,17 +8,10 @@
 */
 
 .biscuitman {
-	--dark: #000;
 	--text: #444;
-	--mid: #999;
-	--light: #ccc;
-	--lighter: #eee;
 	--bg: #fff;
-	--accent: #105d89;
-	--sb: 16px;
-	
-	position:fixed;
-	bottom:0;
+	--color: #105d89;
+
 	width:100%;
 	padding:20px;
 	background:var(--bg);
@@ -71,17 +64,17 @@
 
 	button {
 		background: var(--bg);
-		border:2px solid var(--accent);
+		border:2px solid var(--color);
 		line-height:1em;
-		padding:0.85em;
+		padding:0.8em;
 		margin-top:10px;
-		color: var(--accent);
+		color: var(--color);
 		font-size:13px;
 		border-radius:3px;
 		cursor:pointer;
 
 		&[data-id=accept] {
-			background: var(--accent);
+			background: var(--color);
 			color: var(--bg) !important;
 		}
 
@@ -90,7 +83,7 @@
 			outline:none;
 			position:absolute;
 			background:transparent;
-			color: var(--dark);
+			color: #000;
 			top: 0;
 			right:10px;
 			line-height:1em;
@@ -196,9 +189,12 @@
 		height:100%;
 		padding:15px 0;
 		position:relative;
-		margin-right:calc(var(--sb) * -1);
-		padding-right:var(--sb);
-		scrollbar-color: var(--light) var(--bg);
+		scrollbar-color: #ddd var(--bg);
+		@media (min-width:576px) {
+			padding-right:4px;
+			margin-right:-18px;
+		}
+
 
 		> p  {
 			line-height:18px;
@@ -222,7 +218,7 @@
 
 	a {
 		font-size:inherit;
-		color: var(--accent);
+		color: var(--color);
 		display:inline-block;
 		cursor:pointer;
 		text-decoration:none;
@@ -242,14 +238,15 @@
 	}
 
 	details {
-		border:1px solid var(--light);
+		border:1px solid #ccc;
 		padding:10px;
 		border-radius:5px;
 		box-shadow:0 2px 4px rgba(0,0,0,.1);
 		list-style:none;
 
 		&[open] summary b::after {
-			transform:rotate(180deg)
+			transform:rotate(45deg) scale(0.3);
+			margin:-3px 0 0 -2px;
 		}
 	}
 
@@ -266,16 +263,16 @@
 			margin-bottom:3px;
 
 			&::after {
-				content:'⌃';
+				content:'';
 				display:block;
 				height:1em;
-				width: 1em;
-				transform:rotate(90deg);
-				margin-left:3px;
-				margin-top:5px;
-				transition: .15s transform ease-in;
-				opacity:0.6;
-				font-weight:300;
+				width:1em;
+				border: 5px solid #777;
+				border-left-color:transparent;
+				border-top-color:transparent;
+				border-radius:2px;
+				transform:rotate(-45deg) scale(0.3);
+				margin:-2px 0 0 -4px;
 			}
 		}
 
@@ -298,7 +295,7 @@
 		display:flex;
 		padding: 10px;
 		margin:10px;
-		background: var(--lighter);
+		background: #eee;
 
 		dt,dd {
 			color: var(--text);
@@ -316,15 +313,14 @@
 		--height: 1.2em;
 		--width: 2.3em;
 		--gap: 2px;
-		--font-size: 20px;
-		font-size:var(--font-size) !important;
+		font-size:20px !important;
 		position:absolute;
 		top: 50%;
 		right:20px;
 		display:block;
 		height:var(--height);
 		width:var(--width);
-		background-color: var(--mid);
+		background-color: #999;
 		border-radius:var(--height);
 		transform: translateY(-50%);
 		margin-top:-2px;
@@ -347,7 +343,7 @@
 		}
 
 		&:has(:checked) {
-		background-color: var(--accent);
+		background-color: var(--color);
 
 			&::before {
 				left: auto;

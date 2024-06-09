@@ -2,8 +2,8 @@ import fs from 'node:fs'
 import swc from '@swc/core'
 import browserslist from 'browserslist'
 import {transform, browserslistToTargets, Features} from 'lightningcss'
-const {name, version, repository} = JSON.parse(fs.readFileSync('./package.json'))
-const comment = `/*! ${name} ${version} ${repository.url.replace('.git','')} */`
+const {name, version } = JSON.parse(fs.readFileSync('./package.json'))
+const comment = `/*! ${name}.js ${version} */`
 
 const browserlistString = '>= 2%'
 

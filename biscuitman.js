@@ -1,6 +1,6 @@
 ((d, w)=>{
 	const bm = 'biscuitman'
-	const ui = d.createElement('aside')
+	const ui = d.createElement('div')
 	let dialog
 
 	const defaults = {
@@ -162,10 +162,11 @@
 		w[o.global].consentTime = +new Date()
 		o.sections.forEach(section => {
 			if (section === 'essential') return false
+			let sectionElement = ui.querySelector(`[data-s=${section}]`)
 			w[o.global][section] = willReadValues 
-				? ui.querySelector(`[data-s=${section}]`).checked
+				? sectionElement.checked
 				: value
-			if (!willReadValues) ui.querySelector(`[data-s=${section}]`).checked = value
+			if (!willReadValues) sectionElement.checked = value
 		})
 		localStorage.setItem(o.storageKey, JSON.stringify(w[o.global]))
 		insertScripts()
