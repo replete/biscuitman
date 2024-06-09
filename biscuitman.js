@@ -16,7 +16,7 @@
 		accept: 'Accept All',
 		save: 'Save My Settings',
 		settingsTitle: 'My Consent Settings',
-		info: '',
+		info: ``,
 		more: '(Show more)',
 		noCookies: 'No cookies to display',
 		acceptNonEU: false,
