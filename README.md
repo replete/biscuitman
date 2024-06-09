@@ -24,7 +24,7 @@ The goal was to make something as small as possible and versatile enough that I 
 ## How to use
 ```html
 <!-- 
-    1. Add data-consent="{sectionString}" and type="text/plain" properties
+    1. Add data-consent="{sectionName}" and type="text/plain" properties
     (if you want to only load them upon consent of a section)
     (the ids are optional)
 -->
@@ -32,9 +32,7 @@ The goal was to make something as small as possible and versatile enough that I 
 <script data-consent="analytics" type="text/plain" id="js-analytics-gtm-after">
     console.log('This script runs as soon as analytics consent is granted')
 </script>
-<script data-consent="analytics" type="text/plain" id="js-analytics-misc">
-    console.log('This embedded script will be inserted when analytics consent is granted')
-</script>
+<!-- for more advanced examples view source of index.html -->
 
 <!-- 
     2. Configure biscuitman global object
@@ -82,6 +80,37 @@ While you have the option to enable or disable some or all of these cookies, not
 <script src="biscuitman.withcss.min.js"></script>
 
 ```
+
+## Globals
+- `biscuitman` – configuration object, must be `window.biscuitman`
+- `Consent` – object for accessing consents (add `global` config property to override)
+    ```
+    {
+        "consentTime": 1717846660979,
+        "functional": false,
+        "analytics": false,
+        "performance": false,
+        "advertisement": false,
+        "uncategorized": false
+    }
+    ```
+    - example: `if (Consent && Consent.analytics) { doAnalyticsThing() }`
+- `bmInvalidateConsent()` – Delete stored consent data and reinstate UI
+- `bmUpdateConsent()` – Opens My Consent Settings modal
+    - example: `<a href="javascript:bmUpdateConsent();"> Update my consent settings</a>` 
+
+## Events
+
+The easiest way to see how events work is to view the `console.debug()` calls in the [demo](https://replete.github.io/biscuitman)
+- `biscuitman:openModal`
+- `biscuitman:closeModel`
+- `biscuitman:buttonPress`
+- `biscuitman:saveConsent`
+- `biscuitman:scriptInjected`
+- `biscuitman:scriptLoaded`
+- `biscuitman:invalidateConsent`
+- `biscuitman:updateConsent`
+    
 
 ## Notes
 This is a brand new pre-1.0 project and needs more testing and iteration, and isn't going to suit all circumstances yet, although I'm using it on live sites.
