@@ -120,11 +120,6 @@ document.addEventListener('biscuitman:openModal', (e) => {
 }, true);
 ```
 
-## Notes
-This is a brand new pre-1.0 project and needs more testing and iteration, and isn't going to suit all circumstances yet, although I'm using it on live sites.
-
-There are number of features we might want to add, such as forcing the popup to show and not allow use of the site until consent choice is made.
-
 
 ## Development
 
