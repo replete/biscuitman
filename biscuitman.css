@@ -352,7 +352,7 @@
 			}
 		}
 
-		&:has(:focus-within) {
+		&:has(:focus-visible) {
 			/* Show focus outline correctly correctly with keyboard focus */
 			outline: auto highlight;
 		}
