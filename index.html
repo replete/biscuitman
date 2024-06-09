@@ -124,6 +124,13 @@ While you have the option to enable or disable some or all of these cookies, not
 		}
 
 		a.img { display:inline-flex; flex-direction: column}
+
+		html:not(.js-bm-hidden)::after {
+			content:'';
+			min-height:300px;
+			display:block;
+			user-select:none;
+		}
 	</style>
 
 	<header>
