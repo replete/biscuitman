@@ -31,13 +31,12 @@
 		var sc_security="beefbeef"
 		var sc_https=1
 	</script>
-	<script data-consent="analytics" async src="https://statcounter.com/counter/counter.js" type="text/plain" id="js-analytics-statcounter"></script>
+	<script type="text/plain" async src="https://statcounter.com/counter/counter.js" data-consent="analytics" id="js-analytics-statcounter"></script>
 
 	<script id="js-analytics-misc" data-consent="analytics" type="text/plain">
 		console.log('This embedded script will be inserted when analytics consent is granted')
 	</script>
 
-	<!-- biscuitman config, unless its a one-page site serve this from biscuitman-config.js -->
 	<script>
 		biscuitman = {
 			message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
@@ -67,13 +66,26 @@ While you have the option to enable or disable some or all of these cookies, not
 			force: false
 		}
 	</script>
-	<!-- biscuitman must be after biscuitman config and data-consent scripts -->
-	<script src="biscuitman.js"></script>
+
+	<script id="sandboxScript">
+		// load the unprocessed JS in dev environment
+		const isLocal = location.hostname === 'localhost'
+
+		let el = document.createElement('script')
+		el.src = isLocal ? 'biscuitman.js' : 'dist/biscuitman.withcss.min.js'
+		document.getElementById('sandboxScript').insertAdjacentElement('afterend', el);
+
+		if (isLocal) {
+			let link = document.createElement('link')
+			link.rel = 'stylesheet'
+			link.href = 'biscuitman.css'
+			document.documentElement.appendChild(link)
+		}
+	</script> 
 
 
 
 	<style>
-		@import url(biscuitman.css);
 		body {
 			font-family: Arial, sans-serif;
 			margin: 0;
