@@ -32,7 +32,8 @@ The goal was to make something as small as possible and versatile enough that I 
 	   - add 'data-consent' property with consent section name (e.g. analytics, functional, performance)
 -->
 <script data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" type="text/plain" id="js-analytics-gtm">
-	console.log(google_tag_manager) // evaluated 'onload' of src
+	// The contents of this script is injected when the parent script is loaded, for convenience
+	console.log(google_tag_manager)
 </script>
 <script data-consent="analytics" type="text/plain" id="js-analytics-gtm-after">
 	console.log('This script runs as soon as analytics section consent is granted')
@@ -138,25 +139,24 @@ html:not(.js-bm-hidden)::after {
 	}
 	```
 	- example usage: `if (Consent && Consent.analytics) { doAnalyticsThing() }`
-- `bmInvalidateConsent()` – Delete stored consent data and reinstate UI
-- `bmUpdateConsent()` – Opens My Consent Settings modal
-	- example usage: `<a href="javascript:bmUpdateConsent();"> Update my consent settings</a>` 
+- `bmInvalidate()` – Delete stored consent data and reinstate UI
+- `bmOpen()` – Opens My Consent Settings modal
+	- example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>` 
 
 ## Events
 
 The easiest way to see how events work is to view the `console.debug()` calls in the [demo](https://replete.github.io/biscuitman)
-- `biscuitman:openModal`
-- `biscuitman:closeModel`
-- `biscuitman:buttonPress`
-- `biscuitman:saveConsent`
-- `biscuitman:scriptInjected`
-- `biscuitman:scriptLoaded`
-- `biscuitman:invalidateConsent`
-- `biscuitman:updateConsent`
+- `biscuitman:open` => `{time: 1718915128298}` modal opened
+- `biscuitman:close` => `{time: 1718915128298}` modal closed
+- `biscuitman:button` => `{id: "settings", time: 1718915128298}` button clicked
+- `biscuitman:save` => `{data: {consentTime: 1718914784624, advertisement:true, advertisement: fal..}, time: 1718914784624}` consent choice saved
+- `biscuitman:inject` =>  `{el: $Element, parent?: $Element, time: 1718914784624}` script injected to DOM. if parent exists, it's a new tag inserted after a `src` script loaded which also had text content (a 'dependent' script = tidier convenient markup)
+- `biscuitman:invalidate` => `{data: {..consentObjectJustDeleted}, time: 1718915128298}` consent invalidated
+- `biscuitman:update` => `{data: {...currentConsentObject}, time: 1718914784624}` returns current consent object and time
 	
 You can watch for these events like this:
 ```js
-document.addEventListener('biscuitman:openModal', (e) => {
+document.addEventListener('biscuitman:open', (e) => {
 	console.log('modal opened')
 }, true);
 ```

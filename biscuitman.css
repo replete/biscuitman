@@ -6,7 +6,6 @@
 	and is processed to un-nested native CSS nesting
 	and include vendor
 */
-
 .biscuitman {
 	--text: #444;
 	--bg: #fff;
@@ -18,14 +17,6 @@
 	box-shadow: 0px -2px 10px rgba(0,0,0,.16);
 	font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	box-sizing: border-box;
-
-	&:has(dialog[open]) {
-		padding:0;
-
-		article{
-			display:none;
-		}
-	}
 
 	* {
 		box-sizing: border-box;
@@ -66,7 +57,7 @@
 		background: var(--bg);
 		border:2px solid var(--color);
 		line-height:1em;
-		padding:0.8em;
+		padding:.8em;
 		margin-top:10px;
 		color: var(--color);
 		font-size:13px;
@@ -87,7 +78,7 @@
 			top: 0;
 			right:10px;
 			line-height:1em;
-			opacity:0.6;
+			opacity:.6;
 			font-size:24px;
 			user-select:none;
 			z-index:2;
@@ -100,7 +91,7 @@
 		}
 
 		&:hover {
-			opacity:0.8;
+			opacity:.8;
 		}
 	}
 
@@ -123,7 +114,7 @@
 		}
 	}
 
-	dialog[open] {
+	dialog {
 		border:0;
 		width:100%;
 		height:100%;
@@ -139,7 +130,7 @@
 		border-radius:10px;
 		}
 		@media (min-width:576px) and (min-height:1134px) {
-		max-height:908px;
+			height:890px; /* KLUDGE: magic number based on 6 sections */
 		}
 
 		nav {
@@ -245,7 +236,7 @@
 		list-style:none;
 
 		&[open] summary b::after {
-			transform:rotate(45deg) scale(0.3);
+			transform:rotate(45deg) scale(.3);
 			margin:-3px 0 0 -2px;
 		}
 	}
@@ -271,7 +262,7 @@
 				border-left-color:transparent;
 				border-top-color:transparent;
 				border-radius:2px;
-				transform:rotate(-45deg) scale(0.3);
+				transform:rotate(-45deg) scale(.3);
 				margin:-2px 0 0 -4px;
 			}
 		}
@@ -338,7 +329,7 @@
 			left:var(--gap);
 			left:0;
 			top:50%;
-			transform: translateY(-50%) scale(0.8);
+			transform: translateY(-50%) scale(.8);
 			transform-origin: center center;
 		}
 
@@ -358,7 +349,7 @@
 		}
 
 		&:has([disabled]:checked) {
-			opacity:0.6
+			opacity:.6
 		}
 
 		input {

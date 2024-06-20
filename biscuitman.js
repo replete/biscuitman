@@ -128,11 +128,11 @@
 			case 'reject': saveConsent(false); break;
 			default: break
 		}
-		dispatch('buttonPress', {id})
+		dispatch('button', {id})
 	}
 
 	function closeModalHandler() {
-		dispatch('closeModal')
+		dispatch('close')
 	}
 
 	function cancelModalHandler(e) {
@@ -141,7 +141,7 @@
 
 	function openModal() {
 		dialog.showModal()
-		dispatch('openModal')
+		dispatch('open')
 	}
 
 	const displayUI = (show) => d.documentElement.classList[show ? 'remove' : 'add']('js-bm-hidden')
@@ -150,7 +150,7 @@
 		try {
 			return JSON.parse(localStorage.getItem(o.storageKey))
 		} catch (err) {
-			console.error(`${bm} readConsent error:`, err.message)
+			console.error(bm, err)
 			localStorage.removeItem(o.storageKey) // If there's an error in localstorage, wipe consent data
 			return {}
 		}
@@ -170,7 +170,7 @@
 		})
 		localStorage.setItem(o.storageKey, JSON.stringify(w[o.global]))
 		insertScripts()
-		dispatch('saveConsent', {data: w[o.global]})
+		dispatch('save', {data: w[o.global]})
 		dialog.close()
 		displayUI(false)
 	}
@@ -205,14 +205,14 @@
 			if (!script.src) newScript.textContent = script.textContent
 			// Insert script to DOM
 			script.parentNode.replaceChild(newScript, script)
-			dispatch('scriptInjected', {data: script.outerHTML})
+			dispatch('inject', {el: script})
 
 			// If tag has src and inline script, insert dependent inline script as new tag on load
 			if (script.src && script.textContent.trim() !== '') newScript.addEventListener('load', () => {
 				let depScript = d.createElement('script')
 				depScript.textContent = script.textContent
 				newScript.insertAdjacentElement('afterend', depScript)
-				dispatch('scriptLoaded', {data: depScript.outerHTML})
+				dispatch('inject', {el: depScript, parent: script})
 			})
 		});
 	}
@@ -244,13 +244,13 @@
 	// Helper global methods 
 	// <a onclick="bmUpdateConsent()" href="javascript:void(0)">Update Consent Preferences</a>
 	w.bmInvalidateConsent = () => {
+		dispatch('invalidate', {data: readConsent()})
 		saveConsent(false) // resets UI
 		localStorage.removeItem(o.storageKey)
 		displayUI(true)
-		dispatch('invalidateConsent', readConsent())
 	}
 	w.bmUpdateConsent = () => {
+		dispatch('update', {data: readConsent()})
 		openModal()
-		dispatch('updateConsent', readConsent())
 	}
 })(document, window)
