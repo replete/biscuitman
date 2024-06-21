@@ -3,9 +3,7 @@
 
 #### [View demo](https://replete.github.io/biscuitman)
 
-I didn't like sending 100KB+ for a simple cookie consent solution so I wrote my own in vanilla JS. It's currently **3kB** brotli compressed, including CSS.
-
-The goal was to make something as small as possible and versatile enough that I could drop it on my optimized sites for basic use, adhering to GDPR.
+I didn't like sending 100KB+ for a simple cookie consent solution so I wrote this. It's currently **2.9kB/br or 3.4kB/gz**, including CSS. It's designed to be as small as possible with a good enough featureset for basic cookie consent.
 
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
@@ -151,7 +149,7 @@ The easiest way to see how events work is to view the `console.debug()` calls in
 - `biscuitman:button` => `{id: "settings", time: 1718915128298}` button clicked
 - `biscuitman:save` => `{data: {consentTime: 1718914784624, advertisement:true, advertisement: fal..}, time: 1718914784624}` consent choice saved
 - `biscuitman:inject` =>  `{el: $Element, parent?: $Element, time: 1718914784624}` script injected to DOM. if parent exists, it's a new tag inserted after a `src` script loaded which also had text content (a 'dependent' script = tidier convenient markup)
-- `biscuitman:invalidate` => `{data: {..consentObjectJustDeleted}, time: 1718915128298}` consent invalidated
+- `biscuitman:invalidate` => `{data: {...consentObjectJustDeleted}, time: 1718915128298}` consent invalidated
 - `biscuitman:update` => `{data: {...currentConsentObject}, time: 1718914784624}` returns current consent object and time
 	
 You can watch for these events like this:
