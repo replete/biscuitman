@@ -3,11 +3,12 @@
 
 #### [View demo](https://replete.github.io/biscuitman)
 
-I didn't like sending 100KB+ for a simple cookie consent solution so I wrote this. It's currently **2.9kB/br or 3.4kB/gz**, including CSS. It's designed to be as small as possible with a good enough featureset for basic cookie consent.
+I didn't like sending 100KB+ for a simple cookie consent solution so I wrote this. It's currently **3.1kB/br or 3.6kB/gz**, including CSS. It's designed to be as small as possible with an adequate featureset for basic website cookie consent.
 
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
 - Optionally shows user specific cookie details
+- Cookies/localstorage items removed on rejection/invalidation, if cookie details added 
 - Fully customizable strings so you can serve localized strings if you want
 - Overridable localStorage key, consent global
 - Simple flat configuration object
@@ -93,7 +94,8 @@ While you have the option to enable or disable some or all of these cookies, not
 		analyticsTitle: 'Analytics',
 		analyticsMessage: 'Analytical cookies are used to understand how visitors interact with the website. These cookies help provide information on metrics such as the number of visitors, bounce rate, traffic source, etc.',
 		
-		// Optionally include details of the cookies in use for a section, add them like a name/value dictionary like so:
+		// (Optional) Include details of the cookies in use for a section, add them like a name/value dictionary
+		// NOTE: By default, if these exist, then when when consent is rejected/invalidated, these cookies/localStorage entries will be immediately removed. Wildcards only work at the end of a string.
 		analyticsCookies: {
 			'_ga': 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
 			'_ga_*': 'Google Analytics uses this cookie for storing page view count'
@@ -151,6 +153,7 @@ The easiest way to see how events work is to view the `console.debug()` calls in
 - `biscuitman:inject` =>  `{el: $Element, parent?: $Element, time: 1718914784624}` script injected to DOM. if parent exists, it's a new tag inserted after a `src` script loaded which also had text content (a 'dependent' script = tidier convenient markup)
 - `biscuitman:invalidate` => `{data: {...consentObjectJustDeleted}, time: 1718915128298}` consent invalidated
 - `biscuitman:update` => `{data: {...currentConsentObject}, time: 1718914784624}` returns current consent object and time
+- `biscuitman:delete` => `{localStorage|cookie: 'cookieName', time: 1718914784624}` fires when consent is rejected or invalidated and cookies/localStorage entries are deleted
 	
 You can watch for these events like this:
 ```js

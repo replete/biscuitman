@@ -1,4 +1,4 @@
-((d, w, bm)=>{
+((d, w, Object, bm)=>{
 	const defaults = {
 		storageKey: 'myconsent',
 		global: 'Consent',
@@ -122,11 +122,11 @@
 		let id = e.target.dataset.id
 		dispatch('button', {id})
 		switch (id) {
-			case 'accept': saveConsent(true); break;
+			case 'accept': saveConsents(true); break;
 			case 'close': dialog.close(); break;
 			case 'settings': openModal(); break;
-			case 'save': saveConsent(); break;
-			case 'reject': saveConsent(false); break;
+			case 'save': saveConsents(); break;
+			case 'reject': saveConsents(false); break;
 		}
 	}
 
@@ -153,9 +153,9 @@
 		console.debug(name, payload);
 	}
 
-	/* Consents & Injection */
+	/* Data */
 
-	function readConsent() {
+	function readConsents() {
 		try {
 			return JSON.parse(localStorage.getItem(o.storageKey))
 		} catch (err) {
@@ -165,19 +165,53 @@
 		}
 	}
 
-	function saveConsent(value) {
+	function clearStorages() {
+		const localStores = Object.fromEntries(Object.entries(localStorage))
+		const cookies = Object.fromEntries(
+			d.cookie.split('; ').map(cookie => cookie.split('='))
+		)
+		const { consentTime, ...consents } = readConsents()
+	
+		for (let [section, sectionConsent] of Object.entries(consents)) {
+			if (sectionConsent) continue
+			let sectionCookieNames = Object.keys(o[`${section}Cookies`] || {})
+
+			sectionCookieNames
+			.filter(name => name.endsWith('*'))
+			.map(wildcardName => {
+				Object.keys({...cookies, ...localStores}).map(name => {
+					if (name.startsWith(wildcardName.slice(0, -1))) sectionCookieNames.push(name)
+				})
+			})
+
+			for (const name of sectionCookieNames) {
+				if (cookies[name]) {
+					d.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+					dispatch('delete',{cookie : name})
+				}
+				if (localStores[name]) {
+					localStorage.removeItem(name)
+					dispatch('delete',{localStorage : name})
+				}
+			}
+		}
+	}
+
+	function saveConsents(value) {
 		const willReadValues = value === undefined
 		w[o.global].consentTime = +new Date()
 		o.sections.forEach(section => {
 			if (section === 'essential') return false
 			let sectionElement = ui.querySelector(`[data-s=${section}]`)
-			w[o.global][section] = willReadValues 
+			let sectionConsent = willReadValues 
 				? sectionElement.checked
 				: value
+			w[o.global][section] = sectionConsent
 			if (!willReadValues) sectionElement.checked = value
 		})
 		localStorage.setItem(o.storageKey, JSON.stringify(w[o.global]))
 		dispatch('save', {data: w[o.global]})
+		clearStorages()
 		insertScripts()
 		dialog.close()
 		displayUI(false)
@@ -208,15 +242,17 @@
 		});
 	}
 
+
+
 	/* Start */
 
-	w[o.global] = readConsent() || {} 
+	w[o.global] = readConsents() || {} 
 
 	// Optional Non-EU auto-consent
 	const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 	const isEuropeTimezone = /^(GMT|UTC)$/.test(tz) || /(Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-1|GMT-2|UTC+1|UTC+2|UTC+3)/.test(tz)
 	if (o.acceptNonEU && !isEuropeTimezone) {
-		saveConsent(true)
+		saveConsents(true)
 		displayUI(false)
 	}
 
@@ -232,14 +268,14 @@
 	// Helper  methods 
 	// <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
 	w.bmInvalidate = () => {
-		dispatch('invalidate', {data: readConsent()})
-		saveConsent(false)
+		dispatch('invalidate', {data: readConsents()})
+		saveConsents(false)
 		localStorage.removeItem(o.storageKey)
 		displayUI(true)
 	}
 	// <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
 	w.bmUpdate = () => {
-		dispatch('update', {data: readConsent()})
+		dispatch('update', {data: readConsents()})
 		openModal()
 	}
-})(document, window, 'biscuitman')
+})(document, window, Object, 'biscuitman')
