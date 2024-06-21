@@ -1,8 +1,4 @@
-((d, w)=>{
-	const bm = 'biscuitman'
-	const ui = d.createElement('div')
-	let dialog
-
+((d, w, bm)=>{
 	const defaults = {
 		storageKey: 'myconsent',
 		global: 'Consent',
@@ -44,14 +40,16 @@
 // 		uncategorizedTitle: 'Uncategorized',
 // 		uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
 	}
+	const o = {...defaults, ...w.biscuitman}
 
-	// read user options from 'biscuitman' global object
-	const o = w.biscuitman ? {...defaults, ...w.biscuitman} : defaults
+	/* UI & Events */
 
-	// Apply UI and bind events
+	const ui = d.createElement('div')
+	let dialog
+
 	function render() {
 		ui.classList.add(bm)
-		ui.style = 'position:fixed;background:#fff;bottom:0' // critical css
+		ui.style = 'position:fixed;background:#fff;bottom:0' // critical CSS
 		ui.innerHTML = `
 <article>
 	<b>${o.title}</b>
@@ -118,17 +116,18 @@
 		d.body.appendChild(ui)
 	}
 
+	const displayUI = (show) => ui.classList[show ? 'remove' : 'add']('bm-hide')
+
 	function buttonHandler(e) {
-		id = e.target.dataset.id
+		let id = e.target.dataset.id
+		dispatch('button', {id})
 		switch (id) {
 			case 'accept': saveConsent(true); break;
 			case 'close': dialog.close(); break;
 			case 'settings': openModal(); break;
 			case 'save': saveConsent(); break;
 			case 'reject': saveConsent(false); break;
-			default: break
 		}
-		dispatch('button', {id})
 	}
 
 	function closeModalHandler() {
@@ -140,23 +139,32 @@
 	}
 
 	function openModal() {
-		dialog.showModal()
 		dispatch('open')
+		dialog.showModal()
 	}
 
-	const displayUI = (show) => d.documentElement.classList[show ? 'remove' : 'add']('js-bm-hidden')
+	function dispatch(eventName, data) {
+		const name = `${bm}:${eventName}`
+		const payload = {
+			...(data !== undefined && data),
+			time: +new Date()
+		}
+		d.dispatchEvent(new CustomEvent(name, payload))
+		console.debug(name, payload);
+	}
+
+	/* Consents & Injection */
 
 	function readConsent() {
 		try {
 			return JSON.parse(localStorage.getItem(o.storageKey))
 		} catch (err) {
-			console.error(bm, err)
-			localStorage.removeItem(o.storageKey) // If there's an error in localstorage, wipe consent data
+			console.error(err)
+			localStorage.removeItem(o.storageKey)
 			return {}
 		}
 	}
 
-	// Update global and localstorage with consent options
 	function saveConsent(value) {
 		const willReadValues = value === undefined
 		w[o.global].consentTime = +new Date()
@@ -169,45 +177,28 @@
 			if (!willReadValues) sectionElement.checked = value
 		})
 		localStorage.setItem(o.storageKey, JSON.stringify(w[o.global]))
-		insertScripts()
 		dispatch('save', {data: w[o.global]})
+		insertScripts()
 		dialog.close()
 		displayUI(false)
 	}
 
-	// Custom events in case you want to trigger behaviour
-	function dispatch(eventName, data) {
-		const name = `${bm}:${eventName}`
-		const payload = {
-			...(data !== undefined && data),
-			time: +new Date()
-		}
-		d.dispatchEvent(new CustomEvent(name, payload))
-		console.debug(name, payload);
-	}
-
-	// replaces neutralized script tags with active script tags
 	function insertScripts() {
-		const scripts = d.querySelectorAll('script[data-consent]')
+		const scripts = ui.querySelectorAll('script[data-consent]')
 		scripts.forEach(script => {
-			// Check consent
 			if (!w[o.global][script.dataset.consent]) return false
-			// Create new tag
+
 			const newScript = d.createElement('script')
-			// Copy attributes, ignoring data- and type attributes
 			for (let { name, value } of script.attributes) {
 				if (name.startsWith('data-') || name === 'type') continue
 				newScript.setAttribute(name, value)
 			}
-			// set type property
 			newScript.setAttribute('type', script.dataset.type || 'text/javascript')
-			// copy inline scripts if they do not have a src attribute
 			if (!script.src) newScript.textContent = script.textContent
-			// Insert script to DOM
 			script.parentNode.replaceChild(newScript, script)
 			dispatch('inject', {el: script})
 
-			// If tag has src and inline script, insert dependent inline script as new tag on load
+			// If tag has src AND tag content, inject new tag adjacent to parent after load
 			if (script.src && script.textContent.trim() !== '') newScript.addEventListener('load', () => {
 				let depScript = d.createElement('script')
 				depScript.textContent = script.textContent
@@ -217,10 +208,11 @@
 		});
 	}
 
-	// Load consent
+	/* Start */
+
 	w[o.global] = readConsent() || {} 
 
-	// Optionally auto-accept consent if timezone is not EU
+	// Optional Non-EU auto-consent
 	const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 	const isEuropeTimezone = /^(GMT|UTC)$/.test(tz) || /(Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-1|GMT-2|UTC+1|UTC+2|UTC+3)/.test(tz)
 	if (o.acceptNonEU && !isEuropeTimezone) {
@@ -228,29 +220,26 @@
 		displayUI(false)
 	}
 
-	// Initiate UI
+	// Render UI
 	render()
 
 	// Consent logic
 	if (w[o.global].consentTime) {
 		displayUI(false)
-		// Consent exists, initiate scripts:
 		insertScripts()
-	} else if (o.force) {
-		// Force consent choice
-		openModal()
-	}
+	} else if (o.force) openModal()
 
-	// Helper global methods 
-	// <a onclick="bmUpdateConsent()" href="javascript:void(0)">Update Consent Preferences</a>
-	w.bmInvalidateConsent = () => {
+	// Helper  methods 
+	// <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
+	w.bmInvalidate = () => {
 		dispatch('invalidate', {data: readConsent()})
-		saveConsent(false) // resets UI
+		saveConsent(false)
 		localStorage.removeItem(o.storageKey)
 		displayUI(true)
 	}
-	w.bmUpdateConsent = () => {
+	// <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
+	w.bmUpdate = () => {
 		dispatch('update', {data: readConsent()})
 		openModal()
 	}
-})(document, window)
+})(document, window, 'biscuitman')

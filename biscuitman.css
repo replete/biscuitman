@@ -30,6 +30,14 @@
 		transform: translateY(100%);
 	}
 
+	&.bm-hide {
+		padding:0;
+
+		article {
+			display:none;
+		}
+	}
+
 	article {
 		position:relative;
 
@@ -342,7 +350,6 @@
 
 			&::before {
 				left: auto;
-				right:var(--gap);
 				right:0;
 			}
 		}
@@ -362,13 +369,3 @@
 	}
 }
 
-.js-bm-hidden {
-	.biscuitman {
-		padding:0;
-		/* box-shadow:0; */
-
-		> article {
-			display:none;
-		}
-	}
-}

@@ -37,10 +37,12 @@ swc.transform(js, {
 	minify: true
   })
   .then(({code, map}) => {
-	const codeWithoutWhitespace = code.replace(/[\n\t]/g, '')
-	fs.writeFileSync('dist/biscuitman.min.js', comment + codeWithoutWhitespace)
+	const optimizedCode = code
+		// remove whitespace:
+		.replace(/[\n\t]/g, '')
+	fs.writeFileSync('dist/biscuitman.min.js', comment + optimizedCode)
 	console.log('Wrote dist/biscuitman.min.js')
-	writeJsWithCss(codeWithoutWhitespace)
+	writeJsWithCss(optimizedCode)
   });
 
   function writeJsWithCss(js) {

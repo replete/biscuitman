@@ -117,7 +117,7 @@ While you have the option to enable or disable some or all of these cookies, not
 
 If you want to make sure website content obscured underneath the banner, add these styles to your website CSS:
 ```css
-html:not(.js-bm-hidden)::after {
+html:not(:has(.bm-hide))::after {
 	content:'';
 	min-height:300px;
 	display:block;
