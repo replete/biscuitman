@@ -26,6 +26,10 @@
 		line-height:1.4em;
 	}
 
+	&:has([open]) {
+		transform: translateY(100%);
+	}
+
 	article {
 		position:relative;
 
@@ -361,6 +365,7 @@
 .js-bm-hidden {
 	.biscuitman {
 		padding:0;
+		/* box-shadow:0; */
 
 		> article {
 			display:none;
