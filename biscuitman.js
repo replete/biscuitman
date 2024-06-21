@@ -184,7 +184,7 @@
 	}
 
 	function insertScripts() {
-		const scripts = ui.querySelectorAll('script[data-consent]')
+		const scripts = d.querySelectorAll('script[data-consent]')
 		scripts.forEach(script => {
 			if (!w[o.global][script.dataset.consent]) return false
 
