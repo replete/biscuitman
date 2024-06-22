@@ -235,7 +235,7 @@
 			newScript.setAttribute('type', script.dataset.type || 'text/javascript')
 			if (!script.src) newScript.textContent = script.textContent
 			script.parentNode.replaceChild(newScript, script)
-			dispatch('inject', {el: script})
+			dispatch('inject', {el: script, ...(script.id && {id: script.id})})
 
 			// If tag has src AND tag content, inject new tag adjacent to parent after load
 			if (script.src && script.textContent.trim() !== '') newScript.addEventListener('load', () => {
@@ -243,7 +243,7 @@
 				afterScript.textContent = script.textContent
 				if (script.id) afterScript.id = script.id + '-after'
 				newScript.insertAdjacentElement('afterend', afterScript)
-				dispatch('inject', {el: afterScript, parent: script})
+				dispatch('inject', {el: afterScript, parent: script, ...(afterScript.id && {id: afterScript.id})})
 			})
 		});
 	}

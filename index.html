@@ -135,6 +135,9 @@ While you have the option to enable or disable some or all of these cookies, not
 			},
 			functionalTitle: 'Functional',
 			functionalMessage: 'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
+			functionalCookies: {
+				'biscuitselector':'Your favourite biscuit is stored here'
+			},
 			analyticsTitle: 'Analytics',
 			analyticsMessage: 'Analytical cookies allow us to understand visitor interactions with the website, offering insights into metrics like visitor count, bounce rate, and traffic source',
 			analyticsCookies: {
@@ -285,6 +288,47 @@ While you have the option to enable or disable some or all of these cookies, not
 		</script>
 
 		<p>Biscuits, the beloved treats that accompany tea time, snack breaks, and dessert cravings. In this comprehensive guide, we delve into the world of biscuits, exploring their history, varieties, and cultural significance.</p>
+
+		<h2>Favourite Biscuit Selector</h2>
+		<div class="biscuit-selector">
+			<button id="hobnob">Hobnob</button>
+			<button id="custardcream">Custard Cream</button>
+			<button id="digestive">Digestive</button>
+		</div>
+		<script>
+			let selectedBiscuit = localStorage.getItem('biscuitselector')
+			if (selectedBiscuit) document.getElementById(selectedBiscuit).classList.add('selected')
+
+			let biscuitButtons = document.querySelectorAll('.biscuit-selector button')
+			biscuitButtons.forEach(button => button.addEventListener('click', (e) => {
+				biscuitButtons.forEach(button => button.classList.remove('selected'))
+				e.target.classList.add('selected');
+				if (Consent.functional) localStorage.setItem('biscuitselector',e.target.id)
+			}))
+		</script>
+
+		<style>
+			.biscuit-selector {
+				button {
+					padding:20px;
+					font-size:18px;
+					border:3px solid #ccc;
+					background: #eee;
+					font-weight:bold;
+
+					&:active {
+						border-color:#666;
+						background-color:#aaa;
+					}
+
+					&.selected {
+						color: green;
+						background:#00FF0066;
+						border-color:green;
+					}
+				}
+			}
+		</style>
 
 		<h2>History of Biscuits</h2>
 		<p>The origins of biscuits trace back centuries, with evidence of early biscuit-like snacks dating back to ancient civilizations. However, the modern biscuit, as we know it today, evolved during the Middle Ages in Europe. Initially, biscuits were hard, dry baked goods made primarily from flour, water, and sometimes sugar.</p>
