@@ -170,10 +170,12 @@
 		const cookies = Object.fromEntries(
 			d.cookie.split('; ').map(cookie => cookie.split('='))
 		)
+
+
 		const { consentTime, ...consents } = readConsents() || o.sections.slice(1).reduce((consents, section) => {
 			consents[section] = false;
 			return { consentTime: undefined, ...consents }
-		  }, {})
+		}, {})
 	
 		for (let [section, sectionConsent] of Object.entries(consents)) {
 			if (sectionConsent) continue
