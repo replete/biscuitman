@@ -1,6 +1,6 @@
 ((d, w, Object, bm)=>{
 	const defaults = {
-		storageKey: 'myconsent',
+		key: 'myconsent',
 		global: 'Consent',
 		force:false,
 		enableMore: true,
@@ -157,10 +157,10 @@
 
 	function readConsents() {
 		try {
-			return JSON.parse(localStorage.getItem(o.storageKey))
+			return JSON.parse(localStorage.getItem(o.key))
 		} catch (err) {
 			console.error(err)
-			localStorage.removeItem(o.storageKey)
+			localStorage.removeItem(o.key)
 			return {}
 		}
 	}
@@ -170,7 +170,10 @@
 		const cookies = Object.fromEntries(
 			d.cookie.split('; ').map(cookie => cookie.split('='))
 		)
-		const { consentTime, ...consents } = readConsents()
+		const { consentTime, ...consents } = readConsents() || o.sections.slice(1).reduce((consents, section) => {
+			consents[section] = false;
+			return { consentTime: undefined, ...consents }
+		  }, {})
 	
 		for (let [section, sectionConsent] of Object.entries(consents)) {
 			if (sectionConsent) continue
@@ -209,7 +212,7 @@
 			w[o.global][section] = sectionConsent
 			if (!willReadValues) sectionElement.checked = value
 		})
-		localStorage.setItem(o.storageKey, JSON.stringify(w[o.global]))
+		localStorage.setItem(o.key, JSON.stringify(w[o.global]))
 		dispatch('save', {data: w[o.global]})
 		clearStorages()
 		insertScripts()
@@ -234,15 +237,14 @@
 
 			// If tag has src AND tag content, inject new tag adjacent to parent after load
 			if (script.src && script.textContent.trim() !== '') newScript.addEventListener('load', () => {
-				let depScript = d.createElement('script')
-				depScript.textContent = script.textContent
-				newScript.insertAdjacentElement('afterend', depScript)
-				dispatch('inject', {el: depScript, parent: script})
+				let afterScript = d.createElement('script')
+				afterScript.textContent = script.textContent
+				if (script.id) afterScript.id = script.id + '-after'
+				newScript.insertAdjacentElement('afterend', afterScript)
+				dispatch('inject', {el: afterScript, parent: script})
 			})
 		});
 	}
-
-
 
 	/* Start */
 
@@ -259,6 +261,9 @@
 	// Render UI
 	render()
 
+	// Wipe matching cookies without consent 
+	clearStorages()
+
 	// Consent logic
 	if (w[o.global].consentTime) {
 		displayUI(false)
@@ -270,7 +275,7 @@
 	w.bmInvalidate = () => {
 		dispatch('invalidate', {data: readConsents()})
 		saveConsents(false)
-		localStorage.removeItem(o.storageKey)
+		localStorage.removeItem(o.key)
 		displayUI(true)
 	}
 	// <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>

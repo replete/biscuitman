@@ -47,7 +47,7 @@ I didn't like sending 100KB+ for a simple cookie consent solution so I wrote thi
 	biscuitman = {
 		/* Default properties */
 
-		// storageKey: 'myconsent',  // the key to store consent choices in localStorage
+		// key: 'myconsent',  // the key to store consent choices in localStorage
 		// global: 'Consent',  // global window object to access consents at runtime
 		// force: false,  // this forces the modal open at start and prevents website access without choosing consent
 		// enableMore: true,   // Hide multiple lines of info text behind a 'show more' link to keep UI short

@@ -7,7 +7,13 @@
 </head>
 <body>
 
-	<!-- analytics scripts -->
+	<!-- Google analytics -->
+	<script type="text/javascript" id="js-analytics-gtm-setup">
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'G-TEST');
+	</script>
 	<script data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" type="text/plain" id="js-analytics-gtm">
 		/* 
 			Normally <script> tags with src property will not evaluate embedded script content,
@@ -18,23 +24,35 @@
 			like the one you are readiing now, biscuitman will inject the embedded script as separate
 			adjacent script tag after the parent script has loaded and executed.
 		*/
-		console.log('This javascript is injected into a new adjacent <script> tag only after the src script has loaded');
-		console.log(google_tag_manager) // only available once loaded
+		console.log('google tag manager loaded:', !!google_tag_manager) // only available once loaded
 	</script>
 	<script data-consent="analytics" type="text/plain" id="js-analytics-gtm-after">
 		console.log('This script runs as soon as analytics consent is granted')
 	</script>
+
+	<!-- statcounter -->
 	<script id="js-analytics-statcounter-setup">
 		// not handled by biscuitman
-		var sc_project=9999999
+		var sc_project=9999999999999999999
 		var sc_invisible=1
 		var sc_security="beefbeef"
 		var sc_https=1
 	</script>
-	<script type="text/plain" async src="https://statcounter.com/counter/counter.js" data-consent="analytics" id="js-analytics-statcounter"></script>
+	<script type="text/plain" data-consent="analytics" async src="https://statcounter.com/counter/counter.js" id="js-analytics-statcounter"></script>
 
+	<!-- Matomo -->
+	<script type="text/javascript" id="js-analytics-matomo-setup">
+		var _mtm = window._mtm = window._mtm || [];
+		_mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+    	_mtm.push({'idSite': '9999999999999999999'});
+	</script>
+	<script type="text/plain" data-consent="analytics" defer src="https://cdn.matomo.cloud/demo-web.matomo.org/container_bugnCohE.js" id="js-analytics-matomo">
+		console.log('Matomo loaded:', !!Matomo) // only available once loaded
+	</script>
+
+	<!-- misc analytics -->
 	<script id="js-analytics-misc" data-consent="analytics" type="text/plain">
-		console.log('This embedded script will be inserted when analytics consent is granted')
+		console.log('analytics consent granted: This script will be inserted when analytics consent is granted')
 	</script>
 
 	<script>
@@ -48,6 +66,9 @@ While you have the option to enable or disable some or all of these cookies, not
 			sections: ['essential','functional','analytics','performance','advertisement','uncategorized'],
 			essentialTitle: 'Essential',
 			essentialMessage: 'Essential cookies are required for basic site functionality',
+			essentialCookies: {
+				'myconsent': 'This key is required to store your consent preferences'
+			},
 			functionalTitle: 'Functional',
 			functionalMessage: 'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
 			analyticsTitle: 'Analytics',
@@ -57,7 +78,9 @@ While you have the option to enable or disable some or all of these cookies, not
 				'_ga_*': 'Google Analytics uses this cookie for storing page view count',
 				'sc_is_visitor_unique': 'Statcounter uses this as a visit counter',
 				'sc_medium_source': 'Statcounter uses this to store the referring website',
-				'statcounter.com/localstorage/': 'Statcounter uses this to count'
+				'statcounter.com/localstorage/': 'Statcounter uses this to count',
+				'_pk_*': 'Matomo/Piwik analytics',
+				
 			},
 			performanceTitle: 'Performance',
 			performanceMessage: 'Performance cookies allow us to understand critical website performance indicators, contributing to an enhanced user experience for visitors',
@@ -93,6 +116,9 @@ While you have the option to enable or disable some or all of these cookies, not
 			padding: 0;
 			background-color: #f5f5f5;
 			font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		}
+		* {
+			box-sizing: border-box;
 		}
 		header {
 			min-height:35vw;
@@ -144,6 +170,16 @@ While you have the option to enable or disable some or all of these cookies, not
 			display:block;
 			user-select:none;
 		}
+
+		#cookies, #localstorage {
+			font-family:monospace;
+			background: #ddd;
+			padding:15px;
+			font-size:13px;
+			overflow-y:scroll;
+			white-space: pre;
+		}
+		/* table {max-width:800px} */
 	</style>
 
 	<header>
@@ -158,17 +194,13 @@ While you have the option to enable or disable some or all of these cookies, not
 	<div class="container">
 		<p style="text-align:center"><a class="img" href="https://github.com/replete/biscuitman"><img src="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" style="width:50px;"/>README @ Github repo</a></p>
 
-		<h3 id="localhost"></h3>
-		<table>
-			<tr>
-				<td>
-					<h4>localStorage contents:</h4>
-					<pre id="localstorage"></pre>
-				</td>
-					<h4>cookies contents:</h4>
-					<pre id="cookies"></pre>
-			</tr>
-		</table>
+		<h2>This page uses real analytics scripts with dummy IDs</h3>
+		<h3 id="localhost"></h4>
+
+		<h4>localStorage contents (refreshed once/s):</h4>
+		<div id="localstorage" class="update"></div>
+		<h4>document cookies (refreshed once/s):</h4>
+		<div id="cookies"></div>
 
 		<script>
 			window.setInterval(()=>{
@@ -182,7 +214,7 @@ While you have the option to enable or disable some or all of these cookies, not
 				cookies.textContent = document.cookie.replaceAll(' ','\n');
 			},1000)
 
-			if(location.hostname === 'localhost') localhost.textContent = 'Warning: Rejecting or Invalidating when running on localhost will wipe some wildcard cookies configured in the demo (e.g. _ga_*, statcounter) that you might have set running another website on localhost'
+			if(location.hostname === 'localhost') localhost.textContent = 'Warning: Rejecting or Invalidating on localhost will wipe matching wildcard cookies set by another local app running at localhost'
 		</script>
 
 		<p>Biscuits, the beloved treats that accompany tea time, snack breaks, and dessert cravings. In this comprehensive guide, we delve into the world of biscuits, exploring their history, varieties, and cultural significance.</p>
