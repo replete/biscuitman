@@ -3,7 +3,7 @@
 
 #### [View demo](https://replete.github.io/biscuitman)
 
-I didn't like sending 100KB+ for a simple cookie consent solution so I wrote this. It's currently **3.1kB/br or 3.6kB/gz**, including CSS. It's designed to be as small as possible with an adequate featureset for basic website cookie consent.
+I didn't like sending 100KB+ for a simple cookie consent solution so I wrote this. It's currently **3.3kB/br and 3.8kB/gz**, including CSS. It's designed to be as small as possible with an adequate featureset for basic website cookie consent.
 
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
@@ -18,12 +18,15 @@ I didn't like sending 100KB+ for a simple cookie consent solution so I wrote thi
 - Mobile-first
 - Browser support: >= 2% browserlist (No IE support, but its not impossible)
   - Written with latest CSS / JS features and targetted to >= 2% using browserlist
-- show more functionality for long disclaimer text
-- link for privacy policy in any string
+- 'show more' functionality for long disclaimer text
+- include optional link in any text
+- CSS classes on `<html>` element for consents
 
 ![screenshot of main UI](media/ui.webp)
 
 ## How to use
+[View demo](https://replete.github.io/biscuitman) for a more detailed example
+
 ```html
 <!-- 
 	1. Prepare script tags
@@ -142,6 +145,12 @@ html:not(:has(.bm-hide))::after {
 - `bmInvalidate()` – Delete stored consent data and reinstate UI
 - `bmOpen()` – Opens My Consent Settings modal
 	- example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>` 
+
+## CSS 
+
+	- `biscuitman` class is used for the main UI
+	- consents are added to `<html>` with the convention of `bm-{sectionName}` for granted and `bm-no-{sectionName}` for ungranted
+	- `bm-hide` is used on the UI container
 
 ## Events
 

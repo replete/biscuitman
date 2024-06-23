@@ -1,4 +1,4 @@
-((d, w, Object, bm)=>{
+((d, w, Object, h, bm)=>{
 	const defaults = {
 		key: 'myconsent',
 		global: 'Consent',
@@ -76,7 +76,7 @@
 			}
 			</p>
 			${o.sections.map(section => {
-				let hasConsent = w[o.global][section]
+				let hasConsent = getConsents()[section]
 				let isEssential = section === 'essential'
 				let isDisabled = isEssential ? 'disabled' : ''
 				let isChecked = isEssential ? 'checked' : ''
@@ -116,7 +116,17 @@
 		d.body.appendChild(ui)
 	}
 
-	const displayUI = (show) => ui.classList[show ? 'remove' : 'add']('bm-hide')
+	const displayUI = (show) => ui.classList.toggle('bm-hide', !show)
+	
+	const applyCssClasses = () => {
+		const { consentTime, ...consents} = getConsents()
+		if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
+
+		for (let [name, granted] of Object.entries(consents)) {
+			h.classList.toggle(`bm-${name}`, granted)
+			h.classList.toggle(`bm-no-${name}`, !granted)
+		}
+	}
 
 	function buttonHandler(e) {
 		let id = e.target.dataset.id
@@ -155,7 +165,14 @@
 
 	/* Data */
 
-	function readConsents() {
+	const setConsents = consents => {
+		w[o.global] = consents
+		applyCssClasses()
+	}
+
+	const getConsents = () => w[o.global]
+
+	function loadConsents() {
 		try {
 			return JSON.parse(localStorage.getItem(o.key))
 		} catch (err) {
@@ -171,8 +188,7 @@
 			d.cookie.split('; ').map(cookie => cookie.split('='))
 		)
 
-
-		const { consentTime, ...consents } = readConsents() || o.sections.slice(1).reduce((consents, section) => {
+		const { consentTime, ...consents } = loadConsents() || o.sections.slice(1).reduce((consents, section) => {
 			consents[section] = false;
 			return { consentTime: undefined, ...consents }
 		}, {})
@@ -204,18 +220,21 @@
 
 	function saveConsents(value) {
 		const willReadValues = value === undefined
-		w[o.global].consentTime = +new Date()
+		let consents = {
+			consentTime: +new Date()
+		}
 		o.sections.forEach(section => {
 			if (section === 'essential') return false
 			let sectionElement = ui.querySelector(`[data-s=${section}]`)
 			let sectionConsent = willReadValues 
 				? sectionElement.checked
 				: value
-			w[o.global][section] = sectionConsent
+			consents[section] = sectionConsent
 			if (!willReadValues) sectionElement.checked = value
 		})
-		localStorage.setItem(o.key, JSON.stringify(w[o.global]))
-		dispatch('save', {data: w[o.global]})
+		setConsents(consents)
+		localStorage.setItem(o.key, JSON.stringify(consents))
+		dispatch('save', {data: consents})
 		clearStorages()
 		insertScripts()
 		dialog.close()
@@ -225,7 +244,7 @@
 	function insertScripts() {
 		const scripts = d.querySelectorAll('script[data-consent]')
 		scripts.forEach(script => {
-			if (!w[o.global][script.dataset.consent]) return false
+			if (!getConsents()[script.dataset.consent]) return false
 
 			const newScript = d.createElement('script')
 			for (let { name, value } of script.attributes) {
@@ -250,7 +269,7 @@
 
 	/* Start */
 
-	w[o.global] = readConsents() || {} 
+	setConsents(loadConsents() || {})
 
 	// Optional Non-EU auto-consent
 	const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -275,14 +294,15 @@
 	// Helper  methods 
 	// <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
 	w.bmInvalidate = () => {
-		dispatch('invalidate', {data: readConsents()})
+		dispatch('invalidate', {data: getConsents()})
 		saveConsents(false)
+		setConsents({})
 		localStorage.removeItem(o.key)
 		displayUI(true)
 	}
 	// <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
 	w.bmUpdate = () => {
-		dispatch('update', {data: readConsents()})
+		dispatch('update', {data: getConsents()})
 		openModal()
 	}
-})(document, window, Object, 'biscuitman')
+})(document, window, Object, document.documentElement, 'biscuitman')
