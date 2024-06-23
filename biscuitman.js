@@ -207,7 +207,10 @@
 
 			for (const name of sectionCookieNames) {
 				if (cookies[name]) {
-					d.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+					let expiredCookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:01 UTC;path=/;`
+					d.cookie = expiredCookie
+					d.cookie = `${expiredCookie}domain=${location.hostname};` // Safari iOS
+					d.cookie = `${expiredCookie}domain=.${location.hostname};` // Safari iOS
 					dispatch('delete',{cookie : name})
 				}
 				if (localStores[name]) {
