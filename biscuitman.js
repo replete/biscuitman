@@ -119,8 +119,9 @@
 	const displayUI = (show) => ui.classList.toggle('bm-hide', !show)
 	
 	const applyCssClasses = () => {
-		const { consentTime, ...consents} = getConsents()
-		if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
+		let { consentTime, ...consents } = getConsents()
+		// if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
+		if (!consentTime) consents = Object.fromEntries(o.sections.slice(1).map(sectionName => [sectionName, false]));
 
 		for (let [name, granted] of Object.entries(consents)) {
 			h.classList.toggle(`bm-${name}`, granted)

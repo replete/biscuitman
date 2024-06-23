@@ -232,12 +232,20 @@ While you have the option to enable or disable some or all of these cookies, not
 		</script>
 
 		<style>
+			.biscuit-selector {
+				display:flex;
+				width:100%;
+				gap:10px;
+				padding:10px;
+			}
+
 			.biscuit-selector button {
 				padding:20px;
 				font-size:18px;
 				border:3px solid #ccc;
 				background: #eee;
 				font-weight:bold;
+				flex-grow:1;
 			}
 
 			.biscuit-selector button:active {
@@ -249,6 +257,14 @@ While you have the option to enable or disable some or all of these cookies, not
 				color: green;
 				background:#00FF0066;
 				border-color:green;
+			}
+
+			.bm-no-functional .biscuit-selector {
+				background: #ccc;
+				pointer-events:none;
+				user-select:none;
+				opacity:0.5;
+				border:1px solid #aaa;
 			}
 		</style>
 
