@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.9 */
+/*! biscuitman.js 0.3.10 */
 ((d, w, Object1, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -67,7 +67,10 @@
 						</label>
 						<p>${o[`${section}Message`]}</p>
 					</summary>
-					${cookies ? Object1.entries(cookies).map(([k, v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
+					${cookies ? Object1.entries(cookies).map((param)=>{
+                let [k, v] = param;
+                return `<dl><dt>${k}</dt><dd>${v}</dd></dl>`;
+            }).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
 				</details>
 			</section>`;
         }).join('')}
@@ -333,7 +336,7 @@
   position: relative;
 }
 
-@media (width >= 770px) {
+@media (min-width: 770px) {
   .biscuitman article {
     padding-right: calc(max(300px, 30vw) + 20px);
   }
@@ -354,7 +357,7 @@
   font-size: 13px;
 }
 
-@media (width >= 575px) {
+@media (min-width: 575px) {
   .biscuitman article p {
     font-size: 14px;
   }
@@ -402,7 +405,7 @@
   opacity: .8;
 }
 
-@media (width >= 576px) {
+@media (min-width: 576px) {
   .biscuitman nav {
     flex-direction: row-reverse;
     gap: 10px;
@@ -416,7 +419,7 @@
   }
 }
 
-@media (width <= 575px) {
+@media (max-width: 575px) {
   .biscuitman nav {
     flex-direction: column;
     flex-grow: 1;
@@ -432,7 +435,7 @@
   max-height: 100%;
 }
 
-@media (width >= 576px) {
+@media (min-width: 576px) {
   .biscuitman dialog {
     border-radius: 10px;
     width: 90vw;
@@ -443,7 +446,7 @@
   }
 }
 
-@media (width >= 576px) and (height >= 1134px) {
+@media (min-width: 576px) and (min-height: 1134px) {
   .biscuitman dialog {
     height: 890px;
   }
@@ -498,7 +501,7 @@
   overflow-y: scroll;
 }
 
-@media (width >= 576px) {
+@media (min-width: 576px) {
   .biscuitman .bm-sections {
     margin-right: -18px;
     padding-right: 4px;
@@ -516,7 +519,7 @@
   display: block;
 }
 
-@media (width >= 576px) {
+@media (min-width: 576px) {
   .biscuitman .bm-sections > p span {
     font-size: 14px;
   }

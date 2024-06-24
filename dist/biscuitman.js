@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.9 */
+/*! biscuitman.js 0.3.10 */
 ((d, w, Object1, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -67,7 +67,10 @@
 						</label>
 						<p>${o[`${section}Message`]}</p>
 					</summary>
-					${cookies ? Object1.entries(cookies).map(([k, v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
+					${cookies ? Object1.entries(cookies).map((param)=>{
+                let [k, v] = param;
+                return `<dl><dt>${k}</dt><dd>${v}</dd></dl>`;
+            }).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
 				</details>
 			</section>`;
         }).join('')}

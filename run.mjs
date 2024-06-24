@@ -1,11 +1,15 @@
 import fs from 'fs'
-import zlib from 'zlib'
 import swc from '@swc/core'
 import { transform as transformCss, browserslistToTargets, Features} from 'lightningcss'
 import browserslist from 'browserslist'
 import browserSync from 'browser-sync'
+import { Readable } from 'stream'
+import doiuse from 'doiuse/stream'
+import { ESLint } from 'eslint'
+import zlib from 'zlib'
 const { readFile, writeFile } = fs.promises;
-const { name, version } = JSON.parse(await readFile('./package.json'))
+const log = msg => console.log(`\x1b[33m[ run ]\x1b[0m ${msg}`)
+const { name, version, browserslist: browserlistString } = JSON.parse(await readFile('./package.json'))
 const comment = `/*! ${name}.js ${version} */`
 
 const filenames = {
@@ -16,7 +20,6 @@ const filenames = {
 	jsWithCss: 'biscuitman.withcss.js',
 	minJsWithCss: 'biscuitman.withcss.min.js'
 }
-const browserlistString = '>= 2%'
 
 export async function styles() {
 	const sourceStyles = await readFile(filenames.css, 'utf8')
@@ -29,7 +32,7 @@ export async function styles() {
 		include: Features.Nesting
 	})
 	await writeFile(`dist/${filenames.css}`, `${comment}\n` + processedStyles.code)
-	console.log(`Saved dist/${filenames.css}`)
+	log(`Saved dist/${filenames.css}`)
 
 	let minifiedStyles = transformCss({
 		code: Buffer.from(sourceStyles),
@@ -39,7 +42,7 @@ export async function styles() {
 		include: Features.Nesting
 	})
 	await writeFile(`dist/${filenames.minCss}`, comment + minifiedStyles.code)
-	console.log(`Saved dist/${filenames.minCss}`)
+	log(`Saved dist/${filenames.minCss}`)
 
 	return [processedStyles.code, minifiedStyles.code]
 }
@@ -57,7 +60,7 @@ export async function scripts() {
 	  })
 	  .then(async ({ code }) => {
 		await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
-		console.log(`Saved dist/${filenames.js}`)
+		log(`Saved dist/${filenames.js}`)
 		return code
 	});
 
@@ -78,7 +81,7 @@ export async function scripts() {
         minify: true
     }).then(async ({ code }) => {
 		await writeFile(`dist/${filenames.minJs}`, comment + code.replace(/[\n\t]/g, ''))
-		console.log(`Saved dist/${filenames.minJs}`)
+		log(`Saved dist/${filenames.minJs}`)
 		return code
 	})
 
@@ -104,18 +107,66 @@ ${js[0]};
 		writeFile(`dist/${filenames.minJsWithCss}`, jsCssMin)
 	])
 
-	console.log(`Saved dist/${filenames.jsWithCss}
-- size: ${jsCss.length} bytes
-- gzip: ${zlib.gzipSync(jsCss).length} bytes
-- brot: ${zlib.brotliCompressSync(jsCss).length} bytes	
-	`)
+	log(`Saved dist/${filenames.jsWithCss} (bytes: ${jsCss.length}, ${zlib.gzipSync(jsCss).length} gz, ${zlib.brotliCompressSync(jsCss).length} br)`)
+	log(`Saved dist/${filenames.minJsWithCss} (bytes: ${jsCssMin.length}, ${zlib.gzipSync(jsCssMin).length} gz, ${zlib.brotliCompressSync(jsCssMin).length} br)`)
 
-	console.log(`Saved dist/${filenames.minJsWithCss}
-- size: ${jsCssMin.length} bytes
-- gzip: ${zlib.gzipSync(jsCssMin).length} bytes
-- brot: ${zlib.brotliCompressSync(jsCssMin).length} bytes	
-	`)
 	console.timeEnd('Build Time')
+}
+
+async function report() {
+	log('Checking JS browser compatibility...')
+	let js = await scripts()
+	const eslint = new ESLint({
+
+		overrideConfig: {
+			parserOptions: {
+				ecmaVersion: 2018,
+			  },
+			extends: [
+				'plugin:compat/recommended'
+			],
+			plugins: ['compat'],
+			rules: {
+				"compat/compat": "error"
+			},
+			settings: {
+				browsers: browserslist(browserlistString)
+			},
+			env: {
+			  browser: true,
+			  es6: true,
+			}
+		  }
+	})
+
+	const lint = await eslint.lintText(js[0])
+	const formatter = await eslint.loadFormatter('stylish')
+	const jsReport = formatter.format(lint)
+	if (jsReport.length === 0) {
+		log('No JS Compatibilty warnings')
+	} else console.log(jsReport)
+
+	log('Checking CSS browser compatibility...')
+	let css = await styles()
+	let cssReportData = []
+	new Readable({
+		read() {
+		  this.push(css[0])
+		  this.push(null)
+		}
+	})
+	.pipe(doiuse({
+		browsers: 'last 2 years',
+		ignore: []
+	}))
+	.on('data',usageInfo => {
+		console.log(usageInfo.message.replace('<streaming css input>:',''))
+		cssReportData.push(usageInfo)
+	})
+	.on('end', async data => {
+		await writeFile('cssreport.json', JSON.stringify({report: cssReportData}))
+		log('Saved cssreport.json')
+	})
 }
 
 async function serve() {
@@ -163,6 +214,7 @@ async function main() {
 			case 'styles': styles(); break;
 			case 'scripts': scripts(); break;
 			case 'build': build(); break;
+			case 'report': report(); break;
 			default: console.log('Usage: node build.js [serve|build|styles|scripts]');
 		}
 	}

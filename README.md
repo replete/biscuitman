@@ -3,7 +3,7 @@
 
 #### [View demo](https://replete.github.io/biscuitman)
 
-I didn't like sending 100KB+ for a simple cookie consent solution so I wrote this. It's currently **3.3kB/br and 3.8kB/gz**, including CSS. It's designed to be as small as possible with an adequate featureset for basic website cookie consent.
+100kB+ seemed too heavy for a cookie popup so I wrote this. It's currently < 4kB gz/btr, including CSS. It's designed to be as small as possible with an adequate featureset for basic website cookie consent.
 
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
@@ -15,8 +15,13 @@ I didn't like sending 100KB+ for a simple cookie consent solution so I wrote thi
 - Injects scripts when granular consent is granted (`<script data-consent="analytics" type="text/plain" src="..."></script>`)
 - Injects embedded `<script>` from script tags with `src` properties on onload (tidier markup)
 - Mobile-first
-- Browser support: >= 2% browserlist (No IE support, but its not impossible)
-  - Written with latest CSS / JS features and targetted to >= 2% using browserlist
+- Browser support (targeted via `browserlist` in `package.json` - `>= 2%, last 2 years`):
+  - Chrome 105+,
+  - Edge 105+
+  - Safari 15.4+
+  - Firefox 121+
+  - Samsung browser 20+
+  - run `npm run build report` and view `index.html` to compatibility table. If you need a version to work in older browsers, update the browserlist version and modify the CSS
 - 'show more' functionality for long disclaimer text
 - include optional link in any text
 - CSS classes on `<html>` element for consents
@@ -158,7 +163,7 @@ The easiest way to see how events work is to view the `console.debug()` calls in
 - `biscuitman:close` => `{time: 1718915128298}` modal closed
 - `biscuitman:button` => `{id: "settings", time: 1718915128298}` button clicked
 - `biscuitman:save` => `{data: {consentTime: 1718914784624, advertisement:true, advertisement: fal..}, time: 1718914784624}` consent choice saved
-- `biscuitman:inject` =>  `{el: $Element, parent?: $Element, time: 1718914784624}` script injected to DOM. if parent exists, it's a new tag inserted after a `src` script loaded which also had text content (a 'dependent' script = tidier convenient markup)
+- `biscuitman:inject` =>  `{el: $Element, parent?: $Element, id?: 'script-id', time: 1718914784624}` script injected to DOM. if parent exists, it's a new tag inserted after a `src` script loaded which also had text content (a 'dependent' script = tidier convenient markup)
 - `biscuitman:invalidate` => `{data: {...consentObjectJustDeleted}, time: 1718915128298}` consent invalidated
 - `biscuitman:update` => `{data: {...currentConsentObject}, time: 1718914784624}` returns current consent object and time
 - `biscuitman:delete` => `{localStorage|cookie: 'cookieName', time: 1718914784624}` fires when consent is rejected or invalidated and cookies/localStorage entries are deleted
