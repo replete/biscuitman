@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.10 */
+/*! biscuitman.js 0.3.11 */
 ((d, w, Object1, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -304,6 +304,7 @@
   --c: #105d89;
   background: var(--b);
   box-sizing: border-box;
+  z-index: 3;
   width: 100%;
   padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
