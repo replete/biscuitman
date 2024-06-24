@@ -17,6 +17,7 @@
 	box-shadow: 0px -2px 10px rgba(0,0,0,.16);
 	font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	box-sizing: border-box;
+	z-index:3;
 
 	* {
 		box-sizing: border-box;
@@ -158,7 +159,8 @@
 		flex-direction:column;
 
 		b {
-			position:relative
+			position:relative;
+			padding-bottom:8px;
 		}
 
 		> b::after {

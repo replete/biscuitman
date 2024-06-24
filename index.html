@@ -4,17 +4,18 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Biscuitman.js Sandbox</title>
+	<link rel="stylesheet" href="dist/biscuitman.css"/>
 </head>
 <body>
 
-	<!-- Google analytics -->
+	<!-- Google Analytics -->
 	<script type="text/javascript" id="js-analytics-gtm-setup">
 		window.dataLayer = window.dataLayer || [];
 		function gtag(){dataLayer.push(arguments);}
 		gtag('js', new Date());
 		gtag('config', 'G-TEST');
 	</script>
-	<script data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" type="text/plain" id="js-analytics-gtm">
+	<script type="text/plain" data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" id="js-analytics-gtm">
 		/* 
 			Normally <script> tags with src property will not evaluate embedded script content,
 			but in this scenario you might want some code to run after a file has loaded,
@@ -27,7 +28,7 @@
 		console.log('google tag manager loaded:', !!google_tag_manager) // only available once loaded
 	</script>
 
-	<!-- statcounter -->
+	<!-- Statcounter -->
 	<script id="js-analytics-statcounter-setup">
 		// not handled by biscuitman
 		var sc_project=9999999999999999999
@@ -37,7 +38,7 @@
 	</script>
 	<script type="text/plain" data-consent="analytics" async src="https://statcounter.com/counter/counter.js" id="js-analytics-statcounter"></script>
 
-	<!-- Matomo -->
+	<!-- Matomo Analytics -->
 	<script type="text/javascript" id="js-analytics-matomo-setup">
 		var _mtm = window._mtm = window._mtm || [];
 		_mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
@@ -47,7 +48,7 @@
 		console.log('Matomo loaded:', !!Matomo) // only available once loaded
 	</script>
 
-	<!-- hotjar analytics -->
+	<!-- Jotjar Analytics -->
 	<script type="text/plain" data-consent="analytics" id="js-analytics-hotjar">
 		(function(h,o,t,j,a,r){
 		  h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
@@ -59,7 +60,7 @@
 		})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
 	  </script>
 
-	  <!-- mixpanel analytics -->
+	  <!-- Mixpanel Analytics -->
 	  <script type="text/plain" data-consent="analytics" id="js-analytics-mixpanel">
 		(function(f,b){
 		  if(!b.__SV){
@@ -116,7 +117,8 @@
 	</script>
 	<script type="text/plain" data-consent="analytics" src="https://static.klaviyo.com/onsite/js/klaviyo.js" id="js-analytics-klaviyo"></script>
 
-	<script>
+	<!-- Biscuitman config -->
+	<script id="js-biscuitman-config">
 		biscuitman = {
 			message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 			info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
@@ -160,19 +162,8 @@ While you have the option to enable or disable some or all of these cookies, not
 		}
 	</script>
 
-	<script id="sandboxScript">
-		// load the unprocessed JS in dev environment for this demo
-		const isLocal = location.hostname === 'localhost'
-
-		let el = document.createElement('script')
-		el.src = isLocal ? 'dist/biscuitman.js' : 'dist/biscuitman.min.js'
-		document.getElementById('sandboxScript').insertAdjacentElement('afterend', el);
-
-		let link = document.createElement('link')
-		link.rel = 'stylesheet'
-		link.href = isLocal ? 'dist/biscuitman.css' : 'dist/biscuitman.min.css'
-		document.head.appendChild(link)
-	</script> 
+	<!-- Biscuitman: load -->
+	<script src="dist/biscuitman.js" id="js-biscuitman"></script>
 
 	<header>
 		<h1>🍪 biscuitman.js</h1>
@@ -186,14 +177,15 @@ While you have the option to enable or disable some or all of these cookies, not
 	<div class="container">
 		<p style="text-align:center"><a class="img" href="https://github.com/replete/biscuitman"><img src="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" style="width:50px;"/>README @ Github repo</a></p>
 
+		<!-- Notices-->
 		<h2>This page uses real analytics scripts with dummy IDs</h2>
 		<h3 id="localhost"></h3>
 
+		<!-- Storages-->
 		<h3>localStorage contents (refreshed once/s):</h3>
 		<div id="localstorage" class="update"></div>
 		<h4>document cookies (refreshed once/s):</h4>
 		<div id="cookies"></div>
-
 		<script>
 			window.setInterval(()=>{
 				consents.textContent = (localStorage.getItem('myconsent') ||'').replaceAll(',',',\n')
@@ -209,7 +201,8 @@ While you have the option to enable or disable some or all of these cookies, not
 			if(location.hostname === 'localhost') localhost.textContent = 'Warning: Rejecting or Invalidating on localhost will wipe matching wildcard cookies set by another local app running at localhost'
 		</script>
 
-		<h2 id="browser-support">CSS Feature Browser Compatibility</h2>
+		<!-- CSS Feature Compatibility -->
+		<h2 id="browser-support">CSS Feature Compatibility</h2>
 		<p>In order to get a better idea of browser support, this table is generated from our CSS and shows the minimum version to support the feature in use. Android browsers seem to have data issues at caniuse, as these features are supported earlier than the current latest version, so we'll ignore that.</p>
 		<div id="cssreport"></div>
 		<script>
@@ -232,7 +225,7 @@ While you have the option to enable or disable some or all of these cookies, not
 					})
 				}
 
-				let shownBrowsers = ['edge','chrome','safari','firefox','ios_saf','and_chr','samsung','and_ff']
+				let shownBrowsers = ['edge','chrome','safari','firefox','ios_saf','and_chr','and_ff']
 				cssreport.innerHTML = `<table class="cssreport table">
 	<thead><tr><th>CSS Feature</th>${shownBrowsers.map(browser => `<th>${browser}</th>`).join('')}</tr></thead>
 	<tbody>
@@ -241,18 +234,10 @@ While you have the option to enable or disable some or all of these cookies, not
 			${shownBrowsers.map(browser => `<td>${browsers[browser] || '–'}</td>`).join('')}
 		</tr>`).join('')}
 	</tbody>
-</table>`
-			})()
+</table>`})()
 		</script>
-		<style>
-			.table {
-				font-size:14px;
-			}
-			.table th:first-of-type {
-				text-align:left;
-			}
-		</style>
 
+		<!-- Functional component example -->
 		<h2>Favourite Biscuit Selector</h2>
 		<div class="biscuit-selector">
 			<button id="hobnob">Hobnob</button>
@@ -270,44 +255,9 @@ While you have the option to enable or disable some or all of these cookies, not
 				if (Consent.functional) localStorage.setItem('biscuitselector',e.target.id)
 			}))
 		</script>
-		<style>
-			.biscuit-selector {
-				display:flex;
-				width:100%;
-				gap:10px;
-				padding:10px;
-			}
 
-			.biscuit-selector button {
-				padding:20px;
-				font-size:18px;
-				border:3px solid #ccc;
-				background: #eee;
-				font-weight:bold;
-				flex-grow:1;
-			}
-
-			.biscuit-selector button:active {
-				border-color:#666;
-				background-color:#aaa;
-			}
-
-			.biscuit-selector button.selected {
-				color: green;
-				background:#00FF0066;
-				border-color:green;
-			}
-
-			.bm-no-functional .biscuit-selector {
-				background: #ccc;
-				pointer-events:none;
-				user-select:none;
-				opacity:0.5;
-				border:1px solid #aaa;
-			}
-		</style>
-
-	<p>Biscuits, the beloved treats that accompany tea time, snack breaks, and dessert cravings. In this comprehensive guide, we delve into the world of biscuits, exploring their history, varieties, and cultural significance.</p>
+		<!-- Filler content -->
+		<p>Biscuits, the beloved treats that accompany tea time, snack breaks, and dessert cravings. In this comprehensive guide, we delve into the world of biscuits, exploring their history, varieties, and cultural significance.</p>
 
 		<h2>History of Biscuits</h2>
 		<p>The origins of biscuits trace back centuries, with evidence of early biscuit-like snacks dating back to ancient civilizations. However, the modern biscuit, as we know it today, evolved during the Middle Ages in Europe. Initially, biscuits were hard, dry baked goods made primarily from flour, water, and sometimes sugar.</p>
@@ -330,6 +280,7 @@ While you have the option to enable or disable some or all of these cookies, not
 		<p>While technically not biscuits but often included in biscuit assortments, Jaffa Cakes are a beloved snack consisting of a sponge cake base topped with a layer of orange-flavored jelly and coated in chocolate. The combination of tangy orange and rich chocolate makes Jaffa Cakes a delightful treat for any occasion.</p>
 	</div>
 
+	<!-- Page styles -->
 	<style>
 		body {
 			font-family: Arial, sans-serif;
@@ -400,8 +351,67 @@ While you have the option to enable or disable some or all of these cookies, not
 			overflow-y:scroll;
 			white-space: pre;
 		}
-		/* table {max-width:800px} */
-	</style>
 
+		#cssreport {
+			overflow-y:scroll
+		}
+
+		#cssreport table tr :is(td, th):first-of-type {
+			min-width:175px;
+			text-align:left;
+		}
+
+		#cssreport table tr :is(td, th) {
+			border-bottom:1px solid #ccc;
+			padding:6px;
+			text-align:center
+		}
+
+		#cssreport table tr :is(td, th):first-of-type {
+			padding-left:0;
+		}
+
+		.table {
+				font-size:14px;
+			}
+		.table th:first-of-type {
+			text-align:left;
+		}
+
+		.biscuit-selector {
+				display:flex;
+				width:100%;
+				gap:10px;
+				padding:10px;
+			}
+
+		.biscuit-selector button {
+			padding:20px;
+			font-size:18px;
+			border:3px solid #ccc;
+			background: #eee;
+			font-weight:bold;
+			flex-grow:1;
+		}
+
+		.biscuit-selector button:active {
+			border-color:#666;
+			background-color:#aaa;
+		}
+
+		.biscuit-selector button.selected {
+			color: green;
+			background:#00FF0066;
+			border-color:green;
+		}
+
+		.bm-no-functional .biscuit-selector {
+			background: #ccc;
+			pointer-events:none;
+			user-select:none;
+			opacity:0.5;
+			border:1px solid #aaa;
+		}
+	</style>
 </body>
 </html>

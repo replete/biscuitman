@@ -21,7 +21,7 @@ const filenames = {
 	minJsWithCss: 'biscuitman.withcss.min.js'
 }
 
-export async function styles() {
+export async function styles(skipFileSave) {
 	const sourceStyles = await readFile(filenames.css, 'utf8')
 
 	let processedStyles = transformCss({
@@ -31,7 +31,7 @@ export async function styles() {
 		targets: browserslistToTargets(browserslist(browserlistString)),
 		include: Features.Nesting
 	})
-	await writeFile(`dist/${filenames.css}`, `${comment}\n` + processedStyles.code)
+	if (!skipFileSave) await writeFile(`dist/${filenames.css}`, `${comment}\n` + processedStyles.code)
 	log(`Saved dist/${filenames.css}`)
 
 	let minifiedStyles = transformCss({
@@ -41,13 +41,13 @@ export async function styles() {
 		targets: browserslistToTargets(browserslist(browserlistString)),
 		include: Features.Nesting
 	})
-	await writeFile(`dist/${filenames.minCss}`, comment + minifiedStyles.code)
+	if (!skipFileSave) await writeFile(`dist/${filenames.minCss}`, comment + minifiedStyles.code)
 	log(`Saved dist/${filenames.minCss}`)
 
 	return [processedStyles.code, minifiedStyles.code]
 }
 
-export async function scripts() {
+export async function scripts(skipFileSave) {
 	const sourceJs = await readFile(filenames.js, 'utf8')
 
 	const js = swc.transform(sourceJs, {
@@ -59,7 +59,7 @@ export async function scripts() {
 		minify: false
 	  })
 	  .then(async ({ code }) => {
-		await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
+		if (!skipFileSave) await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
 		log(`Saved dist/${filenames.js}`)
 		return code
 	});
@@ -115,9 +115,8 @@ ${js[0]};
 
 async function report() {
 	log('Checking JS browser compatibility...')
-	let js = await scripts()
+	let js = await scripts(true)
 	const eslint = new ESLint({
-
 		overrideConfig: {
 			parserOptions: {
 				ecmaVersion: 2018,
@@ -136,7 +135,7 @@ async function report() {
 			  browser: true,
 			  es6: true,
 			}
-		  }
+		}
 	})
 
 	const lint = await eslint.lintText(js[0])
@@ -147,7 +146,7 @@ async function report() {
 	} else console.log(jsReport)
 
 	log('Checking CSS browser compatibility...')
-	let css = await styles()
+	let css = await styles(true)
 	let cssReportData = []
 	new Readable({
 		read() {

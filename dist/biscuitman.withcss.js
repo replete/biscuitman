@@ -465,6 +465,7 @@
 }
 
 .biscuitman .bm-dialog b {
+  padding-bottom: 8px;
   position: relative;
 }
 
