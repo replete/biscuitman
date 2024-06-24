@@ -5,8 +5,7 @@
 	This stylesheet is the source stylesheet
 	and is processed to un-nested native CSS nesting
 	and include vendor
-*/
-.biscuitman {
+*/.biscuitman {
 	--t: #444;
 	--b: #fff;
 	--c: #105d89;

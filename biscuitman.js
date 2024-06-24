@@ -12,7 +12,7 @@
 		accept: 'Accept All',
 		save: 'Save My Settings',
 		settingsTitle: 'My Consent Settings',
-		info: ``,
+		info: ``, 
 		more: '(Show more)',
 		noCookies: 'No cookies to display',
 		acceptNonEU: false,
@@ -42,7 +42,7 @@
 	}
 	const o = {...defaults, ...w.biscuitman}
 
-	/* UI & Events */
+	// UI & Events:
 
 	const ui = d.createElement('div')
 	let dialog
@@ -164,7 +164,7 @@
 		console.debug(name, payload);
 	}
 
-	/* Data */
+	// Data:
 
 	const setConsents = consents => {
 		w[o.global] = consents
@@ -271,7 +271,7 @@
 		});
 	}
 
-	/* Start */
+	// Start:
 
 	setConsents(loadConsents() || {})
 

@@ -165,15 +165,13 @@ While you have the option to enable or disable some or all of these cookies, not
 		const isLocal = location.hostname === 'localhost'
 
 		let el = document.createElement('script')
-		el.src = isLocal ? 'biscuitman.js' : 'dist/biscuitman.withcss.min.js'
+		el.src = isLocal ? 'dist/biscuitman.js' : 'dist/biscuitman.min.js'
 		document.getElementById('sandboxScript').insertAdjacentElement('afterend', el);
 
-		if (isLocal) {
-			let link = document.createElement('link')
-			link.rel = 'stylesheet'
-			link.href = 'biscuitman.css'
-			document.head.appendChild(link)
-		}
+		let link = document.createElement('link')
+		link.rel = 'stylesheet'
+		link.href = isLocal ? 'dist/biscuitman.css' : 'dist/biscuitman.min.css'
+		document.head.appendChild(link)
 	</script> 
 
 	<header>
@@ -188,10 +186,10 @@ While you have the option to enable or disable some or all of these cookies, not
 	<div class="container">
 		<p style="text-align:center"><a class="img" href="https://github.com/replete/biscuitman"><img src="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" style="width:50px;"/>README @ Github repo</a></p>
 
-		<h2>This page uses real analytics scripts with dummy IDs</h3>
-		<h3 id="localhost"></h4>
+		<h2>This page uses real analytics scripts with dummy IDs</h2>
+		<h3 id="localhost"></h3>
 
-		<h4>localStorage contents (refreshed once/s):</h4>
+		<h3>localStorage contents (refreshed once/s):</h3>
 		<div id="localstorage" class="update"></div>
 		<h4>document cookies (refreshed once/s):</h4>
 		<div id="cookies"></div>
