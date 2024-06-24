@@ -296,8 +296,8 @@
 })(document, window, Object, document.documentElement, 'biscuitman');
 ;
 ((d)=>{
-	let c=d.createElement('style');
-	c.textContent=`.biscuitman {
+	let css=d.createElement('style');
+	css.textContent=`.biscuitman {
   --t: #444;
   --b: #fff;
   --c: #105d89;
@@ -676,5 +676,5 @@
   opacity: 0;
 }
 `;
-	d.documentElement.appendChild(c)
+	d.head.appendChild(css)
 })(document);

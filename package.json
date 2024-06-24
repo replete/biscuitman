@@ -14,7 +14,7 @@
     "consent-manager"
   ],
   "scripts": {
-    "dev": "browser-sync start -s --cwd -w --https",
+    "dev": "node ./run.mjs build serve",
     "build": "node ./run.mjs build"
   },
   "devDependencies": {
