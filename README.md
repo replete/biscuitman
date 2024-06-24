@@ -129,7 +129,7 @@ html:not(:has(.bm-hide))::after {
 
 ## Globals
 - `biscuitman` – configuration object, must be `window.biscuitman`
-- `Consent` – object for accessing consents (add `global` config property to override)
+- `Consent` – object for accessing consents (override: `global` in `window.biscuitman`)
 	```
 	{
 		"consentTime": 1717846660979,
@@ -140,16 +140,16 @@ html:not(:has(.bm-hide))::after {
 		"uncategorized": false
 	}
 	```
-	- example usage: `if (Consent && Consent.analytics) { doAnalyticsThing() }`
+	- example usage: `if (Consent.analytics) { doAnalyticsThing() }`
 - `bmInvalidate()` – Delete stored consent data and reinstate UI
 - `bmOpen()` – Opens My Consent Settings modal
 	- example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>` 
 
 ## CSS 
 
-	- `biscuitman` class is used for the main UI
-	- consents are added to `<html>` with the convention of `bm-{sectionName}` for granted and `bm-no-{sectionName}` for ungranted
-	- `bm-hide` is used on the UI container
+- `biscuitman` class is used for the main UI
+- consents are added to `<html>` with the convention of `bm-{sectionName}` for granted and `bm-no-{sectionName}` for ungranted
+- `bm-hide` is used on the UI container
 
 ## Events
 
