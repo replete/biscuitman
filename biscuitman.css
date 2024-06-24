@@ -3,13 +3,14 @@
 	https://github.com/replete/biscuitman
 
 	This stylesheet is the source stylesheet
-	and is processed to un-nested native CSS nesting
-	and include vendor
+	Use a version in /dist/ for improved compatibility
 */.biscuitman {
 	--t: #444;
 	--b: #fff;
 	--c: #105d89;
 
+	position:fixed;
+	bottom:0;
 	width:100%;
 	padding:20px;
 	background:var(--b);

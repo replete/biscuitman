@@ -1,7 +1,7 @@
 {
   "name": "biscuitman",
   "version": "0.3.9",
-  "description": "Lightweight client-side cookie consent manager with dependency hooks and script injection",
+  "description": "Super lightweight open-source privacy consent manager for your website ",
   "browser": "biscuitman.js",
   "keywords": [
     "privacy",

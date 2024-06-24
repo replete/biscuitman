@@ -29,8 +29,6 @@
     let dialog;
     function render() {
         ui.classList.add(bm);
-        ui.style = 'position:fixed;background:#fff;bottom:0' // critical CSS
-        ;
         ui.innerHTML = `
 <article>
 	<b>${o.title}</b>
@@ -306,6 +304,8 @@
   width: 100%;
   padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  position: fixed;
+  bottom: 0;
   box-shadow: 0 -2px 10px #00000029;
 }
 

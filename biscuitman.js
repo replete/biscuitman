@@ -49,7 +49,6 @@
 
 	function render() {
 		ui.classList.add(bm)
-		ui.style = 'position:fixed;background:#fff;bottom:0' // critical CSS
 		ui.innerHTML = `
 <article>
 	<b>${o.title}</b>

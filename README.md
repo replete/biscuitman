@@ -14,7 +14,6 @@ I didn't like sending 100KB+ for a simple cookie consent solution so I wrote thi
 - Simple flat configuration object
 - Injects scripts when granular consent is granted (`<script data-consent="analytics" type="text/plain" src="..."></script>`)
 - Injects embedded `<script>` from script tags with `src` properties on onload (tidier markup)
-- Works without CSS (thanks to `<dialog>` and `<details>`)
 - Mobile-first
 - Browser support: >= 2% browserlist (No IE support, but its not impossible)
   - Written with latest CSS / JS features and targetted to >= 2% using browserlist
