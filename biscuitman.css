@@ -27,6 +27,7 @@
 		line-height:1.4em;
 	}
 
+	/* Progressive enhancement */
 	&:has([open]) {
 		transform: translateY(100%);
 	}
@@ -204,20 +205,21 @@
 		> p  {
 			line-height:18px;
 			padding-right:30px;
+			font-size:13px;
+
+			@media (min-width:576px) {
+			font-size:14px;
+			}
 			
 			span {
-				font-size:13px;
-				display:block;
+				font-size:inherit;
+				display:inline-block;
 				padding-bottom:5px;
+			}
 
-				@media (min-width:576px) {
-				font-size:14px;
-				}
-
-				&:has(.more) ~ span {
-					display:none;
-				}
-			}			
+			.more ~ span {
+				display:none;
+			}	
 		}
 	}
 
@@ -347,7 +349,7 @@
 			transform-origin: center center;
 		}
 
-		&:has(:checked) {
+		&.checked {
 		background-color: var(--c);
 
 			&::before {
@@ -356,12 +358,13 @@
 			}
 		}
 
+		/* Progressive enhancement */
 		&:has(:focus-visible) {
 			/* Show focus outline correctly correctly with keyboard focus */
 			outline: auto highlight;
 		}
 
-		&:has([disabled]:checked) {
+		&.disabled.checked {
 			opacity:.6
 		}
 

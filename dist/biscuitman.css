@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.11 */
+/*! biscuitman.js 0.3.12 */
 .biscuitman {
   --t: #444;
   --b: #fff;
@@ -213,22 +213,23 @@
 
 .biscuitman .bm-sections > p {
   padding-right: 30px;
+  font-size: 13px;
   line-height: 18px;
 }
 
-.biscuitman .bm-sections > p span {
-  padding-bottom: 5px;
-  font-size: 13px;
-  display: block;
-}
-
 @media (min-width: 576px) {
-  .biscuitman .bm-sections > p span {
+  .biscuitman .bm-sections > p {
     font-size: 14px;
   }
 }
 
-.biscuitman .bm-sections > p span:has(.more) ~ span {
+.biscuitman .bm-sections > p span {
+  font-size: inherit;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.biscuitman .bm-sections > p .more ~ span {
   display: none;
 }
 
@@ -361,11 +362,11 @@
   transform: translateY(-50%)scale(.8);
 }
 
-.biscuitman label:has(:checked) {
+.biscuitman label.checked {
   background-color: var(--c);
 }
 
-.biscuitman label:has(:checked):before {
+.biscuitman label.checked:before {
   left: auto;
   right: 0;
 }
@@ -374,7 +375,7 @@
   outline: auto highlight;
 }
 
-.biscuitman label:has([disabled]:checked) {
+.biscuitman label.disabled.checked {
   opacity: .6;
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "biscuitman",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "Super lightweight open-source privacy consent manager for your website ",
   "browser": "biscuitman.js",
   "keywords": [

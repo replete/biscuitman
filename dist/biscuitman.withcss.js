@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.11 */
+/*! biscuitman.js 0.3.12 */
 ((d, w, Object1, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -16,7 +16,7 @@
         save: 'Save My Settings',
         settingsTitle: 'My Consent Settings',
         info: ``,
-        more: '(Show more)',
+        more: 'Show more',
         noCookies: 'No cookies to display',
         acceptNonEU: false
     };
@@ -46,24 +46,24 @@
 		<div class="bm-sections">
 			<p><span>${o.message}</span></p>
 			<p>${o.info.split('\n').map((line, i, arr)=>{
-            let more = arr.length > 1 && o.enableMore && i == 0 ? `<a class="more" href="javascript:void(0)">${o.more}</a>` : '';
-            return `<span>${line}${more}</span>`;
+            return `<span>${line}</span>
+					${arr.length > 1 && o.enableMore && i == 0 ? `<a class="more" href="javascript:void(0)">${o.more}</a>` : ''}`;
         }).join('')}
 			</p>
 			${o.sections.map((section)=>{
             let hasConsent = getConsents()[section];
             let isEssential = section === 'essential';
-            let isDisabled = isEssential ? 'disabled' : '';
-            let isChecked = isEssential ? 'checked' : '';
-            if (hasConsent !== undefined) isChecked = hasConsent ? 'checked' : '';
+            let disabledProp = isEssential ? 'disabled' : '';
+            let checkedProp = isEssential ? 'checked' : '';
+            if (hasConsent !== undefined) checkedProp = hasConsent ? 'checked' : '';
             let cookies = o[`${section}Cookies`];
             return `
 			<section>
 				<details>
 					<summary>
 						<b>${o[`${section}Title`]}</b>
-						<label for="${bm}_${section}">
-							<input type="checkbox" id="${bm}_${section}" ${isDisabled} ${isChecked} data-s="${section}"/>
+						<label for="${bm}_${section}" class="${disabledProp} ${checkedProp}">
+							<input type="checkbox" id="${bm}_${section}" ${disabledProp} ${checkedProp} data-s="${section}"/>
 						</label>
 						<p>${o[`${section}Message`]}</p>
 					</summary>
@@ -88,6 +88,9 @@
         dialog.addEventListener('cancel', cancelModalHandler);
         const moreLink = ui.querySelector('.more');
         if (moreLink) moreLink.addEventListener('click', moreLink.remove);
+        ui.querySelectorAll('[data-s]').forEach((checkbox)=>checkbox.addEventListener('change', (e)=>{
+                checkbox.parentElement.classList.toggle('checked', e.target.checked);
+            }));
         d.body.appendChild(ui);
     }
     const displayUI = (show)=>ui.classList.toggle('bm-hide', !show);
@@ -288,6 +291,7 @@
         dispatch('invalidate', {
             data: getConsents()
         });
+        checkConsents({});
         saveConsents(false);
         setConsents({});
         localStorage.removeItem(o.key);
@@ -518,22 +522,23 @@
 
 .biscuitman .bm-sections > p {
   padding-right: 30px;
+  font-size: 13px;
   line-height: 18px;
 }
 
-.biscuitman .bm-sections > p span {
-  padding-bottom: 5px;
-  font-size: 13px;
-  display: block;
-}
-
 @media (min-width: 576px) {
-  .biscuitman .bm-sections > p span {
+  .biscuitman .bm-sections > p {
     font-size: 14px;
   }
 }
 
-.biscuitman .bm-sections > p span:has(.more) ~ span {
+.biscuitman .bm-sections > p span {
+  font-size: inherit;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.biscuitman .bm-sections > p .more ~ span {
   display: none;
 }
 
@@ -666,11 +671,11 @@
   transform: translateY(-50%)scale(.8);
 }
 
-.biscuitman label:has(:checked) {
+.biscuitman label.checked {
   background-color: var(--c);
 }
 
-.biscuitman label:has(:checked):before {
+.biscuitman label.checked:before {
   left: auto;
   right: 0;
 }
@@ -679,7 +684,7 @@
   outline: auto highlight;
 }
 
-.biscuitman label:has([disabled]:checked) {
+.biscuitman label.disabled.checked {
   opacity: .6;
 }
 
