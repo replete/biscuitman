@@ -13,3 +13,9 @@ node_modules
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+
+# keys/certs for browserSync
+*.key
+*.crt
+*.pem

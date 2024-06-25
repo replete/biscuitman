@@ -7,7 +7,7 @@ import { Readable } from 'stream'
 import doiuse from 'doiuse/stream'
 import { ESLint } from 'eslint'
 import zlib from 'zlib'
-const { readFile, writeFile } = fs.promises;
+const { readFile, writeFile } = fs.promises
 const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
 const { name, version, browserslist: browserlistString } = JSON.parse(await readFile('./package.json'))
 const comment = `/*! ${name}.js ${version} */`
@@ -88,7 +88,7 @@ export async function scripts(skipFileSave) {
 	return Promise.all([js, minJs])
 }
 
-async function build() {
+export async function build() {
 	console.time('Build Time')
 	let js = await scripts()
 	let css = await styles()
@@ -113,7 +113,7 @@ ${js[0]};
 	console.timeEnd('Build Time')
 }
 
-async function report() {
+export async function report() {
 	log('report', `Running browser compatibility report`)
 	log('report : js','Checking JS browser compatibility...')
 	let js = await scripts(true)
@@ -169,8 +169,8 @@ async function report() {
 	})
 }
 
-async function serve() {
-    const bs = browserSync.create();
+export async function serve() {
+    const bs = browserSync.create()
 
     bs.watch('package.json', async (event, file) => {
         if (event === 'change') {
@@ -199,10 +199,31 @@ async function serve() {
         server: './',
         files: ['./dist/*','index.html'], // watch
         port: 3000, 
-		https: true, // required for https cookies
+		https: { // required for https cookies
+            key: './server.key',
+            cert: './server.crt'
+        }, 
         open: false,
         notify: false
     })
+}
+
+export async function testServer(port) {
+	const bs = browserSync.create()
+
+	bs.init({
+        server: './',
+        port: port || 3333, 
+		logLevel: 'silent',
+		https: { // required for https cookies
+            key: './server.key',
+            cert: './server.crt'
+        }, 
+        open: false,
+        notify: false
+    })
+
+	return bs
 }
 
 async function main() {
@@ -215,7 +236,7 @@ async function main() {
 			case 'scripts': scripts(); break;
 			case 'build': build(); break;
 			case 'report': report(); break;
-			default: console.log('Usage: node build.js [serve|build|styles|scripts]');
+			default: break;
 		}
 	}
 }

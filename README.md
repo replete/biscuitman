@@ -150,7 +150,7 @@ html:not(:has(.bm-hide))::after {
 - `bmOpen()` – Opens My Consent Settings modal (you might want to link this on your Privacy policy or footer nav)
 	- example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>` 
 
-## CSS 
+## CSS Classes
 
 - `biscuitman`, `bm-hide` on UI container
 - `bm-{sectionName}`, `bm-no-{sectionName}` on `<html>` for consent state
@@ -177,14 +177,29 @@ document.addEventListener('biscuitman:open', (e) => {
 
 ## Development
 
-Fire up a browsersync dev server on `:3000`. `index.html` will display as the dev sandbox.
-```bash
-npm install
-npm run dev
-```
+`npm run dev` fires up a browsersync dev server on `https://localhost:3000`. 
+
+We need to use `https://` to be able to delete Secure cookies.
+
+### Fix NET::ERR_CERT_AUTHORITY_INVALID error
+
+This isn't a problem for testing the UI, but is a problem for the tests running headless browsers. To fix this: 
+- Install `mkcert` ([Installation instructions](https://github.com/FiloSottile/mkcert#installation)) and then run:
+- run `npm run makecerts`, to create `server.crt` and `server.key` for browserSync
+
+Visiting `https://localhost:3000` should now work without warnings.
+
+
 
 ### Building
-`npm run build`
+`npm run build` - creates project distributes. 
+
+Build script `run.mjs` built with Node 18
+
+### Tests
+`npm run test` - Launches pupeeter integration tests in a browser
+Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up.
+
 
 ## Support development
 
