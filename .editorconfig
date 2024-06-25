@@ -1,4 +1,4 @@
-[*.{js,css,html,json}]
+[**/*.{js,css,html,json,mjs}]
 charset = utf-8
 indent_style = tab
 indent_size = 4
