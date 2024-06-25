@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "dev": "node ./run.mjs build serve",
-    "build": "node ./run.mjs build"
+    "build": "node ./run.mjs build",
+    "report": "node ./run.mjs report"
   },
   "devDependencies": {
     "@swc/core": "^1.6.5",

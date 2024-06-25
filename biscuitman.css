@@ -143,7 +143,7 @@
 		border-radius:10px;
 		}
 		@media (min-width:576px) and (min-height:1134px) {
-			height:890px; /* KLUDGE: magic number based on 6 sections */
+			max-height:950px; /* KLUDGE: magic number based on 6 sections */
 		}
 
 		nav {

@@ -8,7 +8,7 @@ import doiuse from 'doiuse/stream'
 import { ESLint } from 'eslint'
 import zlib from 'zlib'
 const { readFile, writeFile } = fs.promises;
-const log = msg => console.log(`\x1b[33m[ run ]\x1b[0m ${msg}`)
+const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
 const { name, version, browserslist: browserlistString } = JSON.parse(await readFile('./package.json'))
 const comment = `/*! ${name}.js ${version} */`
 
@@ -32,7 +32,7 @@ export async function styles(skipFileSave) {
 		include: Features.Nesting
 	})
 	if (!skipFileSave) await writeFile(`dist/${filenames.css}`, `${comment}\n` + processedStyles.code)
-	log(`Saved dist/${filenames.css}`)
+	log('css',`Saved dist/${filenames.css}`)
 
 	let minifiedStyles = transformCss({
 		code: Buffer.from(sourceStyles),
@@ -42,7 +42,7 @@ export async function styles(skipFileSave) {
 		include: Features.Nesting
 	})
 	if (!skipFileSave) await writeFile(`dist/${filenames.minCss}`, comment + minifiedStyles.code)
-	log(`Saved dist/${filenames.minCss}`)
+	log('css',`Saved dist/${filenames.minCss}`)
 
 	return [processedStyles.code, minifiedStyles.code]
 }
@@ -60,7 +60,7 @@ export async function scripts(skipFileSave) {
 	  })
 	  .then(async ({ code }) => {
 		if (!skipFileSave) await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
-		log(`Saved dist/${filenames.js}`)
+		log('js',`Saved dist/${filenames.js}`)
 		return code
 	});
 
@@ -81,7 +81,7 @@ export async function scripts(skipFileSave) {
         minify: true
     }).then(async ({ code }) => {
 		await writeFile(`dist/${filenames.minJs}`, comment + code.replace(/[\n\t]/g, ''))
-		log(`Saved dist/${filenames.minJs}`)
+		log('js',`Saved dist/${filenames.minJs}`)
 		return code
 	})
 
@@ -107,14 +107,15 @@ ${js[0]};
 		writeFile(`dist/${filenames.minJsWithCss}`, jsCssMin)
 	])
 
-	log(`Saved dist/${filenames.jsWithCss} (bytes: ${jsCss.length}, ${zlib.gzipSync(jsCss).length} gz, ${zlib.brotliCompressSync(jsCss).length} br)`)
-	log(`Saved dist/${filenames.minJsWithCss} (bytes: ${jsCssMin.length}, ${zlib.gzipSync(jsCssMin).length} gz, ${zlib.brotliCompressSync(jsCssMin).length} br)`)
+	log('build',`Saved dist/${filenames.jsWithCss} (bytes: ${jsCss.length}, ${zlib.gzipSync(jsCss).length} gz, ${zlib.brotliCompressSync(jsCss).length} br)`)
+	log('build',`Saved dist/${filenames.minJsWithCss} (bytes: ${jsCssMin.length}, ${zlib.gzipSync(jsCssMin).length} gz, ${zlib.brotliCompressSync(jsCssMin).length} br)`)
 
 	console.timeEnd('Build Time')
 }
 
 async function report() {
-	log('Checking JS browser compatibility...')
+	log('report', `Running browser compatibility report`)
+	log('report : js','Checking JS browser compatibility...')
 	let js = await scripts(true)
 	const eslint = new ESLint({
 		overrideConfig: {
@@ -142,10 +143,10 @@ async function report() {
 	const formatter = await eslint.loadFormatter('stylish')
 	const jsReport = formatter.format(lint)
 	if (jsReport.length === 0) {
-		log('No JS Compatibilty warnings')
-	} else console.log(jsReport)
+		log('report: js','✅ No JS Compatibilty warnings')
+	} else log('report: js', jsReport)
 
-	log('Checking CSS browser compatibility...')
+	log('report: css','Checking CSS browser compatibility...')
 	let css = await styles(true)
 	let cssReportData = []
 	new Readable({
@@ -155,16 +156,16 @@ async function report() {
 		}
 	})
 	.pipe(doiuse({
-		browsers: 'last 2 years',
+		browsers: browserlistString,
 		ignore: []
 	}))
 	.on('data',usageInfo => {
-		console.log(usageInfo.message.replace('<streaming css input>:',''))
+		log('report: css', usageInfo.message.replace('<streaming css input>:',''))
 		cssReportData.push(usageInfo)
 	})
 	.on('end', async data => {
 		await writeFile('cssreport.json', JSON.stringify({report: cssReportData}))
-		log('Saved cssreport.json')
+		log('report: css','Saved cssreport.json (see compatibility table on index.html')
 	})
 }
 

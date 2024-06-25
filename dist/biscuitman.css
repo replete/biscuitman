@@ -150,7 +150,7 @@
 
 @media (min-width: 576px) and (min-height: 1134px) {
   .biscuitman dialog {
-    height: 890px;
+    max-height: 950px;
   }
 }
 

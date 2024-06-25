@@ -146,11 +146,16 @@
         console.debug(name, payload);
     }
     // Data:
-    const setConsents = (consents)=>{
+    const getConsents = ()=>w[o.global] || {};
+    function setConsents(consents) {
         w[o.global] = consents;
         applyCssClasses();
-    };
-    const getConsents = ()=>w[o.global];
+    }
+    function checkConsents(oldConsents, newConsents) {
+        for(const sectionName in oldConsents)if (oldConsents[sectionName] && newConsents[sectionName] === false) dispatch('revoke', {
+            section: sectionName
+        });
+    }
     function loadConsents() {
         try {
             return JSON.parse(localStorage.getItem(o.key));
@@ -214,6 +219,7 @@
             consents[section] = sectionConsent;
             if (!willReadValues) sectionElement.checked = value;
         });
+        checkConsents(getConsents(), consents);
         setConsents(consents);
         localStorage.setItem(o.key, JSON.stringify(consents));
         dispatch('save', {
@@ -269,7 +275,7 @@
     }
     // Render UI
     render();
-    // Wipe matching cookies without consent 
+    // Wipe matching cookies/localStorages without consent 
     clearStorages();
     // Consent logic
     if (w[o.global].consentTime) {
@@ -449,7 +455,7 @@
 
 @media (min-width: 576px) and (min-height: 1134px) {
   .biscuitman dialog {
-    height: 890px;
+    max-height: 950px;
   }
 }
 

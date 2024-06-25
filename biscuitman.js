@@ -165,12 +165,18 @@
 
 	// Data:
 
-	const setConsents = consents => {
+	const getConsents = () => w[o.global] || {}
+
+	function setConsents(consents) {
 		w[o.global] = consents
 		applyCssClasses()
 	}
 
-	const getConsents = () => w[o.global]
+	function checkConsents(oldConsents, newConsents) {
+		for (const sectionName in oldConsents)
+			if (oldConsents[sectionName] && newConsents[sectionName] === false)
+				dispatch('revoke', {section: sectionName})
+	}
 
 	function loadConsents() {
 		try {
@@ -235,6 +241,7 @@
 			consents[section] = sectionConsent
 			if (!willReadValues) sectionElement.checked = value
 		})
+		checkConsents(getConsents(),consents)
 		setConsents(consents)
 		localStorage.setItem(o.key, JSON.stringify(consents))
 		dispatch('save', {data: consents})
@@ -285,7 +292,7 @@
 	// Render UI
 	render()
 
-	// Wipe matching cookies without consent 
+	// Wipe matching cookies/localStorages without consent 
 	clearStorages()
 
 	// Consent logic
