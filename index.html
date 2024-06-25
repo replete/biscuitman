@@ -249,13 +249,16 @@ While you have the option to enable or disable some or all of these cookies, not
 		<div class="biscuit-selector">
 			<button id="richtea">Rich Tea</button>
 			<button id="hobnobs">Hobnobs</button>
-			<button id="digestive">Custard Cream</button>
+			<button id="custardcream">Custard Cream</button>
 			<button id="bourbons">Bourbons</button>
 		</div>
-		<script async>
+		<script>
 			let selectedBiscuit = localStorage.getItem('biscuitselector')
-			if (selectedBiscuit) document.getElementById(selectedBiscuit).classList.add('selected')
-
+			if (selectedBiscuit) {
+				let el = document.getElementById(selectedBiscuit)
+				if (el) el.classList.add('selected')
+				else localStorage.removeItem('biscuitselector')
+			}
 			let biscuitButtons = document.querySelectorAll('.biscuit-selector button')
 			biscuitButtons.forEach(button => button.addEventListener('click', (e) => {
 				biscuitButtons.forEach(button => button.classList.remove('selected'))
