@@ -14,6 +14,7 @@ describe("a fresh instance of biscuitman", () => {
 			headless: true, 
 			// slowMo: showBrowser ? 100 : false, 
 			// devtools: showBrowser
+			ignoreHTTPSErrors: true
 		})
 
 		page = await context.newPage()
