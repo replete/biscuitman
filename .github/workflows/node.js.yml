@@ -27,28 +27,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install mkcert
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libnss3-tools
-          wget https://dl.filippo.io/mkcert/latest?for=linux/amd64 -O mkcert
-          chmod +x mkcert
-          sudo mv mkcert /usr/local/bin/
-      
-      - name: Set up local CA
-        run: mkcert -install
-
-      - name: Generate certificates
-        run: npm run makecerts
-
-      - name: Trust mkcert CA
-        run: |
-          sudo cp "$(mkcert -CAROOT)/rootCA.pem" /usr/local/share/ca-certificates/mkcert-ca.crt
-          sudo update-ca-certificates
-
-      - name: Export NODE_EXTRA_CA_CERTS
-        run: echo "NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem" >> $GITHUB_ENV
-
       - name: Build project
         run: npm run build --if-present
 

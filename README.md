@@ -25,6 +25,8 @@
   - Firefox 121+ (should be fine in many earlier versions, TBD)
   - If JS fails in an old browser, it will probably be fixable by updating `browserlist` in `package.json` then rebuilding
   - (Will be tested more definitively with browserstack at some point)
+  - source styles use CSS Nesting which is explicitly processed out for compatibility
+- Integration test suite WIP
 
 ![screenshot of main UI](media/ui.webp)
 

@@ -215,10 +215,6 @@ export async function testServer(port) {
         server: './',
         port: port || 3333, 
 		logLevel: 'silent',
-		https: { // required for https cookies
-            key: './server.key',
-            cert: './server.crt'
-        }, 
         open: false,
         notify: false
     },(err, bsInstance) => {
