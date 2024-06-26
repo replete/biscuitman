@@ -19,8 +19,10 @@
     "build": "node ./run.js build",
     "report": "node ./run.js report",
     "test": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --runInBand",
+    "coverage": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --runInBand --collectCoverage --",
     "makecerts": "mkcert -cert-file server.crt -key-file server.key localhost 127.0.0.1 ::1"
   },
+  "test": "jest --",
   "devDependencies": {
     "@swc/core": "^1.6.5",
     "@swc/jest": "^0.2.36",

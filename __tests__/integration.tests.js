@@ -117,7 +117,6 @@ describe("a fresh instance of biscuitman", () => {
 	})
 
 	test("should hide UI and save consents correctly after selecting some sections", async () => {
-		console.log(await loadConsents())
 
 		await page.click('button[data-id=settings]')
 		const dialog = await page.$('dialog')

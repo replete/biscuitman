@@ -198,6 +198,7 @@ Build script `run.mjs` built with Node 18
 
 ### Tests
 `npm run test` - Launches pupeeter integration tests in a browser
+`npm run coverage` - run jest tests with coverage
 Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up.
 
 
