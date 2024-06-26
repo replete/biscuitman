@@ -48,10 +48,8 @@ jobs:
 
       - name: Verify CA installation
         run: |
-          ls -l /usr/local/share/ca-certificates/
-          ls -l /etc/ssl/certs/
           cat /etc/ssl/certs/ca-certificates.crt | grep "$(mkcert -CAROOT)/rootCA.pem"
-          
+
       - name: Export NODE_EXTRA_CA_CERTS
         run: echo "NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem" >> $GITHUB_ENV
 
@@ -62,3 +60,4 @@ jobs:
         run: npm test
         env:
           NODE_EXTRA_CA_CERTS: ${{ env.NODE_EXTRA_CA_CERTS }}
+          NODE_OPTIONS: --use-openssl-ca
