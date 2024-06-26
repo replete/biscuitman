@@ -194,7 +194,7 @@ Visiting `https://localhost:3000` should now work without warnings.
 ### Building
 `npm run build` - creates project distributes. 
 
-Build script `run.mjs` built with Node 18
+Build script `runmjs` built with Node 20
 
 ### Tests
 `npm run test` - Launches pupeeter integration tests in a browser
