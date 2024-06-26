@@ -221,7 +221,13 @@ export async function testServer(port) {
         }, 
         open: false,
         notify: false
-    })
+    },(err, bsInstance) => {
+		if (err) {
+		  console.error('Error starting BrowserSync:', err)
+		} else {
+		  console.log(`BrowserSync running at: ${bsInstance.options.getIn(['urls', 'local'])}`)
+		}
+	  })
 
 	return bs
 }
