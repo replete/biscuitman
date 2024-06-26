@@ -46,10 +46,6 @@ jobs:
           sudo cp "$(mkcert -CAROOT)/rootCA.pem" /usr/local/share/ca-certificates/mkcert-ca.crt
           sudo update-ca-certificates
 
-      - name: Verify CA installation
-        run: |
-          cat /etc/ssl/certs/ca-certificates.crt | grep "$(mkcert -CAROOT)/rootCA.pem"
-
       - name: Export NODE_EXTRA_CA_CERTS
         run: echo "NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem" >> $GITHUB_ENV
 
