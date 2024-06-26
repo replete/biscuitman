@@ -26,7 +26,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
     - run: npm ci
+
     - name: Install mkcert
       run: |
         sudo apt-get install libnss3-tools
@@ -34,9 +36,11 @@ jobs:
         chmod +x mkcert
         sudo mv mkcert /usr/local/bin/
 
-      - name: Set up local CA and generate certificates
-        run: |
-          mkcert -install
+    - name: Set up local CA and generate certificates
+      run: |
+        mkcert -install
+        mkcert -key-file server.key -cert-file server.crt localhost 127.0.0.1 ::1
+
     - run: npm run makecerts
     - run: npm run build --if-present
     - run: npm test
