@@ -27,5 +27,16 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
+    - name: Install mkcert
+      run: |
+        sudo apt-get install libnss3-tools
+        wget https://dl.filippo.io/mkcert/latest?for=linux/amd64 -O mkcert
+        chmod +x mkcert
+        sudo mv mkcert /usr/local/bin/
+
+      - name: Set up local CA and generate certificates
+        run: |
+          mkcert -install
+    - run: npm run makecerts
     - run: npm run build --if-present
     - run: npm test
