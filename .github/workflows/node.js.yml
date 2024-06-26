@@ -15,7 +15,8 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -23,25 +24,41 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
       - name: Install mkcert
         run: |
+          sudo apt-get update
           sudo apt-get install -y libnss3-tools
           wget https://dl.filippo.io/mkcert/latest?for=linux/amd64 -O mkcert
           chmod +x mkcert
           sudo mv mkcert /usr/local/bin/
-
+      
       - name: Set up local CA
         run: mkcert -install
 
-      - run: npm run makecerts
+      - name: Generate certificates
+        run: npm run makecerts
 
-      - name: Set up Puppeteer with mkcert CA
+      - name: Trust mkcert CA
         run: |
           sudo cp "$(mkcert -CAROOT)/rootCA.pem" /usr/local/share/ca-certificates/mkcert-ca.crt
           sudo update-ca-certificates
 
-      - run: npm run build --if-present
+      - name: Verify CA installation
+        run: |
+          ls -l /usr/local/share/ca-certificates/
+          ls -l /etc/ssl/certs/
+          cat /etc/ssl/certs/ca-certificates.crt | grep "$(mkcert -CAROOT)/rootCA.pem"
+          
+      - name: Export NODE_EXTRA_CA_CERTS
+        run: echo "NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem" >> $GITHUB_ENV
 
-      - run: npm test
+      - name: Build project
+        run: npm run build --if-present
+
+      - name: Run tests
+        run: npm test
+        env:
+          NODE_EXTRA_CA_CERTS: ${{ env.NODE_EXTRA_CA_CERTS }}
