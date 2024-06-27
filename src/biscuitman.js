@@ -40,7 +40,7 @@
 // 		uncategorizedTitle: 'Uncategorized',
 // 		uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
 	}
-	const options = {...defaults, ...w.biscuitman}
+	const options = { ...defaults, ...w.biscuitman }
 
 	// UI & Events:
 
@@ -134,7 +134,7 @@
 
 	function buttonHandler(e) {
 		let id = e.target.dataset.id
-		dispatch('button', {id})
+		dispatch('button', { id })
 		switch (id) {
 			case 'accept': saveConsents(true); break
 			case 'close': dialog.close(); break
@@ -179,7 +179,7 @@
 	function checkConsents(oldConsents, newConsents) {
 		for (const sectionName in oldConsents)
 			if (oldConsents[sectionName] && newConsents[sectionName] === false)
-				dispatch('revoke', {section: sectionName})
+				dispatch('revoke', { section: sectionName })
 	}
 
 	function loadConsents() {
@@ -210,7 +210,7 @@
 			sectionCookieNames
 			.filter(name => name.endsWith('*'))
 			.map(wildcardName => {
-				Object.keys({...cookies, ...localStores}).map(name => {
+				Object.keys({ ...cookies, ...localStores }).map(name => {
 					if (name.startsWith(wildcardName.slice(0, -1))) sectionCookieNames.push(name)
 				})
 			})
@@ -221,11 +221,11 @@
 					d.cookie = expiredCookie
 					d.cookie = `${expiredCookie}domain=${location.hostname};` // Safari iOS
 					d.cookie = `${expiredCookie}domain=.${location.hostname};` // Safari iOS
-					dispatch('delete',{cookie : name})
+					dispatch('delete',{ cookie : name })
 				}
 				if (localStores[name]) {
 					localStorage.removeItem(name)
-					dispatch('delete',{localStorage : name})
+					dispatch('delete',{ localStorage : name })
 				}
 			}
 		}
@@ -248,7 +248,7 @@
 		checkConsents(getConsents(),consents)
 		setConsents(consents)
 		localStorage.setItem(options.key, JSON.stringify(consents))
-		dispatch('save', {data: consents})
+		dispatch('save', { data: consents })
 		clearStorages()
 		insertScripts()
 		dialog.close()
@@ -268,7 +268,7 @@
 			newScript.setAttribute('type', script.dataset.type || 'text/javascript')
 			if (!script.src) newScript.textContent = script.textContent
 			script.parentNode.replaceChild(newScript, script)
-			dispatch('inject', {el: script, ...(script.id && {id: script.id})})
+			dispatch('inject', { el: script, ...(script.id && { id: script.id }) })
 
 			// If tag has src AND tag content, inject new tag adjacent to parent after load
 			if (script.src && script.textContent.trim() !== '') newScript.addEventListener('load', () => {
@@ -276,7 +276,7 @@
 				afterScript.textContent = script.textContent
 				if (script.id) afterScript.id = script.id + '-after'
 				newScript.insertAdjacentElement('afterend', afterScript)
-				dispatch('inject', {el: afterScript, parent: script, ...(afterScript.id && {id: afterScript.id})})
+				dispatch('inject', { el: afterScript, parent: script, ...(afterScript.id && { id: afterScript.id }) })
 			})
 		})
 	}
@@ -308,7 +308,7 @@
 	// Helper  methods 
 	// <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
 	w.bmInvalidate = () => {
-		dispatch('invalidate', {data: getConsents()})
+		dispatch('invalidate', { data: getConsents() })
 		checkConsents({})
 		saveConsents(false)
 		setConsents({})
@@ -317,7 +317,7 @@
 	}
 	// <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
 	w.bmUpdate = () => {
-		dispatch('update', {data: getConsents()})
+		dispatch('update', { data: getConsents() })
 		openModal()
 	}
 })(document, window, Object, document.documentElement, 'biscuitman')

@@ -171,7 +171,7 @@
     function clearStorages() {
         const localStores = Object1.fromEntries(Object1.entries(localStorage));
         const cookies = Object1.fromEntries(d.cookie.split('; ').map((cookie)=>cookie.split('=')));
-        // eslint-disable-next-line no-unused-vars
+        
         const { consentTime, ...consents } = loadConsents() || options.sections.slice(1).reduce((consents, section)=>{
             consents[section] = false;
             return {

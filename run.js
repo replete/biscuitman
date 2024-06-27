@@ -1,6 +1,6 @@
 import fs from 'fs'
 import swc from '@swc/core'
-import { transform as transformCss, browserslistToTargets, Features} from 'lightningcss'
+import { transform as transformCss, browserslistToTargets, Features } from 'lightningcss'
 import browserslist from 'browserslist'
 import browserSync from 'browser-sync'
 import { Readable } from 'stream'
@@ -58,6 +58,7 @@ export async function scripts(skipFileSave) {
 		minify: false
 	  })
 	  .then(async ({ code }) => {
+		code = code.replace(/(\/\* eslint-disable.*?\*\/)|(\/\/ eslint-disable-.*?$)/gm,'') // strip eslint comments
 		if (!skipFileSave) await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
 		log('js',`Saved dist/${filenames.js}`)
 		return code
@@ -99,6 +100,7 @@ ${js[0]};
 	css.textContent=\`${css[0]}\`;
 	d.head.appendChild(css)
 })(document);`
+	jsCss = jsCss.replace(/(\/\* eslint-disable.*?\*\/)|(\/\/ eslint-disable-.*?$)/gm,'') // strip eslint comments
 	let jsCssMin = `${comment}${js[1].replace(/[\n\t]/g, '')};((d)=>{let c=d.createElement('style');c.textContent=\`${css[1]}\`;d.head.appendChild(c)})(document);`
 	
 	await Promise.all([
@@ -165,7 +167,7 @@ export async function report() {
 		cssReportData.push(usageInfo)
 	})
 	.on('end', async () => {
-		await writeFile('cssreport.json', JSON.stringify({report: cssReportData}))
+		await writeFile('cssreport.json', JSON.stringify({ report: cssReportData }))
 		log('report: css','Saved cssreport.json (see compatibility table on index.html')
 	})
 }

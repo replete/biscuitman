@@ -15,7 +15,8 @@ export default [
 		rules: {
 			...pluginJs.configs.recommended.rules,
 			semi: [2,'never'],
-			quotes: [2,'single']
+			quotes: [2,'single'],
+			'object-curly-spacing': [2, 'always']
 		},
 	}, 
 	{
