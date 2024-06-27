@@ -1,4 +1,5 @@
 # biscuitman.js 🍪 Lightweight Consent Manager
+
 ![screenshot of main UI](media/readmebanner.webp)
 
 #### [View demo](https://replete.github.io/biscuitman)
@@ -26,7 +27,7 @@
   - If JS fails in an old browser, it will probably be fixable by updating `browserlist` in `package.json` then rebuilding
   - (Will be tested more definitively with browserstack at some point)
   - source styles use CSS Nesting which is explicitly processed out for compatibility
-- Integration test suite WIP
+- Integration test suite WIP ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
 ![screenshot of main UI](media/ui.webp)
 
