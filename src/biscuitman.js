@@ -197,7 +197,6 @@
 		const cookies = Object.fromEntries(
 			d.cookie.split('; ').map(cookie => cookie.split('='))
 		)
-		// eslint-disable-next-line no-unused-vars
 		const { consentTime, ...consents } = loadConsents() || options.sections.slice(1).reduce((consents, section) => {
 			consents[section] = false
 			return { consentTime: undefined, ...consents }

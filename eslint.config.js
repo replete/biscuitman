@@ -16,7 +16,11 @@ export default [
 			...pluginJs.configs.recommended.rules,
 			semi: [2,'never'],
 			quotes: [2,'single'],
-			'object-curly-spacing': [2, 'always']
+			'object-curly-spacing': [2, 'always'],
+			'no-unused-vars': [2, { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': true }],
+			'no-new-wrappers': 2,
+			'no-new-func': 2,
+			'no-loop-func':2
 		},
 	}, 
 	{
