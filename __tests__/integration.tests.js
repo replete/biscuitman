@@ -62,7 +62,6 @@ describe('a fresh instance of biscuitman', () => {
 
 	test('should hide UI and save consents correctly after selecting some sections', async () => {
 		await page.click('button[data-id=settings]')
-		const dialog = await page.$('dialog')
 		await page.click('[for=biscuitman_analytics]')
 		await page.click('[for=biscuitman_functional]')
 		await page.click('[for=biscuitman_performance]')

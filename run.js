@@ -5,7 +5,6 @@ import browserslist from 'browserslist'
 import browserSync from 'browser-sync'
 import { Readable } from 'stream'
 import doiuse from 'doiuse/stream'
-import { ESLint } from 'eslint'
 import zlib from 'zlib'
 const { readFile, writeFile } = fs.promises
 const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
@@ -22,7 +21,7 @@ const filenames = {
 }
 
 export async function styles(skipFileSave) {
-	const sourceStyles = await readFile(filenames.css, 'utf8')
+	const sourceStyles = await readFile(`src/${filenames.css}`, 'utf8')
 
 	let processedStyles = transformCss({
 		code: Buffer.from(sourceStyles),
@@ -48,7 +47,7 @@ export async function styles(skipFileSave) {
 }
 
 export async function scripts(skipFileSave) {
-	const sourceJs = await readFile(filenames.js, 'utf8')
+	const sourceJs = await readFile(`src/${filenames.js}`, 'utf8')
 
 	const js = swc.transform(sourceJs, {
 		sourceMaps: false,
@@ -62,7 +61,7 @@ export async function scripts(skipFileSave) {
 		if (!skipFileSave) await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
 		log('js',`Saved dist/${filenames.js}`)
 		return code
-	});
+	})
 
 	const minJs = swc.transform(sourceJs, {
         sourceMaps: false,
@@ -114,37 +113,39 @@ ${js[0]};
 }
 
 export async function report() {
-	log('report', `Running browser compatibility report`)
-	log('report : js','Checking JS browser compatibility...')
-	let js = await scripts(true)
-	const eslint = new ESLint({
-		overrideConfig: {
-			parserOptions: {
-				ecmaVersion: 2018,
-			  },
-			extends: [
-				'plugin:compat/recommended'
-			],
-			plugins: ['compat'],
-			rules: {
-				"compat/compat": "error"
-			},
-			settings: {
-				browsers: browserslist(browserlistString)
-			},
-			env: {
-			  browser: true,
-			  es6: true,
-			}
-		}
-	})
+	log('report', 'Running browser compatibility report')
+	// eslint-plugin-compat is not compatible with eslint 9, and wasn't that helpful anyway
 
-	const lint = await eslint.lintText(js[0])
-	const formatter = await eslint.loadFormatter('stylish')
-	const jsReport = formatter.format(lint)
-	if (jsReport.length === 0) {
-		log('report: js','✅ No JS Compatibilty warnings')
-	} else log('report: js', jsReport)
+	// log('report : js','Checking JS browser compatibility...')
+	// let js = await scripts(true)
+	// const eslint = new ESLint({
+	// 	overrideConfig: {
+	// 		parserOptions: {
+	// 			ecmaVersion: 2018,
+	// 		  },
+	// 		extends: [
+	// 			'plugin:compat/recommended'
+	// 		],
+	// 		plugins: ['compat'],
+	// 		rules: {
+	// 			'compat/compat': 'error'
+	// 		},
+	// 		settings: {
+	// 			browsers: browserslist(browserlistString)
+	// 		},
+	// 		env: {
+	// 		  browser: true,
+	// 		  es6: true,
+	// 		}
+	// 	}
+	// })
+
+	// const lint = await eslint.lintText(js[0])
+	// const formatter = await eslint.loadFormatter('stylish')
+	// const jsReport = formatter.format(lint)
+	// if (jsReport.length === 0) {
+	// 	log('report: js','✅ No JS Compatibilty warnings')
+	// } else log('report: js', jsReport)
 
 	log('report: css','Checking CSS browser compatibility...')
 	let css = await styles(true)
@@ -163,7 +164,7 @@ export async function report() {
 		log('report: css', usageInfo.message.replace('<streaming css input>:',''))
 		cssReportData.push(usageInfo)
 	})
-	.on('end', async data => {
+	.on('end', async () => {
 		await writeFile('cssreport.json', JSON.stringify({report: cssReportData}))
 		log('report: css','Saved cssreport.json (see compatibility table on index.html')
 	})
@@ -178,7 +179,7 @@ export async function serve() {
             await build()
             bs.reload()
         }
-    });
+    })
 
     bs.watch('biscuitman.js', async (event, file) => {
         if (event === 'change') {
@@ -186,7 +187,7 @@ export async function serve() {
             await scripts()
             bs.reload()
         }
-    });
+    })
 
     bs.watch('biscuitman.css', async (event, file) => {
         if (event === 'change') {
@@ -229,18 +230,18 @@ export async function testServer(port) {
 }
 
 async function main() {
-    const args = process.argv.slice(2);
+    const args = process.argv.slice(2)
 
 	for (let arg of args) {
 		switch (arg) {
-			case 'serve': serve(); break;
-			case 'styles': styles(); break;
-			case 'scripts': scripts(); break;
-			case 'build': build(); break;
-			case 'report': report(); break;
-			default: break;
+			case 'serve': serve(); break
+			case 'styles': styles(); break
+			case 'scripts': scripts(); break
+			case 'build': build(); break
+			case 'report': report(); break
+			default: break
 		}
 	}
 }
 
-main().catch(err => console.error('Error:', err));
+main().catch(err => console.error('Error:', err))

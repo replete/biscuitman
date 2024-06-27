@@ -9,4 +9,4 @@ export default {
 		'jest-extended/all'
 	],
 	testTimeout: 30000, // Increase timeout for Puppeteer operations
-};
+}

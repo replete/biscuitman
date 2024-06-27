@@ -15,12 +15,12 @@
         accept: 'Accept All',
         save: 'Save My Settings',
         settingsTitle: 'My Consent Settings',
-        info: ``,
+        info: '',
         more: 'Show more',
         noCookies: 'No cookies to display',
         acceptNonEU: false
     };
-    const o = {
+    const options = {
         ...defaults,
         ...w.biscuitman
     };
@@ -31,57 +31,57 @@
         ui.classList.add(bm);
         ui.innerHTML = `
 <article>
-	<b>${o.title}</b>
-	<p>${o.message}</p>
+	<b>${options.title}</b>
+	<p>${options.message}</p>
 	<nav>
-		<button data-id="accept">${o.accept}</button>
-		<button data-id="settings">${o.settings}</button>
-		<button data-id="reject">${o.reject}</button>
+		<button data-id="accept">${options.accept}</button>
+		<button data-id="settings">${options.settings}</button>
+		<button data-id="reject">${options.reject}</button>
 	</nav>
 </article>
 <dialog>
 	<div class="bm-dialog">
-		<b>${o.settingsTitle}</b>
-		<button data-id="close"${o.force ? ' disabled' : ''}>×</button>
+		<b>${options.settingsTitle}</b>
+		<button data-id="close"${options.force ? ' disabled' : ''}>×</button>
 		<div class="bm-sections">
-			<p><span>${o.message}</span></p>
-			<p>${o.info.split('\n').map((line, i, arr)=>{
+			<p><span>${options.message}</span></p>
+			<p>${options.info.split('\n').map((line, i, arr)=>{
             return `<span>${line}</span>
-					${arr.length > 1 && o.enableMore && i == 0 ? `<a class="more" href="javascript:void(0)">${o.more}</a>` : ''}`;
+					${arr.length > 1 && options.enableMore && i == 0 ? `<a class="more" href="javascript:void(0)">${options.more}</a>` : ''}`;
         }).join('')}
 			</p>
-			${o.sections.map((section)=>{
+			${options.sections.map((section)=>{
             let hasConsent = getConsents()[section];
             let isEssential = section === 'essential';
             let disabledProp = isEssential ? 'disabled' : '';
             let checkedProp = isEssential ? 'checked' : '';
             if (hasConsent !== undefined) checkedProp = hasConsent ? 'checked' : '';
-            let cookies = o[`${section}Cookies`];
+            let cookies = options[`${section}Cookies`];
             return `
 			<section>
 				<details>
 					<summary>
-						<b>${o[`${section}Title`]}</b>
+						<b>${options[`${section}Title`]}</b>
 						<label for="${bm}_${section}" class="${disabledProp} ${checkedProp}">
 							<input type="checkbox" id="${bm}_${section}" ${disabledProp} ${checkedProp} data-s="${section}"/>
 						</label>
-						<p>${o[`${section}Message`]}</p>
+						<p>${options[`${section}Message`]}</p>
 					</summary>
 					${cookies ? Object1.entries(cookies).map((param)=>{
                 let [k, v] = param;
                 return `<dl><dt>${k}</dt><dd>${v}</dd></dl>`;
-            }).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
+            }).join('') : `<dl><dd>${options.noCookies}</dd></dl>`}
 				</details>
 			</section>`;
         }).join('')}
 		</div>
 		<nav>
-			<button data-id="accept">${o.accept}</button>
-			<button data-id="save">${o.save}</button>
-			<button data-id="reject">${o.reject}</button>
+			<button data-id="accept">${options.accept}</button>
+			<button data-id="save">${options.save}</button>
+			<button data-id="reject">${options.reject}</button>
 		</nav>
 	</div>
-</dialog>`.replaceAll('{link}', `<a href="${o.linkURL}">${o.linkText}</a>`);
+</dialog>`.replaceAll('{link}', `<a href="${options.linkURL}">${options.linkText}</a>`);
         ui.querySelectorAll('button').forEach((b)=>b.addEventListener('click', buttonHandler));
         dialog = ui.querySelector('dialog');
         dialog.addEventListener('close', closeModalHandler);
@@ -97,7 +97,7 @@
     const applyCssClasses = ()=>{
         let { consentTime, ...consents } = getConsents();
         // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
-        if (!consentTime) consents = Object1.fromEntries(o.sections.slice(1).map((sectionName)=>[
+        if (!consentTime) consents = Object1.fromEntries(options.sections.slice(1).map((sectionName)=>[
                 sectionName,
                 false
             ]));
@@ -133,7 +133,7 @@
         dispatch('close');
     }
     function cancelModalHandler(e) {
-        if (o.force) e.preventDefault();
+        if (options.force) e.preventDefault();
     }
     function openModal() {
         dispatch('open');
@@ -149,9 +149,9 @@
         console.debug(name, payload);
     }
     // Data:
-    const getConsents = ()=>w[o.global] || {};
+    const getConsents = ()=>w[options.global] || {};
     function setConsents(consents) {
-        w[o.global] = consents;
+        w[options.global] = consents;
         applyCssClasses();
     }
     function checkConsents(oldConsents, newConsents) {
@@ -161,17 +161,18 @@
     }
     function loadConsents() {
         try {
-            return JSON.parse(localStorage.getItem(o.key));
+            return JSON.parse(localStorage.getItem(options.key));
         } catch (err) {
             console.error(err);
-            localStorage.removeItem(o.key);
+            localStorage.removeItem(options.key);
             return {};
         }
     }
     function clearStorages() {
         const localStores = Object1.fromEntries(Object1.entries(localStorage));
         const cookies = Object1.fromEntries(d.cookie.split('; ').map((cookie)=>cookie.split('=')));
-        const { consentTime, ...consents } = loadConsents() || o.sections.slice(1).reduce((consents, section)=>{
+        // eslint-disable-next-line no-unused-vars
+        const { consentTime, ...consents } = loadConsents() || options.sections.slice(1).reduce((consents, section)=>{
             consents[section] = false;
             return {
                 consentTime: undefined,
@@ -180,7 +181,7 @@
         }, {});
         for (let [section, sectionConsent] of Object1.entries(consents)){
             if (sectionConsent) continue;
-            let sectionCookieNames = Object1.keys(o[`${section}Cookies`] || {});
+            let sectionCookieNames = Object1.keys(options[`${section}Cookies`] || {});
             sectionCookieNames.filter((name)=>name.endsWith('*')).map((wildcardName)=>{
                 Object1.keys({
                     ...cookies,
@@ -215,7 +216,7 @@
         let consents = {
             consentTime: +new Date()
         };
-        o.sections.forEach((section)=>{
+        options.sections.forEach((section)=>{
             if (section === 'essential') return false;
             let sectionElement = ui.querySelector(`[data-s=${section}]`);
             let sectionConsent = willReadValues ? sectionElement.checked : value;
@@ -224,7 +225,7 @@
         });
         checkConsents(getConsents(), consents);
         setConsents(consents);
-        localStorage.setItem(o.key, JSON.stringify(consents));
+        localStorage.setItem(options.key, JSON.stringify(consents));
         dispatch('save', {
             data: consents
         });
@@ -272,7 +273,7 @@
     // Optional Non-EU auto-consent
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const isEuropeTimezone = /^(GMT|UTC)$/.test(tz) || /(Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-1|GMT-2|UTC+1|UTC+2|UTC+3)/.test(tz);
-    if (o.acceptNonEU && !isEuropeTimezone) {
+    if (options.acceptNonEU && !isEuropeTimezone) {
         saveConsents(true);
         displayUI(false);
     }
@@ -281,10 +282,10 @@
     // Wipe matching cookies/localStorages without consent 
     clearStorages();
     // Consent logic
-    if (w[o.global].consentTime) {
+    if (w[options.global].consentTime) {
         displayUI(false);
         insertScripts();
-    } else if (o.force) openModal();
+    } else if (options.force) openModal();
     // Helper  methods 
     // <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
     w.bmInvalidate = ()=>{
@@ -294,7 +295,7 @@
         checkConsents({});
         saveConsents(false);
         setConsents({});
-        localStorage.removeItem(o.key);
+        localStorage.removeItem(options.key);
         displayUI(true);
     };
     // <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
