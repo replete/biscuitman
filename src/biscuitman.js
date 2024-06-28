@@ -16,29 +16,29 @@
 		more: 'Show more',
 		noCookies: 'No cookies to display',
 		acceptNonEU: false,
-// 		message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
-// 		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
-// Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
-// While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
-// 		linkText: 'Privacy Policy',
-// 		linkURL: 'https://domain.com/privacy-policy',
-// 		sections: ['essential','functional','analytics','performance','advertisement','uncategorized'],
-// 		essentialTitle: 'Essential',
-// 		essentialMessage: 'Essential cookies are required for basic site functionality',
-// 		functionalTitle: 'Functional',
-// 		functionalMessage: 'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
-// 		analyticsTitle: 'Analytics',
-// 		analyticsMessage: 'Analytical cookies allow us to understand visitor interactions with the website, offering insights into metrics like visitor count, bounce rate, and traffic source',
-// 		analyticsCookies: {
-// 			'_ga': 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
-// 			'_ga_*': 'Google Analytics uses this cookie for storing page view count'
-// 		},
-// 		performanceTitle: 'Performance',
-// 		performanceMessage: 'Performance cookies allow us to understand critical website performance indicators, contributing to an enhanced user experience for visitors',
-// 		advertisementTitle: 'Advertisement',
-// 		advertisementMessage: 'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
-// 		uncategorizedTitle: 'Uncategorized',
-// 		uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
+		// message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
+		// info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
+		// Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
+		// While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
+		// linkText: 'Privacy Policy',
+		// linkURL: 'https://domain.com/privacy-policy',
+		// sections: ['essential','functional','analytics','performance','advertisement','uncategorized'],
+		// essentialTitle: 'Essential',
+		// essentialMessage: 'Essential cookies are required for basic site functionality',
+		// functionalTitle: 'Functional',
+		// functionalMessage: 'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
+		// analyticsTitle: 'Analytics',
+		// analyticsMessage: 'Analytical cookies allow us to understand visitor interactions with the website, offering insights into metrics like visitor count, bounce rate, and traffic source',
+		// analyticsCookies: {
+		// 	'_ga': 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
+		// 	'_ga_*': 'Google Analytics uses this cookie for storing page view count'
+		// },
+		// performanceTitle: 'Performance',
+		// performanceMessage: 'Performance cookies allow us to understand critical website performance indicators, contributing to an enhanced user experience for visitors',
+		// advertisementTitle: 'Advertisement',
+		// advertisementMessage: 'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
+		// uncategorizedTitle: 'Uncategorized',
+		// uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
 	}
 	const options = { ...defaults, ...w.biscuitman }
 
@@ -65,24 +65,20 @@
 		<button data-id="close"${options.force ? ' disabled' : ''}>×</button>
 		<div class="bm-sections">
 			<p><span>${options.message}</span></p>
-			<p>${
-				options.info.split('\n').map((line, i, arr) => {
-					return `<span>${line}</span>
-					${arr.length > 1 && options.enableMore && i == 0
-						? `<a class="more" href="javascript:void(0)">${options.more}</a>` 
-						: ''
-					}`
-				}).join('')
-			}
+			<p>${options.info.split('\n').map((line, i, arr) => 
+				`<span>${line}</span>
+				${arr.length > 1 && options.enableMore && i == 0 ? 
+				`<a class="more" href="javascript:void(0)">${options.more}</a>` : ''
+				}`).join('')}
 			</p>
 			${options.sections.map(section => {
-				let hasConsent = getConsents()[section]
-				let isEssential = section === 'essential'
-				let disabledProp = isEssential ? 'disabled' : ''
-				let checkedProp = isEssential ? 'checked' : ''
-				if (hasConsent !== undefined) checkedProp = hasConsent ? 'checked' : ''
-				let cookies = options[`${section}Cookies`]
-				return `
+					let hasConsent = getConsents()[section]
+					let isEssential = section === 'essential'
+					let disabledProp = isEssential ? 'disabled' : ''
+					let checkedProp = isEssential ? 'checked' : ''
+					if (hasConsent !== undefined) checkedProp = hasConsent ? 'checked' : ''
+					let cookies = options[`${section}Cookies`]
+					return `
 			<section>
 				<details>
 					<summary>
@@ -92,13 +88,11 @@
 						</label>
 						<p>${options[`${section}Message`]}</p>
 					</summary>
-					${cookies
-						? Object.entries(cookies).map(([k, v]) => `<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('')
-						: `<dl><dd>${options.noCookies}</dd></dl>`
-					}
+					${cookies ? Object.entries(cookies).map(([k, v]) => 
+					`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : 
+					`<dl><dd>${options.noCookies}</dd></dl>`}
 				</details>
-			</section>`
-			}).join('')}
+			</section>`}).join('')}
 		</div>
 		<nav>
 			<button data-id="accept">${options.accept}</button>
@@ -207,12 +201,12 @@
 			let sectionCookieNames = Object.keys(options[`${section}Cookies`] || {})
 
 			sectionCookieNames
-			.filter(name => name.endsWith('*'))
-			.map(wildcardName => {
-				Object.keys({ ...cookies, ...localStores }).map(name => {
-					if (name.startsWith(wildcardName.slice(0, -1))) sectionCookieNames.push(name)
+				.filter(name => name.endsWith('*'))
+				.map(wildcardName => {
+					Object.keys({ ...cookies, ...localStores }).map(name => {
+						if (name.startsWith(wildcardName.slice(0, -1))) sectionCookieNames.push(name)
+					})
 				})
-			})
 
 			for (const name of sectionCookieNames) {
 				if (cookies[name]) {

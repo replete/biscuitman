@@ -56,30 +56,30 @@ export async function scripts(skipFileSave) {
 			targets: browserlistString
 		},
 		minify: false
-	  })
-	  .then(async ({ code }) => {
-		code = code.replace(/(\/\* eslint-disable.*?\*\/)|(\/\/ eslint-disable-.*?$)/gm,'') // strip eslint comments
-		if (!skipFileSave) await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
-		log('js',`Saved dist/${filenames.js}`)
-		return code
 	})
+		.then(async ({ code }) => {
+			code = code.replace(/(\/\* eslint-disable.*?\*\/)|(\/\/ eslint-disable-.*?$)/gm,'') // strip eslint comments
+			if (!skipFileSave) await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
+			log('js',`Saved dist/${filenames.js}`)
+			return code
+		})
 
 	const minJs = swc.transform(sourceJs, {
-        sourceMaps: false,
-        isModule: false,
-        env: {
-            targets: browserlistString
-        },
-        jsc: {
-            minify: {
-                compress: {
-                    unused: true
-                },
-                mangle: true
-            }
-        },
-        minify: true
-    }).then(async ({ code }) => {
+		sourceMaps: false,	
+		isModule: false,
+		env: {
+			targets: browserlistString
+		},
+		jsc: {
+			minify: {
+				compress: {
+					unused: true
+				},
+				mangle: true
+			}
+		},
+		minify: true
+	}).then(async ({ code }) => {
 		await writeFile(`dist/${filenames.minJs}`, comment + code.replace(/[\n\t]/g, ''))
 		log('js',`Saved dist/${filenames.minJs}`)
 		return code
@@ -158,73 +158,73 @@ export async function report() {
 		  this.push(null)
 		}
 	})
-	.pipe(doiuse({
-		browsers: browserlistString,
-		ignore: []
-	}))
-	.on('data',usageInfo => {
-		log('report: css', usageInfo.message.replace('<streaming css input>:',''))
-		cssReportData.push(usageInfo)
-	})
-	.on('end', async () => {
-		await writeFile('cssreport.json', JSON.stringify({ report: cssReportData }))
-		log('report: css','Saved cssreport.json (see compatibility table on index.html')
-	})
+		.pipe(doiuse({
+			browsers: browserlistString,
+			ignore: []
+		}))
+		.on('data',usageInfo => {
+			log('report: css', usageInfo.message.replace('<streaming css input>:',''))
+			cssReportData.push(usageInfo)
+		})
+		.on('end', async () => {
+			await writeFile('cssreport.json', JSON.stringify({ report: cssReportData }))
+			log('report: css','Saved cssreport.json (see compatibility table on index.html')
+		})
 }
 
 export async function serve() {
-    const bs = browserSync.create()
+	const bs = browserSync.create()
 
-    bs.watch('package.json', async (event, file) => {
-        if (event === 'change') {
-            console.log(`File ${file} has changed`)
-            await build()
-            bs.reload()
-        }
-    })
+	bs.watch('package.json', async (event, file) => {
+		if (event === 'change') {
+			console.log(`File ${file} has changed`)
+			await build()
+			bs.reload()
+		}
+	})
 
-    bs.watch('biscuitman.js', async (event, file) => {
-        if (event === 'change') {
-            console.log(`File ${file} has changed`)
-            await scripts()
-            bs.reload()
-        }
-    })
+	bs.watch('biscuitman.js', async (event, file) => {
+		if (event === 'change') {
+			console.log(`File ${file} has changed`)
+			await scripts()
+			bs.reload()
+		}
+	})
 
-    bs.watch('biscuitman.css', async (event, file) => {
-        if (event === 'change') {
-            console.log(`File ${file} has changed`)
-            styles()
-        }
-    })
+	bs.watch('biscuitman.css', async (event, file) => {
+		if (event === 'change') {
+			console.log(`File ${file} has changed`)
+			styles()
+		}
+	})
 
-    bs.init({
-        server: './',
-        files: ['./dist/*','index.html'], // watch
-        port: 3000, 
+	bs.init({
+		server: './',
+		files: ['./dist/*','index.html'], // watch
+		port: 3000, 
 		https: { // required for https cookies
-            key: './server.key',
-            cert: './server.crt'
-        }, 
-        open: false,
-        notify: false
-    })
+			key: './server.key',
+			cert: './server.crt'
+		}, 
+		open: false,
+		notify: false
+	})
 }
 
 export async function testServer(port) {
 	const bs = browserSync.create()
 
 	bs.init({
-        server: './',
-        port: port || 3333, 
+		server: './',
+		port: port || 3333, 
 		logLevel: 'silent',
-        open: false,
-        notify: false
-    },(err, bsInstance) => {
+		open: false,
+		notify: false
+	},(err, bsInstance) => {
 		if (err) {
-		  console.error('Error starting BrowserSync:', err)
+			console.error('Error starting BrowserSync:', err)
 		} else {
-		  console.log(`BrowserSync running at: ${bsInstance.options.getIn(['urls', 'local'])}`)
+			console.log(`BrowserSync running at: ${bsInstance.options.getIn(['urls', 'local'])}`)
 		}
 	  })
 
@@ -232,7 +232,7 @@ export async function testServer(port) {
 }
 
 async function main() {
-    const args = process.argv.slice(2)
+	const args = process.argv.slice(2)
 
 	for (let arg of args) {
 		switch (arg) {

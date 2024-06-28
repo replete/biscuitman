@@ -10,21 +10,34 @@ export default [
 		}
 	},
 	{
-		files: ['**/*.js'],
+		files: ['**/*.js','**/*.mjs'],
 		ignores: ['dist/**/*.js','./coverage/**/*.js'],
 		rules: {
 			...pluginJs.configs.recommended.rules,
-			semi: [2,'never'],
-			quotes: [2,'single'],
+			semi: [2, 'never'],
+			quotes: [2, 'single'],
 			'object-curly-spacing': [2, 'always'],
 			'no-unused-vars': [2, { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': true }],
+			indent: ['warn', 'tab', { 
+				ignoredNodes: [
+					'ConditionalExpression',
+					'TemplateLiteral'
+				],
+				SwitchCase: 1,
+				MemberExpression: 1,
+				// FunctionDeclaration: { body: 1, parameters: 1 },
+				FunctionExpression: { body: 1, parameters: 1 },
+				CallExpression: { arguments: 1 },
+			}],
+			'no-multi-spaces': 'error',
 			'no-new-wrappers': 2,
 			'no-new-func': 2,
-			'no-loop-func':2
+			'no-loop-func': 2,
+			'dot-location': ['error', 'property']
 		},
 	}, 
 	{
-		files: ['src/*.js'],
+		files: ['src/*.js','src/*.mjs'],
 		languageOptions: {
 			globals: {
 				...globals.browser

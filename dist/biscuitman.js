@@ -45,10 +45,8 @@
 		<button data-id="close"${options.force ? ' disabled' : ''}>×</button>
 		<div class="bm-sections">
 			<p><span>${options.message}</span></p>
-			<p>${options.info.split('\n').map((line, i, arr)=>{
-            return `<span>${line}</span>
-					${arr.length > 1 && options.enableMore && i == 0 ? `<a class="more" href="javascript:void(0)">${options.more}</a>` : ''}`;
-        }).join('')}
+			<p>${options.info.split('\n').map((line, i, arr)=>`<span>${line}</span>
+				${arr.length > 1 && options.enableMore && i == 0 ? `<a class="more" href="javascript:void(0)">${options.more}</a>` : ''}`).join('')}
 			</p>
 			${options.sections.map((section)=>{
             let hasConsent = getConsents()[section];
@@ -171,7 +169,6 @@
     function clearStorages() {
         const localStores = Object1.fromEntries(Object1.entries(localStorage));
         const cookies = Object1.fromEntries(d.cookie.split('; ').map((cookie)=>cookie.split('=')));
-        
         const { consentTime, ...consents } = loadConsents() || options.sections.slice(1).reduce((consents, section)=>{
             consents[section] = false;
             return {
