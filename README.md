@@ -27,7 +27,11 @@
   - If JS fails in an old browser, it will probably be fixable by updating `browserlist` in `package.json` then rebuilding
   - (Will be tested more definitively with browserstack at some point)
   - source styles use CSS Nesting which is explicitly processed out for compatibility
-- Integration test suite WIP ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
+- Experimental ESM version `biscuitman.mjs` [ESM Module version demo](https://replete.github.io/biscuitman)
+	- still uses globals
+	- allows easier event setting with `.on('revoke', (sec) => { if (sec === 'analytics') window.reload() )})`
+	- experimental stage, only worth maintaining if the codebase remains pretty much the same, consider this another packaging option
+- preliminary e2e tests ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
 ![screenshot of main UI](media/ui.webp)
 
@@ -196,13 +200,13 @@ Visiting `https://localhost:3000` should now work without warnings.
 
 ### Building
 `npm run build` - creates project distributes. 
-
-Build script `runmjs` built with Node 20
+- Build script `run.js` built with Node 20
 
 ### Tests
-`npm run test` - Launches pupeeter integration tests in a browser
-`npm run coverage` - run jest tests with coverage
-Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up.
+Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up. This is only chromium for now, but at some point it would be good to implement browserStack selenium tests to automate browser compatibility checks.
+
+`npm run test` - Launches pupeeter integration tests in a browser (in http mode only)
+`npm run coverage` - run jest tests with coverage saved to `/coverage/`
 
 
 ## Support development

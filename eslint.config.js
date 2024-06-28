@@ -11,7 +11,10 @@ export default [
 	},
 	{
 		files: ['**/*.js','**/*.mjs'],
-		ignores: ['dist/**/*.js','./coverage/**/*.js'],
+		ignores: [
+			'dist/**/*.js',
+			'dist/**/*.mjs',
+			'./coverage/**/*.js'],
 		rules: {
 			...pluginJs.configs.recommended.rules,
 			semi: [2, 'never'],
@@ -60,7 +63,9 @@ export default [
 				page: false,
 				browser: false,
 				__BROWSER__: false,
-				__SERVER__: false
+				__SERVER__: false,
+				__SERVERURL__: false,
+				__SERVERPORT__: false
 			}
 		}
 	}

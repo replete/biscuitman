@@ -1,6 +1,6 @@
 {
   "name": "biscuitman",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "description": "Super lightweight open-source privacy consent manager for your website ",
   "browser": "biscuitman.js",
   "keywords": [
@@ -21,7 +21,7 @@
     "dev": "node ./run.js build serve",
     "build": "node ./run.js build",
     "report": "node ./run.js report",
-    "test": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --runInBand",
+    "test": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --verbose --runInBand",
     "lint": "eslint",
     "coverage": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --runInBand --collectCoverage --",
     "makecerts": "mkcert -cert-file server.crt -key-file server.key localhost 127.0.0.1 ::1"

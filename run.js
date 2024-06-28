@@ -17,7 +17,11 @@ const filenames = {
 	js: 'biscuitman.js',
 	minJs: 'biscuitman.min.js',
 	jsWithCss: 'biscuitman.withcss.js',
-	minJsWithCss: 'biscuitman.withcss.min.js'
+	minJsWithCss: 'biscuitman.withcss.min.js',
+	mjs: 'biscuitman.mjs',
+	minMjs: 'biscuitman.min.mjs',
+	mjsWithCss: 'biscuitman.withcss.mjs',
+	minMjsWithCss: 'biscuitman.withcss.min.mjs'
 }
 
 export async function styles(skipFileSave) {
@@ -30,8 +34,9 @@ export async function styles(skipFileSave) {
 		targets: browserslistToTargets(browserslist(browserlistString)),
 		include: Features.Nesting
 	})
-	if (!skipFileSave) await writeFile(`dist/${filenames.css}`, `${comment}\n` + processedStyles.code)
-	log('css',`Saved dist/${filenames.css}`)
+	let css = `${comment}\n` + processedStyles.code
+	if (!skipFileSave) await writeFile(`dist/${filenames.css}`, css)
+	log('css',`Saved dist/${filenames.css} ${getCompressedSizes(css)}`)
 
 	let minifiedStyles = transformCss({
 		code: Buffer.from(sourceStyles),
@@ -40,8 +45,9 @@ export async function styles(skipFileSave) {
 		targets: browserslistToTargets(browserslist(browserlistString)),
 		include: Features.Nesting
 	})
-	if (!skipFileSave) await writeFile(`dist/${filenames.minCss}`, comment + minifiedStyles.code)
-	log('css',`Saved dist/${filenames.minCss}`)
+	let minCss = comment + minifiedStyles.code
+	if (!skipFileSave) await writeFile(`dist/${filenames.minCss}`, minCss)
+	log('css',`Saved dist/${filenames.minCss} ${getCompressedSizes(minCss)}`)
 
 	return [processedStyles.code, minifiedStyles.code]
 }
@@ -58,9 +64,9 @@ export async function scripts(skipFileSave) {
 		minify: false
 	})
 		.then(async ({ code }) => {
-			code = code.replace(/(\/\* eslint-disable.*?\*\/)|(\/\/ eslint-disable-.*?$)/gm,'') // strip eslint comments
-			if (!skipFileSave) await writeFile(`dist/${filenames.js}`, `${comment}\n` + code)
-			log('js',`Saved dist/${filenames.js}`)
+			code = `${comment}\n` + code
+			if (!skipFileSave) await writeFile(`dist/${filenames.js}`, code)
+			log('js',`Saved dist/${filenames.js} ${getCompressedSizes(code)}`)
 			return code
 		})
 
@@ -80,12 +86,53 @@ export async function scripts(skipFileSave) {
 		},
 		minify: true
 	}).then(async ({ code }) => {
-		await writeFile(`dist/${filenames.minJs}`, comment + code.replace(/[\n\t]/g, ''))
-		log('js',`Saved dist/${filenames.minJs}`)
+		code = comment + code.replace(/[\n\t]/g,'')
+		await writeFile(`dist/${filenames.minJs}`, code)
+		log('js',`Saved dist/${filenames.minJs} ${getCompressedSizes(code)}`)
 		return code
 	})
 
-	return Promise.all([js, minJs])
+	// Module version:
+
+	const sourceMjs = await readFile(`src/${filenames.mjs}`, 'utf8')
+	const mjs = swc.transform(sourceMjs, {
+		sourceMaps: false,
+		isModule: true,
+		env: {
+			targets: browserlistString
+		},
+		minify: false
+	})
+		.then(async ({ code }) => {
+			code = `${comment}\n` + code
+			if (!skipFileSave) await writeFile(`dist/esm/${filenames.mjs}`, code)
+			log('js',`Saved dist/esm/${filenames.mjs} ${getCompressedSizes(code)}`)
+			return code
+		})
+
+	const minMjs = swc.transform(sourceMjs, {
+		sourceMaps: false,	
+		isModule: true,
+		env: {
+			targets: browserlistString
+		},
+		jsc: {
+			minify: {
+				compress: {
+					unused: true
+				},
+				mangle: true
+			}
+		},
+		minify: true
+	}).then(async ({ code }) => {
+		code = comment + code.replace(/[\n\t]/g, '')
+		await writeFile(`dist/esm/${filenames.minMjs}`, code)
+		log('js',`Saved dist/${filenames.minMjs} ${getCompressedSizes(code)}`)
+		return code
+	})
+
+	return Promise.all([js, minJs, mjs, minMjs])
 }
 
 export async function build() {
@@ -93,25 +140,44 @@ export async function build() {
 	let js = await scripts()
 	let css = await styles()
 
-	let jsCss = `${comment}
-${js[0]};
+	let jsCss = `${js[0]};
 ((d)=>{
 	let css=d.createElement('style');
-	css.textContent=\`${css[0]}\`;
+	css.textContent=\`${comment}
+${css[0]}\`;
 	d.head.appendChild(css)
 })(document);`
-	jsCss = jsCss.replace(/(\/\* eslint-disable.*?\*\/)|(\/\/ eslint-disable-.*?$)/gm,'') // strip eslint comments
-	let jsCssMin = `${comment}${js[1].replace(/[\n\t]/g, '')};((d)=>{let c=d.createElement('style');c.textContent=\`${css[1]}\`;d.head.appendChild(c)})(document);`
+	let jsCssMin = `${js[1].replace(/[\n\t]/g, '')};((d)=>{let c=d.createElement('style');c.textContent=\`${comment}${css[1]}\`;d.head.appendChild(c)})(document);`
 	
+	let mjsCss = `${js[2]}
+if (typeof BMCSS === 'undefined') {
+	let css=document.createElement('style');
+	css.id = 'BMCSS';
+	css.textContent=\`${comment}
+${css[0]}\`;
+	document.head.appendChild(css)
+}`
+	let mjsCssMin = `${js[3].replace(/[\n\t]/g, '')};if (typeof BMCSS==='undefined'){let c=document.createElement('style');c.id='BMCSS';c.textContent=\`${comment}${css[1]}\`;document.head.appendChild(c)}`
+
 	await Promise.all([
 		writeFile(`dist/${filenames.jsWithCss}`, jsCss),
-		writeFile(`dist/${filenames.minJsWithCss}`, jsCssMin)
+		writeFile(`dist/${filenames.minJsWithCss}`, jsCssMin),
+		writeFile(`dist/esm/${filenames.mjsWithCss}`, mjsCss),
+		writeFile(`dist/esm/${filenames.minMjsWithCss}`, mjsCssMin),
 	])
 
-	log('build',`Saved dist/${filenames.jsWithCss} (bytes: ${jsCss.length}, ${zlib.gzipSync(jsCss).length} gz, ${zlib.brotliCompressSync(jsCss).length} br)`)
-	log('build',`Saved dist/${filenames.minJsWithCss} (bytes: ${jsCssMin.length}, ${zlib.gzipSync(jsCssMin).length} gz, ${zlib.brotliCompressSync(jsCssMin).length} br)`)
+	log('build',`Saved dist/${filenames.jsWithCss} ${getCompressedSizes(jsCss)}`)
+	log('build',`Saved dist/${filenames.minJsWithCss} ${getCompressedSizes(jsCssMin)}`)
+	log('build',`Saved dist/esm/${filenames.mjsWithCss} ${getCompressedSizes(mjsCss)}`)
+	log('build',`Saved dist/esm/${filenames.minMjsWithCss} ${getCompressedSizes(mjsCssMin)}`)
 
 	console.timeEnd('Build Time')
+}
+
+function getCompressedSizes(text) {
+	return `(${(text.length / 1024).toFixed(1)}kB) `
+	+ `(${ (zlib.gzipSync(text).length / 1024).toFixed(1)}kB/gz) ` 
+	+ `(${ (zlib.brotliCompressSync(text).length / 1024).toFixed(1)}kB/br)`
 }
 
 export async function report() {

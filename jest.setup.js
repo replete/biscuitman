@@ -1,11 +1,11 @@
 import puppeteer from 'puppeteer'
 import { testServer } from './run'
 
-let serverPort = 3003
-let serverUrl = `http://localhost:${serverPort}`
+global.__SERVERPORT__ = 3003
+global.__SERVERURL__ = `http://localhost:${__SERVERPORT__}`
 
 beforeAll(async () => {
-	global.__SERVER__ = await testServer(serverPort)
+	global.__SERVER__ = await testServer(__SERVERPORT__)
 	global.__BROWSER__ = await puppeteer.launch({
 		headless: true
 	})
@@ -28,16 +28,6 @@ beforeAll(async () => {
 		loadConsents: () =>
 			page.evaluate(() => JSON.parse(localStorage.getItem('myconsent')))
 	}
-})
-
-beforeEach(async () => {
-	const client = await page.target().createCDPSession()
-	await client.send('Storage.clearDataForOrigin', {
-		origin: serverUrl,
-		storageTypes:
-			'cookies, local_storage, session_storage, indexeddb, websql, cache_storage, service_workers'
-	})
-	await page.goto(serverUrl, { waitUntil: 'domcontentloaded' })
 })
 
 afterAll(async () => {

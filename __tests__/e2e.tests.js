@@ -1,3 +1,13 @@
+beforeEach(async () => {
+	const client = await page.createCDPSession()
+	await client.send('Storage.clearDataForOrigin', {
+		origin: __SERVERURL__,
+		storageTypes:
+			'cookies, local_storage, session_storage, indexeddb, websql, cache_storage, service_workers'
+	})
+	await page.goto(`${__SERVERURL__}/index-esm.html`, { waitUntil: 'domcontentloaded' })
+})
+
 describe('a fresh instance of biscuitman', () => {
 	test('should load without without consents', async () => {
 		expect(await utils.getConsent()).toBeEmpty()
