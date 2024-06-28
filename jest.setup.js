@@ -1,11 +1,44 @@
+import browserSync from 'browser-sync'
 import puppeteer from 'puppeteer'
-import { testServer } from './run'
 
 global.__SERVERPORT__ = 3003
 global.__SERVERURL__ = `http://localhost:${__SERVERPORT__}`
+global.__HTML__ = null
+global.utils = {
+	getConfig: () => page.evaluate(() => window.biscuitman),
+	getConsent: () => page.evaluate(() => window.Consent),
+	loadConsents: () =>
+		page.evaluate(() => JSON.parse(localStorage.getItem('myconsent')))
+}
+let bs
 
 beforeAll(async () => {
-	global.__SERVER__ = await testServer(__SERVERPORT__)
+	bs = browserSync.create('test')
+
+	bs.init({
+		server: './',
+		port: __SERVERPORT__ || 3333, 
+		logLevel: 'silent',
+		open: false,
+		notify: false,
+		middleware: [
+			(req, res, next) => {
+				if (__HTML__ && req.method === 'GET' && req.url === '/') {
+					res.setHeader('Content-Type', 'text/html')
+					res.end(__HTML__)
+				} else {
+					next()
+				}
+			}
+		]
+	},(err, bsInstance) => {
+		if (err) {
+			console.error('Error starting BrowserSync:', err)
+		} else {
+			console.log(`BrowserSync running at: ${bsInstance.options.getIn(['urls', 'local'])}`)
+		}
+	})
+
 	global.__BROWSER__ = await puppeteer.launch({
 		headless: true
 	})
@@ -21,19 +54,23 @@ beforeAll(async () => {
 			console.log('Console error:', msg.text())
 		}
 	})
+})
 
-	global.utils = {
-		getConfig: () => page.evaluate(() => window.biscuitman),
-		getConsent: () => page.evaluate(() => window.Consent),
-		loadConsents: () =>
-			page.evaluate(() => JSON.parse(localStorage.getItem('myconsent')))
-	}
+beforeEach(async () => {
+	const client = await page.createCDPSession()
+	await client.send('Storage.clearDataForOrigin', {
+		origin: __SERVERURL__,
+		storageTypes:
+			'cookies, local_storage, session_storage, indexeddb, websql, cache_storage, service_workers'
+	})
 })
 
 afterAll(async () => {
 	await __BROWSER__.close()
-	__SERVER__.exit()
+	bs.exit()
 })
+
+
 
 // expect.extend({
 // 	async toHaveVisible(page, selector, timeout = 150) {

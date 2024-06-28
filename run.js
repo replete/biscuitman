@@ -157,7 +157,7 @@ if (typeof BMCSS === 'undefined') {
 ${css[0]}\`;
 	document.head.appendChild(css)
 }`
-	let mjsCssMin = `${js[3].replace(/[\n\t]/g, '')};if (typeof BMCSS==='undefined'){let c=document.createElement('style');c.id='BMCSS';c.textContent=\`${comment}${css[1]}\`;document.head.appendChild(c)}`
+	let mjsCssMin = `${js[3].replace(/[\n\t]/g, '')};if(typeof BMCSS==='undefined'){let c=document.createElement('style');c.id='BMCSS';c.textContent=\`${comment}${css[1]}\`;document.head.appendChild(c)}`
 
 	await Promise.all([
 		writeFile(`dist/${filenames.jsWithCss}`, jsCss),
@@ -275,26 +275,6 @@ export async function serve() {
 		open: false,
 		notify: false
 	})
-}
-
-export async function testServer(port) {
-	const bs = browserSync.create()
-
-	bs.init({
-		server: './',
-		port: port || 3333, 
-		logLevel: 'silent',
-		open: false,
-		notify: false
-	},(err, bsInstance) => {
-		if (err) {
-			console.error('Error starting BrowserSync:', err)
-		} else {
-			console.log(`BrowserSync running at: ${bsInstance.options.getIn(['urls', 'local'])}`)
-		}
-	  })
-
-	return bs
 }
 
 async function main() {

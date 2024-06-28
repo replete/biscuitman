@@ -8,5 +8,5 @@ export default {
 		'./jest.setup.js',
 		'jest-extended/all'
 	],
-	testTimeout: 30000, // Increase timeout for Puppeteer operations
+	testTimeout: 30000
 }
