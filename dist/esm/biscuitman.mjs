@@ -1,5 +1,5 @@
 /*! biscuitman.js 0.3.14 */
-const { document: d, window: w, Object: Object } = globalThis;
+const { document: d, window: w, Object: O } = globalThis;
 const h = d.documentElement;
 const bm = 'biscuitman';
 let instance;
@@ -66,7 +66,7 @@ function render() {
 						</label>
 						<p>${options[`${section}Message`]}</p>
 					</summary>
-					${cookies ? Object.entries(cookies).map((param)=>{
+					${cookies ? O.entries(cookies).map((param)=>{
             let [k, v] = param;
             return `<dl><dt>${k}</dt><dd>${v}</dd></dl>`;
         }).join('') : `<dl><dd>${options.noCookies}</dd></dl>`}
@@ -96,11 +96,11 @@ const displayUI = (show)=>ui.classList.toggle('bm-hide', !show);
 const applyCssClasses = ()=>{
     let { consentTime, ...consents } = getConsents();
     // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
-    if (!consentTime) consents = Object.fromEntries(options.sections.slice(1).map((sectionName)=>[
+    if (!consentTime) consents = O.fromEntries(options.sections.slice(1).map((sectionName)=>[
             sectionName,
             false
         ]));
-    for (let [name, granted] of Object.entries(consents)){
+    for (let [name, granted] of O.entries(consents)){
         h.classList.toggle(`bm-${name}`, granted);
         h.classList.toggle(`bm-no-${name}`, !granted);
     }
@@ -170,8 +170,8 @@ function loadConsents() {
     }
 }
 function clearStorages() {
-    const localStores = Object.fromEntries(Object.entries(localStorage));
-    const cookies = Object.fromEntries(d.cookie.split('; ').map((cookie)=>cookie.split('=')));
+    const localStores = O.fromEntries(O.entries(localStorage));
+    const cookies = O.fromEntries(d.cookie.split('; ').map((cookie)=>cookie.split('=')));
     const { consentTime, ...consents } = loadConsents() || options.sections.slice(1).reduce((consents, section)=>{
         consents[section] = false;
         return {
@@ -179,11 +179,11 @@ function clearStorages() {
             ...consents
         };
     }, {});
-    for (let [section, sectionConsent] of Object.entries(consents)){
+    for (let [section, sectionConsent] of O.entries(consents)){
         if (sectionConsent) continue;
-        let sectionCookieNames = Object.keys(options[`${section}Cookies`] || {});
+        let sectionCookieNames = O.keys(options[`${section}Cookies`] || {});
         sectionCookieNames.filter((name)=>name.endsWith('*')).map((wildcardName)=>{
-            Object.keys({
+            O.keys({
                 ...cookies,
                 ...localStores
             }).map((name)=>{
