@@ -27,10 +27,12 @@
   - If JS fails in an old browser, it will probably be fixable by updating `browserlist` in `package.json` then rebuilding
   - (Will be tested more definitively with browserstack at some point)
   - source styles use CSS Nesting which is explicitly processed out for compatibility
-- Experimental ESM version `biscuitman.mjs` [ESM Module version demo](https://replete.github.io/biscuitman/index-esm.htmls)
+- Experimental ESM version `biscuitman.mjs`
 	- still uses globals
 	- allows easier event setting with `.on('revoke', (sec) => { if (sec === 'analytics') window.reload() )})`
+	- `import biscuitman from '/dist/esm/biscuitman.withcss.mjs'; let bm = biscuitman.create(options);`
 	- experimental stage, only worth maintaining if the codebase remains pretty much the same, consider this another packaging option
+	- see [ESM Module version demo](https://replete.github.io/biscuitman/index-esm.htmls) to see how to use it
 - preliminary e2e tests ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
 ![screenshot of main UI](media/ui.webp)
