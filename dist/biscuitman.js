@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.14 */
+/*! biscuitman.js 0.3.15 */
 ((d, w, O, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -91,7 +91,7 @@
             }));
         d.body.appendChild(ui);
     }
-    const displayUI = (show)=>ui.classList.toggle('bm-hide', !show);
+    const displayUI = (show)=>h.classList.toggle('bm-hide', !show);
     const applyCssClasses = ()=>{
         let { consentTime, ...consents } = getConsents();
         // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();

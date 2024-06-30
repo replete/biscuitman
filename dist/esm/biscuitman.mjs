@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.14 */
+/*! biscuitman.js 0.3.15 */
 const { document: d, window: w, Object: O } = globalThis;
 const h = d.documentElement;
 const bm = 'biscuitman';

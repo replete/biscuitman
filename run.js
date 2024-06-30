@@ -36,7 +36,7 @@ export async function styles(skipFileSave) {
 	})
 	let css = `${comment}\n` + processedStyles.code
 	if (!skipFileSave) await writeFile(`dist/${filenames.css}`, css)
-	log('css',`Saved dist/${filenames.css} ${getCompressedSizes(css)}`)
+	log('css',`Saved dist/${filenames.css}`)
 
 	let minifiedStyles = transformCss({
 		code: Buffer.from(sourceStyles),
@@ -47,7 +47,7 @@ export async function styles(skipFileSave) {
 	})
 	let minCss = comment + minifiedStyles.code
 	if (!skipFileSave) await writeFile(`dist/${filenames.minCss}`, minCss)
-	log('css',`Saved dist/${filenames.minCss} ${getCompressedSizes(minCss)}`)
+	log('css',`Saved dist/${filenames.minCss}`)
 
 	return [processedStyles.code, minifiedStyles.code]
 }
@@ -66,7 +66,7 @@ export async function scripts(skipFileSave) {
 		.then(async ({ code }) => {
 			code = `${comment}\n` + code
 			if (!skipFileSave) await writeFile(`dist/${filenames.js}`, code)
-			log('js',`Saved dist/${filenames.js} ${getCompressedSizes(code)}`)
+			log('js',`Saved dist/${filenames.js}`)
 			return code
 		})
 
@@ -88,7 +88,7 @@ export async function scripts(skipFileSave) {
 	}).then(async ({ code }) => {
 		code = comment + code.replace(/[\n\t]/g,'')
 		await writeFile(`dist/${filenames.minJs}`, code)
-		log('js',`Saved dist/${filenames.minJs} ${getCompressedSizes(code)}`)
+		log('js',`Saved dist/${filenames.minJs}`)
 		return code
 	})
 
@@ -106,7 +106,7 @@ export async function scripts(skipFileSave) {
 		.then(async ({ code }) => {
 			code = `${comment}\n` + code
 			if (!skipFileSave) await writeFile(`dist/esm/${filenames.mjs}`, code)
-			log('js',`Saved dist/esm/${filenames.mjs} ${getCompressedSizes(code)}`)
+			log('js',`Saved dist/esm/${filenames.mjs}`)
 			return code
 		})
 
@@ -128,7 +128,7 @@ export async function scripts(skipFileSave) {
 	}).then(async ({ code }) => {
 		code = comment + code.replace(/[\n\t]/g, '')
 		await writeFile(`dist/esm/${filenames.minMjs}`, code)
-		log('js',`Saved dist/${filenames.minMjs} ${getCompressedSizes(code)}`)
+		log('js',`Saved dist/${filenames.minMjs}`)
 		return code
 	})
 
@@ -175,9 +175,9 @@ ${css[0]}\`;
 }
 
 function getCompressedSizes(text) {
-	return `(${(text.length / 1024).toFixed(1)}kB) `
-	+ `(${ (zlib.gzipSync(text).length / 1024).toFixed(1)}kB/gz) ` 
-	+ `(${ (zlib.brotliCompressSync(text).length / 1024).toFixed(1)}kB/br)`
+	return `(${(text.length / 1024).toFixed(2)}kB) `
+	+ `(${ (zlib.gzipSync(text).length / 1024).toFixed(2)}kB/gz) ` 
+	+ `(${ (zlib.brotliCompressSync(text).length / 1024).toFixed(2)}kB/br)`
 }
 
 export async function report() {
@@ -243,30 +243,30 @@ export async function serve() {
 
 	bs.watch('package.json', async (event, file) => {
 		if (event === 'change') {
-			console.log(`File ${file} has changed`)
+			console.log(`${file} has changed`)
 			await build()
 			bs.reload()
 		}
 	})
 
-	bs.watch('biscuitman.js', async (event, file) => {
+	bs.watch('./src/biscuitman.js', async (event, file) => {
 		if (event === 'change') {
-			console.log(`File ${file} has changed`)
+			console.log(`${file} has changed`)
 			await scripts()
 			bs.reload()
 		}
 	})
 
-	bs.watch('biscuitman.css', async (event, file) => {
+	bs.watch('./src/biscuitman.css', async (event, file) => {
 		if (event === 'change') {
+			await styles()
 			console.log(`File ${file} has changed`)
-			styles()
 		}
 	})
 
 	bs.init({
 		server: './',
-		files: ['./dist/*','index.html'], // watch
+		files: ['./dist/*','index.html','./src/*.css','./src/*.js', './src/*.mjs'], // watch
 		port: 3000, 
 		https: { // required for https cookies
 			key: './server.key',

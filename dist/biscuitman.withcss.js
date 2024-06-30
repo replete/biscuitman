@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.14 */
+/*! biscuitman.js 0.3.15 */
 ((d, w, O, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -91,7 +91,7 @@
             }));
         d.body.appendChild(ui);
     }
-    const displayUI = (show)=>ui.classList.toggle('bm-hide', !show);
+    const displayUI = (show)=>h.classList.toggle('bm-hide', !show);
     const applyCssClasses = ()=>{
         let { consentTime, ...consents } = getConsents();
         // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
@@ -306,12 +306,13 @@
 ;
 ((d)=>{
 	let css=d.createElement('style');
-	css.textContent=`/*! biscuitman.js 0.3.14 */
+	css.textContent=`/*! biscuitman.js 0.3.15 */
 .biscuitman {
-  --t: #444;
-  --b: #fff;
+  --ui: 0, 0, 0;
+  --tx: #444;
+  --bg: #fff;
   --c: #105d89;
-  background: var(--b);
+  background: var(--bg);
   box-sizing: border-box;
   z-index: 3;
   width: 100%;
@@ -324,22 +325,16 @@
 
 .biscuitman * {
   box-sizing: border-box;
+  color: var(--tx);
   margin: 0;
   padding: 0;
+  font-family: inherit;
   font-size: 16px;
   line-height: 1.4em;
 }
 
 .biscuitman:has([open]) {
   transform: translateY(100%);
-}
-
-.biscuitman.bm-hide {
-  padding: 0;
-}
-
-.biscuitman.bm-hide article {
-  display: none;
 }
 
 .biscuitman article {
@@ -362,7 +357,7 @@
 }
 
 .biscuitman article p {
-  color: var(--t);
+  color: var(--tx);
   margin: 10px 0;
   font-size: 13px;
 }
@@ -374,7 +369,7 @@
 }
 
 .biscuitman button {
-  background: var(--b);
+  background: var(--bg);
   border: 2px solid var(--c);
   color: var(--c);
   cursor: pointer;
@@ -387,11 +382,11 @@
 
 .biscuitman button[data-id="accept"] {
   background: var(--c);
-  color: var(--b) !important;
+  color: var(--bg) !important;
 }
 
 .biscuitman button[data-id="close"] {
-  color: #000;
+  color: rgba(var(--ui), .5);
   opacity: .6;
   -webkit-user-select: none;
   user-select: none;
@@ -438,6 +433,7 @@
 }
 
 .biscuitman dialog {
+  background: var(--bg);
   border: 0;
   width: 100%;
   max-width: 100%;
@@ -481,7 +477,7 @@
 
 .biscuitman .bm-dialog > b:after {
   content: "";
-  background: linear-gradient(180deg, var(--b) 20%, transparent);
+  background: linear-gradient(180deg, var(--bg) 20%, transparent);
   pointer-events: none;
   z-index: 1;
   width: 100%;
@@ -494,7 +490,7 @@
 
 .biscuitman .bm-dialog nav:after {
   content: "";
-  background: linear-gradient(0deg, var(--b) 20%, transparent);
+  background: linear-gradient(0deg, var(--bg) 20%, transparent);
   pointer-events: none;
   width: 100%;
   height: 25px;
@@ -504,7 +500,7 @@
 }
 
 .biscuitman .bm-sections {
-  scrollbar-color: #ddd var(--b);
+  scrollbar-color: rgba(var(--ui), .2) var(--bg);
   flex-shrink: 1;
   height: 100%;
   padding: 15px 0;
@@ -563,7 +559,7 @@
 }
 
 .biscuitman details {
-  border: 1px solid #ccc;
+  border: 1px solid rgba(var(--ui), .2);
   border-radius: 5px;
   padding: 10px;
   list-style: none;
@@ -591,8 +587,9 @@
 
 .biscuitman summary b:after {
   content: "";
-  border: 5px solid #777;
-  border-color: #0000 #777 #777 #0000;
+  border: 5px solid rgba(var(--ui), .4);
+  border-top-color: #0000;
+  border-left-color: #0000;
   border-radius: 2px;
   width: 1em;
   height: 1em;
@@ -602,7 +599,7 @@
 }
 
 .biscuitman summary p {
-  color: var(--t);
+  color: var(--tx);
   font-size: 14px;
 }
 
@@ -619,15 +616,15 @@
 }
 
 .biscuitman dl {
-  background: #eee;
+  background: rgba(var(--ui), .08);
   margin: 10px;
   padding: 10px;
   display: flex;
 }
 
 .biscuitman dl dt, .biscuitman dl dd {
-  color: var(--t);
-  font-size: 13px;
+  color: var(--tx);
+  font-size: 12px;
 }
 
 .biscuitman dl dt {
@@ -642,8 +639,8 @@
   --gap: 2px;
   height: var(--height);
   width: var(--width);
+  background-color: rgba(var(--ui), .3);
   border-radius: var(--height);
-  background-color: #999;
   margin-top: -2px;
   display: block;
   position: absolute;
@@ -655,7 +652,7 @@
 
 .biscuitman label:before {
   content: "";
-  background: var(--b);
+  background: var(--bg);
   height: calc(var(--height)  - calc(var(--gap) * 2));
   width: calc(var(--height)  - calc(var(--gap) * 2));
   height: var(--height);
@@ -684,11 +681,19 @@
 }
 
 .biscuitman label.disabled.checked {
-  opacity: .6;
+  opacity: .5;
 }
 
 .biscuitman label input {
   opacity: 0;
+}
+
+html.bm-hide .biscuitman {
+  padding: 0;
+}
+
+html.bm-hide .biscuitman article {
+  display: none;
 }
 `;
 	d.head.appendChild(css)

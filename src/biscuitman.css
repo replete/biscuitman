@@ -6,15 +6,16 @@
 	Use a version in /dist/ for improved compatibility
 */
 .biscuitman {
-	--t: #444;
-	--b: #fff;
+	--ui: 0,0,0;
+	--tx: #444;
+	--bg: #fff;
 	--c: #105d89;
 
 	position: fixed;
 	bottom: 0;
 	width: 100%;
 	padding: 20px;
-	background: var(--b);
+	background: var(--bg);
 	box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.16);
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 		Helvetica, Arial, sans-serif;
@@ -23,23 +24,17 @@
 
 	* {
 		box-sizing: border-box;
+		font-family:inherit;
 		font-size: 16px;
 		padding: 0;
 		margin: 0;
 		line-height: 1.4em;
+		color: var(--tx)
 	}
 
 	/* Progressive enhancement */
 	&:has([open]) {
 		transform: translateY(100%);
-	}
-
-	&.bm-hide {
-		padding: 0;
-
-		article {
-			display: none;
-		}
 	}
 
 	article {
@@ -61,7 +56,7 @@
 		p {
 			margin: 10px 0;
 			font-size: 13px;
-			color: var(--t);
+			color: var(--tx);
 
 			@media (min-width: 575px) {
 				font-size: 14px;
@@ -70,7 +65,7 @@
 	}
 
 	button {
-		background: var(--b);
+		background: var(--bg);
 		border: 2px solid var(--c);
 		line-height: 1em;
 		padding: 0.8em;
@@ -82,7 +77,7 @@
 
 		&[data-id='accept'] {
 			background: var(--c);
-			color: var(--b) !important;
+			color: var(--bg) !important;
 		}
 
 		&[data-id='close'] {
@@ -90,7 +85,7 @@
 			outline: none;
 			position: absolute;
 			background: transparent;
-			color: #000;
+			color: rgba(var(--ui),.5);
 			top: 0;
 			right: 10px;
 			line-height: 1em;
@@ -136,6 +131,7 @@
 		height: 100%;
 		max-height: 100%;
 		max-width: 100%;
+		background: var(--bg);
 
 		@media (min-width: 576px) {
 			box-shadow: 0px 0 8px rgba(0, 0, 0, 0.3);
@@ -174,7 +170,7 @@
 			margin-bottom: -24px;
 			width: 100%;
 			height: 25px;
-			background: linear-gradient(180deg, var(--b) 20%, transparent);
+			background: linear-gradient(180deg, var(--bg) 20%, transparent);
 			pointer-events: none;
 			z-index: 1;
 		}
@@ -186,7 +182,7 @@
 			top: -24px;
 			width: 100%;
 			height: 25px;
-			background: linear-gradient(0deg, var(--b) 20%, transparent);
+			background: linear-gradient(0deg, var(--bg) 20%, transparent);
 			pointer-events: none;
 		}
 	}
@@ -197,7 +193,7 @@
 		height: 100%;
 		padding: 15px 0;
 		position: relative;
-		scrollbar-color: #ddd var(--b);
+		scrollbar-color: rgba(var(--ui),.2) var(--bg);
 		@media (min-width: 576px) {
 			padding-right: 4px;
 			margin-right: -18px;
@@ -246,7 +242,7 @@
 	}
 
 	details {
-		border: 1px solid #ccc;
+		border: 1px solid rgba(var(--ui),.2);
 		padding: 10px;
 		border-radius: 5px;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -275,7 +271,7 @@
 				display: block;
 				height: 1em;
 				width: 1em;
-				border: 5px solid #777;
+				border: 5px solid rgba(var(--ui),.4);
 				border-left-color: transparent;
 				border-top-color: transparent;
 				border-radius: 2px;
@@ -286,7 +282,7 @@
 
 		p {
 			font-size: 14px;
-			color: var(--t);
+			color: var(--tx);
 		}
 
 		> * {
@@ -303,12 +299,12 @@
 		display: flex;
 		padding: 10px;
 		margin: 10px;
-		background: #eee;
+		background: rgba(var(--ui),.08);
 
 		dt,
 		dd {
-			color: var(--t);
-			font-size: 13px;
+			color: var(--tx);
+			font-size: 12px;
 		}
 
 		dt {
@@ -329,7 +325,7 @@
 		display: block;
 		height: var(--height);
 		width: var(--width);
-		background-color: #999;
+		background-color: rgba(var(--ui),.3);
 		border-radius: var(--height);
 		transform: translateY(-50%);
 		margin-top: -2px;
@@ -338,7 +334,7 @@
 			content: '';
 			display: block;
 			position: absolute;
-			background: var(--b);
+			background: var(--bg);
 			height: calc(var(--height) - calc(var(--gap) * 2));
 			width: calc(var(--height) - calc(var(--gap) * 2));
 			height: var(--height);
@@ -367,11 +363,19 @@
 		}
 
 		&.disabled.checked {
-			opacity: 0.6;
+			opacity: 0.5;
 		}
 
 		input {
 			opacity: 0;
+		}
+	}
+
+	html.bm-hide & {
+		padding: 0;
+	
+		article {
+			display: none;
 		}
 	}
 }

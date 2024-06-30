@@ -1,6 +1,6 @@
 # biscuitman.js 🍪 Lightweight Consent Manager
 
-![screenshot of main UI](media/readmebanner.webp)
+![screenshot of main UI](media/ui.webp)
 
 #### [View demo](https://replete.github.io/biscuitman)
 
@@ -12,6 +12,7 @@
 	- Cookies/localstorage items removed on rejection/invalidation, if cookie details added 
 - Fully customizable strings so you can serve localized strings if you want
 - Overridable localStorage key, consent global
+- Basic color theming via CSS variables
 - Simple flat configuration object
 - Injects scripts when granular consent is granted (`<script data-consent="analytics" type="text/plain" src="..."></script>`)
 - Injects embedded 'after' `<script>` from script tags with `src` properties on onload (= less markup)
@@ -32,10 +33,8 @@
 	- allows easier event setting with `.on('revoke', (sec) => { if (sec === 'analytics') window.reload() )})`
 	- `import biscuitman from '/dist/esm/biscuitman.withcss.mjs'; let bm = biscuitman.create(options);`
 	- experimental stage, only worth maintaining if the codebase remains pretty much the same, consider this another packaging option
-	- see [ESM Module version demo](https://replete.github.io/biscuitman/index-esm.htmls) to see how to use it
+	- see [ESM version demo](https://replete.github.io/biscuitman/index-esm.htmls) to see how to use it
 - preliminary e2e tests ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
-
-![screenshot of main UI](media/ui.webp)
 
 ## How to use
 [View demo](https://replete.github.io/biscuitman) for a more detailed example
@@ -131,9 +130,31 @@ While you have the option to enable or disable some or all of these cookies, not
 <link rel="stylesheet" href="biscuitman.min.css"/>
 ```
 
+## Theme CSS
+
+```
+/* hacker mode */
+.biscuitman {
+	--c: limegreen;
+	--bg: #000;
+	--tx: #fff;
+	--ui: 255,255,255;
+	font-family: monospace;
+}
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+	.biscuitman {
+		--c: #1586c6;
+		--bg: #000;
+		--tx: #fff;
+		--ui: 255,255,255;
+	}
+}
+```
+
 If you want to make sure website content obscured underneath the banner, add these styles to your website CSS:
 ```css
-html:not(:has(.bm-hide))::after {
+html:not(.bm-hide)::after {
 	content:'';
 	min-height:300px;
 	display:block;
@@ -142,8 +163,8 @@ html:not(:has(.bm-hide))::after {
 ```
 
 ## Globals
-- `biscuitman` – configuration object, must be `window.biscuitman`
-- `Consent` – object for accessing consents (override: `global` in `window.biscuitman`)
+- `biscuitman` – configuration object, must be `window.biscuitman` (`biscuitman.create(options)` for ESM version)
+- `Consent` – object for accessing consents (override: `global` in config)
 	```
 	{
 		"consentTime": 1717846660979,
@@ -161,8 +182,8 @@ html:not(:has(.bm-hide))::after {
 
 ## CSS Classes
 
-- `biscuitman`, `bm-hide` on UI container
-- `bm-{sectionName}`, `bm-no-{sectionName}` on `<html>` for consent state
+- `biscuitman` on UI container
+- `bm-{sectionName}`, `bm-no-{sectionName}`, `bm-hide` on `<html>`
 
 ## Events
 
@@ -208,6 +229,7 @@ Visiting `https://localhost:3000` should now work without warnings.
 Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up. This is only chromium for now, but at some point it would be good to implement browserStack selenium tests to automate browser compatibility checks.
 
 `npm run test` - Launches pupeeter integration tests in a browser (in http mode only)
+
 `npm run coverage` - run jest tests with coverage saved to `/coverage/`
 
 
