@@ -92,7 +92,7 @@ function render() {
         }));
     d.body.appendChild(ui);
 }
-const displayUI = (show)=>ui.classList.toggle('bm-hide', !show);
+const displayUI = (show)=>h.classList.toggle('bm-hide', !show);
 const applyCssClasses = ()=>{
     let { consentTime, ...consents } = getConsents();
     // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
