@@ -19,8 +19,16 @@ beforeAll(async () => {
 		server: './',
 		port: __SERVERPORT__ || 3333, 
 		logLevel: 'silent',
+		ui:false,
 		open: false,
 		notify: false,
+		ghostmode: false,
+		logFileChanges: false,
+		injectChanges: false,
+		snippet: false,
+		online: false,
+		minify: false,
+		codeSync: false,
 		middleware: [
 			(req, res, next) => {
 				if (__HTML__ && req.method === 'GET' && req.url === '/') {
