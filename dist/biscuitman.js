@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.15 */
+/*! biscuitman.js 0.3.17 */
 ((d, w, O, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -90,8 +90,13 @@
                 checkbox.parentElement.classList.toggle('checked', e.target.checked);
             }));
         d.body.appendChild(ui);
+        function updateHeight() {
+            h.style.setProperty('--bm-height', `${ui.offsetHeight}px`);
+        }
+        w.addEventListener('resize', updateHeight);
+        updateHeight();
     }
-    const displayUI = (show)=>h.classList.toggle('bm-hide', !show);
+    const displayUI = (show)=>h.classList.toggle('bm-show', show);
     const applyCssClasses = ()=>{
         let { consentTime, ...consents } = getConsents();
         // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();

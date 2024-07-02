@@ -21,6 +21,11 @@
 		Helvetica, Arial, sans-serif;
 	box-sizing: border-box;
 	z-index: 3;
+	display:none;
+
+	html.bm-show & {
+		display:block
+	}
 
 	* {
 		box-sizing: border-box;
@@ -39,6 +44,7 @@
 
 	article {
 		position: relative;
+		padding:0;
 
 		@media (min-width: 770px) {
 			padding-right: calc(max(300px, 30vw) + 20px);
@@ -368,14 +374,6 @@
 
 		input {
 			opacity: 0;
-		}
-	}
-
-	html.bm-hide & {
-		padding: 0;
-	
-		article {
-			display: none;
 		}
 	}
 }

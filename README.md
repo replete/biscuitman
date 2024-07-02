@@ -152,11 +152,11 @@ While you have the option to enable or disable some or all of these cookies, not
 }
 ```
 
-If you want to make sure website content obscured underneath the banner, add these styles to your website CSS:
+The banner height is applied as a px value to the `--bm-height` css variable on html so that you can add an offset style when it is visible to make sure no content is obscured by the banner.
 ```css
-html:not(.bm-hide)::after {
+html.bm-show::after {
 	content:'';
-	min-height:300px;
+	min-height:--bm-height;
 	display:block;
 	user-select:none;
 }

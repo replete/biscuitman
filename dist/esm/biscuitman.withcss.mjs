@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.15 */
+/*! biscuitman.js 0.3.17 */
 const { document: d, window: w, Object: O } = globalThis;
 const h = d.documentElement;
 const bm = 'biscuitman';
@@ -91,8 +91,13 @@ function render() {
             checkbox.parentElement.classList.toggle('checked', e.target.checked);
         }));
     d.body.appendChild(ui);
+    function updateHeight() {
+        h.style.setProperty('--bm-height', `${ui.offsetHeight}px`);
+    }
+    w.addEventListener('resize', updateHeight);
+    updateHeight();
 }
-const displayUI = (show)=>h.classList.toggle('bm-hide', !show);
+const displayUI = (show)=>h.classList.toggle('bm-show', show);
 const applyCssClasses = ()=>{
     let { consentTime, ...consents } = getConsents();
     // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
@@ -342,7 +347,7 @@ export default {
 if (typeof BMCSS === 'undefined') {
 	let css=document.createElement('style');
 	css.id = 'BMCSS';
-	css.textContent=`/*! biscuitman.js 0.3.15 */
+	css.textContent=`/*! biscuitman.js 0.3.17 */
 .biscuitman {
   --ui: 0, 0, 0;
   --tx: #444;
@@ -354,9 +359,14 @@ if (typeof BMCSS === 'undefined') {
   width: 100%;
   padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  display: none;
   position: fixed;
   bottom: 0;
   box-shadow: 0 -2px 10px #00000029;
+}
+
+html.bm-show .biscuitman {
+  display: block;
 }
 
 .biscuitman * {
@@ -374,6 +384,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman article {
+  padding: 0;
   position: relative;
 }
 
@@ -722,14 +733,6 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman label input {
   opacity: 0;
-}
-
-html.bm-hide .biscuitman {
-  padding: 0;
-}
-
-html.bm-hide .biscuitman article {
-  display: none;
 }
 `;
 	document.head.appendChild(css)

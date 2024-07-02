@@ -111,9 +111,12 @@
 			checkbox.parentElement.classList.toggle('checked', e.target.checked)
 		}))
 		d.body.appendChild(ui)
+		function updateHeight() { h.style.setProperty('--bm-height', `${ui.offsetHeight}px`) }
+		w.addEventListener('resize', updateHeight)
+		updateHeight()
 	}
 
-	const displayUI = (show) => h.classList.toggle('bm-hide', !show)
+	const displayUI = (show) => h.classList.toggle('bm-show', show)
 	
 	const applyCssClasses = () => {
 		let { consentTime, ...consents } = getConsents()
