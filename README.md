@@ -33,7 +33,7 @@
 	- allows easier event setting with `.on('revoke', (sec) => { if (sec === 'analytics') window.reload() )})`
 	- `import biscuitman from '/dist/esm/biscuitman.withcss.mjs'; let bm = biscuitman.create(options);`
 	- experimental stage, only worth maintaining if the codebase remains pretty much the same, consider this another packaging option
-	- see [ESM version demo](https://replete.github.io/biscuitman/index-esm.htmls) to see how to use it
+	- see [ESM version demo](https://replete.github.io/biscuitman/index-esm.html) to see how to use it
 - preliminary e2e tests ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
 ## How to use
