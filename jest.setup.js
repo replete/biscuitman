@@ -52,7 +52,7 @@ beforeAll(async () => {
 	})
 
 	page.on('pageerror', (error) => {
-		if (error.message && error.message.contains('CookieDeprecationLabel')) return false // GTM bug: https://github.com/replete/biscuitman/issues/4
+		if (error.toString && error.toString().includes('CookieDeprecationLabel')) return false // GTM bug: https://github.com/replete/biscuitman/issues/4
 		console.error('Page error:', error)
 	})
 
