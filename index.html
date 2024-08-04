@@ -16,7 +16,7 @@
 		gtag('config', 'G-TEST');
 	</script>
 	<script type="text/plain" data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" id="js-analytics-gtm">
-		/* 
+		/*
 			Normally <script> tags with src property will not evaluate embedded script content,
 			but in this scenario you might want some code to run after a file has loaded,
 			so biscuitman handles this for you:
@@ -121,7 +121,7 @@
 	<script id="js-biscuitman-config">
 		biscuitman = {
 			message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
-			info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
+			info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
 Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
 While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
 			linkText: 'Privacy Policy',
@@ -162,6 +162,14 @@ While you have the option to enable or disable some or all of these cookies, not
 		}
 	</script>
 
+	<style>
+		html.bm-show::after {
+			content:'';
+			min-height:var(--bm-height);
+			display:block;
+		}
+	</style>
+
 	<!-- Biscuitman: load -->
 	<script src="dist/biscuitman.js" id="js-biscuitman"></script>
 
@@ -191,7 +199,7 @@ While you have the option to enable or disable some or all of these cookies, not
 				consents.textContent = (localStorage.getItem('myconsent') ||'').replaceAll(',',',\n')
 				localstorage.textContent = JSON.stringify(
 					Object.fromEntries(
-						Object.keys(localStorage).map(key => 
+						Object.keys(localStorage).map(key =>
 							[key, localStorage.getItem(key)]
 						)
 					), null, 2)
@@ -268,7 +276,7 @@ While you have the option to enable or disable some or all of these cookies, not
 		</script>
 
 		<h2>Popular Biscuit Varieties</h2>
-		
+
 		<h3>Rich Tea</h3>
 		<p>Rich tea biscuits are renowned for their delicate texture and subtle sweetness. Originating in the United Kingdom, rich tea biscuits are often enjoyed dunked in tea, coffee, or hot chocolate. These biscuits are commonly round-shaped with pin-prick patterns on the surface.</p>
 
@@ -283,7 +291,7 @@ While you have the option to enable or disable some or all of these cookies, not
 
 		<h3>Jaffa Cakes</h3>
 		<p>While technically not biscuits but often included in biscuit assortments, Jaffa Cakes are a beloved snack consisting of a sponge cake base topped with a layer of orange-flavored jelly and coated in chocolate. The combination of tangy orange and rich chocolate makes Jaffa Cakes a delightful treat for any occasion.</p>
-		
+
 	</div>
 
 	<!-- Page styles -->
@@ -341,13 +349,6 @@ While you have the option to enable or disable some or all of these cookies, not
 		}
 
 		a.img { display:inline-flex; flex-direction: column}
-
-		html:not(:has(.bm-hide))::after {
-			content:'';
-			min-height:300px;
-			display:block;
-			user-select:none;
-		}
 
 		#cookies, #localstorage {
 			font-family:monospace;

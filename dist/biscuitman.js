@@ -90,13 +90,15 @@
                 checkbox.parentElement.classList.toggle('checked', e.target.checked);
             }));
         d.body.appendChild(ui);
-        function updateHeight() {
-            h.style.setProperty('--bm-height', `${ui.offsetHeight}px`);
-        }
-        w.addEventListener('resize', updateHeight);
-        updateHeight();
+        w.addEventListener('resize', updateBannerHeight);
     }
-    const displayUI = (show)=>h.classList.toggle('bm-show', show);
+    const updateBannerHeight = ()=>{
+        h.style.setProperty('--bm-height', `${ui.offsetHeight}px`);
+    };
+    const displayUI = (show)=>{
+        h.classList.toggle('bm-show', show);
+        updateBannerHeight();
+    };
     const applyCssClasses = ()=>{
         let { consentTime, ...consents } = getConsents();
         // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
@@ -281,14 +283,17 @@
     }
     // Render UI
     render();
-    // Wipe matching cookies/localStorages without consent 
+    // Wipe matching cookies/localStorages without consent
     clearStorages();
     // Consent logic
     if (w[o.global].consentTime) {
         displayUI(false);
         insertScripts();
-    } else if (o.force) openModal();
-    // Helper  methods 
+    } else {
+        displayUI(true);
+        if (o.force) openModal();
+    }
+    // Helper  methods
     // <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
     w.bmInvalidate = ()=>{
         dispatch('invalidate', {

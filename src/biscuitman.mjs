@@ -19,12 +19,12 @@ const defaults = {
 	accept: 'Accept All',
 	save: 'Save My Settings',
 	settingsTitle: 'My Consent Settings',
-	info: '', 
+	info: '',
 	more: 'Show more',
 	noCookies: 'No cookies to display',
 	acceptNonEU: false,
 	// message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
-	// info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
+	// info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
 	// Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
 	// While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
 	// linkText: 'Privacy Policy',
@@ -71,9 +71,9 @@ function render() {
 		<button data-id="close"${options.force ? ' disabled' : ''}>×</button>
 		<div class="bm-sections">
 			<p><span>${options.message}</span></p>
-			<p>${options.info.split('\n').map((line, i, arr) => 
+			<p>${options.info.split('\n').map((line, i, arr) =>
 				`<span>${line}</span>
-				${arr.length > 1 && options.enableMore && i == 0 ? 
+				${arr.length > 1 && options.enableMore && i == 0 ?
 				`<a class="more" href="javascript:void(0)">${options.more}</a>` : ''
 				}`).join('')}
 			</p>
@@ -94,8 +94,8 @@ function render() {
 						</label>
 						<p>${options[`${section}Message`]}</p>
 					</summary>
-					${cookies ? O.entries(cookies).map(([k, v]) => 
-					`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : 
+					${cookies ? O.entries(cookies).map(([k, v]) =>
+					`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') :
 					`<dl><dd>${options.noCookies}</dd></dl>`}
 				</details>
 			</section>`}).join('')}
@@ -117,13 +117,15 @@ function render() {
 		checkbox.parentElement.classList.toggle('checked', e.target.checked)
 	}))
 	d.body.appendChild(ui)
-	function updateHeight() { h.style.setProperty('--bm-height', `${ui.offsetHeight}px`) }
-	w.addEventListener('resize', updateHeight)
-	updateHeight()
+	w.addEventListener('resize', updateBannerHeight)
 }
 
-const displayUI = (show) => h.classList.toggle('bm-show', show)
-	
+const updateBannerHeight = () => { h.style.setProperty('--bm-height', `${ui.offsetHeight}px`) }
+const displayUI = (show) => {
+	h.classList.toggle('bm-show', show)
+	updateBannerHeight()
+}
+
 const applyCssClasses = () => {
 	let { consentTime, ...consents } = getConsents()
 	// if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
@@ -244,7 +246,7 @@ function saveConsents(value) {
 	options.sections.forEach(section => {
 		if (section === 'essential') return false
 		let sectionElement = ui.querySelector(`[data-s=${section}]`)
-		let sectionConsent = willReadValues 
+		let sectionConsent = willReadValues
 			? sectionElement.checked
 			: value
 		consents[section] = sectionConsent
@@ -305,23 +307,26 @@ function create(config = {}) {
 
 		// Optional Non-EU auto-consent
 		handleNonEUConsent()
-		
+
 		// Render UI
 		render()
 
-		// Wipe matching cookies/localStorages without consent 
+		// Wipe matching cookies/localStorages without consent
 		clearStorages()
 
 		// Consent logic
 		if (w[options.global].consentTime) {
 			displayUI(false)
 			insertScripts()
-		} else if (options.force) openModal()
+		} else {
+			displayUI(true)
+			if (options.force) openModal()
+		}
 	}
 
 
 
-	// Helper  methods 
+	// Helper  methods
 	// <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
 	const invalidate = w.bmInvalidate = () => {
 		dispatch('invalidate', { data: getConsents() })

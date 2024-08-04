@@ -9,7 +9,7 @@
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
 - Optionally shows user specific cookie (or localStorage item) details
-	- Cookies/localstorage items removed on rejection/invalidation, if cookie details added 
+	- Cookies/localstorage items removed on rejection/invalidation, if cookie details added
 - Fully customizable strings so you can serve localized strings if you want
 - Overridable localStorage key, consent global
 - Basic color theming via CSS variables
@@ -40,7 +40,7 @@
 [View demo](https://replete.github.io/biscuitman) for a more detailed example
 
 ```html
-<!-- 
+<!--
 	1. Prepare script tags
 	   - set 'type' property to "text/plain" to prevent execution
 	   - add 'data-consent' property with consent section name (e.g. analytics, functional, performance)
@@ -53,7 +53,7 @@
 	console.log('This script runs as soon as analytics section consent is granted')
 </script>
 
-<!-- 
+<!--
 	2. Configure biscuitman settings
 	   - window.biscuitman must be defined before biscuitman is loaded
 	   - labels must be defined here as the library does not contain defaults for these strings (because they'll)
@@ -86,10 +86,10 @@
 		linkURL: 'https://domain.com/privacy-policy',
 
 		// info uses a template literal in order to handle multiple lines, in case you have a long
-		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
+		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
 Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
 While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
-		
+
 		// Define as many sections as desired, each section represents a granular consent and is fundamental to the software
 		// You can name sections anything you want, but they must not use spaces or special characters
 		// e.g. using data-consent="advertisment" would match 'advertisement'
@@ -98,7 +98,7 @@ While you have the option to enable or disable some or all of these cookies, not
 		// 'essential' is special because it doesn't need consent and its toggle is disabled in the UI
 		essentialTitle: 'Essential',
 		essentialMessage: 'Essential cookies are required to enable the basic features of this site',
-		
+
 		// The naming convention is {sectionName}Title, {sectionName}Message, and {sectionName}Cookies
 		functionalTitle: 'Functional',
 		functionalMessage: 'Functional cookies help perform functions like sharing the content of the website on social media platforms, collecting feedback, and other third-party features',
@@ -108,7 +108,7 @@ While you have the option to enable or disable some or all of these cookies, not
 		uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
 		analyticsTitle: 'Analytics',
 		analyticsMessage: 'Analytical cookies are used to understand how visitors interact with the website. These cookies help provide information on metrics such as the number of visitors, bounce rate, traffic source, etc.',
-		
+
 		// (Optional) Include details of the cookies in use for a section, add them like a name/value dictionary
 		// NOTE: By default, if these exist, then when when consent is rejected/invalidated, these cookies/localStorage entries will be immediately removed. Wildcards only work at the end of a string.
 		analyticsCookies: {
@@ -118,7 +118,7 @@ While you have the option to enable or disable some or all of these cookies, not
 	}
 </script>
 
-<!-- 
+<!--
 	3. Include biscuitman.withcss.min.js if you want the CSS included
 -->
 <script src="biscuitman.withcss.min.js"></script>
@@ -128,6 +128,21 @@ While you have the option to enable or disable some or all of these cookies, not
 
 <style>@import url(biscuitman.min.css);</style>
 <link rel="stylesheet" href="biscuitman.min.css"/>
+
+<!--
+	4. (optional) Add extra CSS to ensure content underneath the banner is visible:
+
+	The main point here is that var(--bm-height) contains the current height of the banner in px so you can accomodate it to your design.
+-->
+<style>
+	html.bm-show::after {
+		content:'';
+		min-height: var(--bm-height);
+		/* min-height: calc(var(--bm-height) + 20px) */;
+		display:block;
+	}
+</style>
+
 ```
 
 ## Theme CSS
@@ -156,7 +171,8 @@ The banner height is applied as a px value to the `--bm-height` css variable on 
 ```css
 html.bm-show::after {
 	content:'';
-	min-height:--bm-height;
+	min-height:var(--bm-height);
+	/* min-height: calc(var(--bm-height) + 20px) */;
 	display:block;
 	user-select:none;
 }
@@ -178,7 +194,7 @@ html.bm-show::after {
 	- example usage: `if (Consent.analytics) { doAnalyticsThing() }`
 - `bmInvalidate()` – Delete stored consent data and reinstate UI (you might use this in your app code)
 - `bmOpen()` – Opens My Consent Settings modal (you might want to link this on your Privacy policy or footer nav)
-	- example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>` 
+	- example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>`
 
 ## CSS Classes
 
@@ -197,7 +213,7 @@ The easiest way to see how events work is to view the `console.debug()` calls in
 - `biscuitman:revoke` => `{section: 'analytics', time: 1718914784624}` returns section that was revoked if updated consent changed from true to false
 - `biscuitman:update` => `{data: {...currentConsentObject}, time: 1718914784624}` returns current consent object and time
 - `biscuitman:delete` => `{localStorage|cookie: 'cookieName', time: 1718914784624}` fires when consent is rejected or invalidated and cookies/localStorage entries are deleted
-	
+
 You can watch for these events like this:
 ```js
 document.addEventListener('biscuitman:open', (e) => {
@@ -207,13 +223,13 @@ document.addEventListener('biscuitman:open', (e) => {
 
 ## Development
 
-`npm run dev` fires up a browsersync dev server on `https://localhost:3000`. 
+`npm run dev` fires up a browsersync dev server on `https://localhost:3000`.
 
 We need to use `https://` to be able to delete Secure cookies.
 
 ### Fix NET::ERR_CERT_AUTHORITY_INVALID error
 
-This isn't a problem for testing the UI, but is a problem for the tests running headless browsers. To fix this: 
+This isn't a problem for testing the UI, but is a problem for the tests running headless browsers. To fix this:
 - Install `mkcert` ([Installation instructions](https://github.com/FiloSottile/mkcert#installation)) and then run:
 - run `npm run makecerts`, to create `server.crt` and `server.key` for browserSync
 
@@ -222,7 +238,7 @@ Visiting `https://localhost:3000` should now work without warnings.
 
 
 ### Building
-`npm run build` - creates project distributes. 
+`npm run build` - creates project distributes.
 - Build script `run.js` built with Node 20
 
 ### Tests
