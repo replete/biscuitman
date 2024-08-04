@@ -17,7 +17,7 @@ beforeAll(async () => {
 
 	bs.init({
 		server: './',
-		port: __SERVERPORT__ || 3333, 
+		port: __SERVERPORT__ || 3333,
 		logLevel: 'silent',
 		ui:false,
 		open: false,
@@ -52,6 +52,7 @@ beforeAll(async () => {
 	})
 
 	page.on('pageerror', (error) => {
+		if (error.contains('CookieDeprecationLabel')) return false // GTM bug: https://github.com/replete/biscuitman/issues/4
 		console.error('Page error:', error)
 	})
 
