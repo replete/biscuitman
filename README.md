@@ -29,22 +29,23 @@
   - (Will be tested more definitively with browserstack at some point)
   - source styles use CSS Nesting which is explicitly processed out for compatibility
 - Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
-	- ```html
-		<script type="module" id="biscuitman-init">
-			import biscuitman from './dist/esm/biscuitman.withcss.mjs';
-			let bm = biscuitman.create({
-				// ...options
-			}).on('save', data => {
-				// optional event callback
-				console.log('ESM version: consents were saved', data.data)
-			}).on('revoke', data => {
-				// optional event callback
-				if (data.section === 'analytics') {
-					console.log('ESM version: analytics was revoked')
-				}
-			})
-		</script>
-	```
+```html
+<!-- experimental ESM version: -->
+<script type="module" id="biscuitman-init">
+	import biscuitman from './dist/esm/biscuitman.withcss.mjs';
+	let bm = biscuitman.create({
+		// ...options
+	}).on('save', data => {
+		// optional event callback
+		console.log('ESM version: consents were saved', data.data)
+	}).on('revoke', data => {
+		// optional event callback
+		if (data.section === 'analytics') {
+			console.log('ESM version: analytics was revoked')
+		}
+	})
+</script>
+```
 - Preliminary e2e tests:
 ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
