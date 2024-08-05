@@ -28,13 +28,25 @@
   - If JS fails in an old browser, it will probably be fixable by updating `browserlist` in `package.json` then rebuilding
   - (Will be tested more definitively with browserstack at some point)
   - source styles use CSS Nesting which is explicitly processed out for compatibility
-- Experimental ESM version `biscuitman.mjs`
-	- still uses globals
-	- allows easier event setting with `.on('revoke', (sec) => { if (sec === 'analytics') window.reload() )})`
-	- `import biscuitman from '/dist/esm/biscuitman.withcss.mjs'; let bm = biscuitman.create(options);`
-	- experimental stage, only worth maintaining if the codebase remains pretty much the same, consider this another packaging option
-	- see [ESM version demo](https://replete.github.io/biscuitman/index-esm.html) to see how to use it
-- preliminary e2e tests ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
+- Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
+	- ```html
+		<script type="module" id="biscuitman-init">
+			import biscuitman from './dist/esm/biscuitman.withcss.mjs';
+			let bm = biscuitman.create({
+				// ...options
+			}).on('save', data => {
+				// optional event callback
+				console.log('ESM version: consents were saved', data.data)
+			}).on('revoke', data => {
+				// optional event callback
+				if (data.section === 'analytics') {
+					console.log('ESM version: analytics was revoked')
+				}
+			})
+		</script>
+	```
+- Preliminary e2e tests:
+![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
 ## How to use
 [View demo](https://replete.github.io/biscuitman) for a more detailed example
@@ -119,7 +131,7 @@ While you have the option to enable or disable some or all of these cookies, not
 </script>
 
 <!--
-	3. Include biscuitman.withcss.min.js if you want the CSS included
+	3. Include Biscuitman files:
 -->
 <script src="biscuitman.withcss.min.js"></script>
 
@@ -129,25 +141,13 @@ While you have the option to enable or disable some or all of these cookies, not
 <style>@import url(biscuitman.min.css);</style>
 <link rel="stylesheet" href="biscuitman.min.css"/>
 
-<!--
-	4. (optional) Add extra CSS to ensure content underneath the banner is visible:
-
-	The main point here is that var(--bm-height) contains the current height of the banner in px so you can accomodate it to your design.
--->
-<style>
-	html.bm-show::after {
-		content:'';
-		min-height: var(--bm-height);
-		/* min-height: calc(var(--bm-height) + 20px) */;
-		display:block;
-	}
-</style>
-
 ```
 
 ## Theme CSS
 
-```
+It's easy enough to theme the included styles by overriding CSS variables. They are shortened for filsize savings, but straightforward:
+
+```css
 /* hacker mode */
 .biscuitman {
 	--c: limegreen;
@@ -167,14 +167,13 @@ While you have the option to enable or disable some or all of these cookies, not
 }
 ```
 
-The banner height is applied as a px value to the `--bm-height` css variable on html so that you can add an offset style when it is visible to make sure no content is obscured by the banner.
+The banner height is applied as a px value to the `var(--bm-height)` css variable on html so that you can add an offset style when it is visible to make sure no content is obscured by the banner. This is an offset fix that uses generated content, but you might implement something else based on margin/padding depending on your site layout design.
 ```css
 html.bm-show::after {
 	content:'';
 	min-height:var(--bm-height);
 	/* min-height: calc(var(--bm-height) + 20px) */;
 	display:block;
-	user-select:none;
 }
 ```
 
@@ -199,11 +198,12 @@ html.bm-show::after {
 ## CSS Classes
 
 - `biscuitman` on UI container
-- `bm-{sectionName}`, `bm-no-{sectionName}`, `bm-hide` on `<html>`
+- `bm-{sectionName}`, `bm-no-{sectionName}`, `bm-show` on `<html>`
+- `--bm-height` CSS variable written to `<html style="--bm-height:0px;">`
 
 ## Events
 
-The easiest way to see how events work is to view the `console.debug()` calls in the [demo](https://replete.github.io/biscuitman)
+Custom events prefixed with `biscuitman:` are fired on `document`. The easiest way to see how events work is to view the `console.debug()` calls in the [demo](https://replete.github.io/biscuitman).
 - `biscuitman:open` => `{time: 1718915128298}` modal opened
 - `biscuitman:close` => `{time: 1718915128298}` modal closed
 - `biscuitman:button` => `{id: "settings", time: 1718915128298}` button clicked
@@ -232,14 +232,14 @@ We need to use `https://` to be able to delete Secure cookies.
 This isn't a problem for testing the UI, but is a problem for the tests running headless browsers. To fix this:
 - Install `mkcert` ([Installation instructions](https://github.com/FiloSottile/mkcert#installation)) and then run:
 - run `npm run makecerts`, to create `server.crt` and `server.key` for browserSync
+- if you're using another solution for local SSL certs, generate `server.crt` and `server.key` manually and place them in the root
 
 Visiting `https://localhost:3000` should now work without warnings.
 
 
 
 ### Building
-`npm run build` - creates project distributes.
-- Build script `run.js` built with Node 20
+`npm run build` - creates project distributes via `run.js` a custom build script requiring `Node v20`
 
 ### Tests
 Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up. This is only chromium for now, but at some point it would be good to implement browserStack selenium tests to automate browser compatibility checks.
