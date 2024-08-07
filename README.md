@@ -183,6 +183,18 @@ html.bm-show::after {
 }
 ```
 
+## Browser Support
+
+With browserlist, we're targeting `">= 2%, last 2 years"`. This project is tested with BrowserStack. The earliest versions tested working are:
+
+- Chrome/Edge/Opera: 85+ (released June 2020)
+- Firefox: 98+ (released March 2022)
+- Safari Desktop+iOS: 15.4+ (released March 2022)
+	- I couldn't easily test 15.0-15.3, 14.1 is broken though
+- Samsung Internet: 14+ (released April 2021)
+
+Currently if this is used in a browser that breaks interactivity (e.g. Safari 14.1, released April 2021), the site is unusable. It might be worth catching errors for unsupported browsers and removing the UI altogether for these extreme edge cases of users not updating their browsers.
+
 ## Globals
 - `biscuitman` – configuration object, must be `window.biscuitman` (`biscuitman.create(options)` for ESM version)
 - `Consent` – object for accessing consents (override: `global` in config)
@@ -252,8 +264,6 @@ Jest is set up with puppeteer to run some integration tests. We're using `@swc/j
 `npm run test` - Launches pupeeter integration tests in a browser (in http mode only)
 
 `npm run coverage` - run jest tests with coverage saved to `/coverage/`
-
-This project is tested with BrowserStack.
 
 
 ## Support development
