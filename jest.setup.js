@@ -51,16 +51,17 @@ beforeAll(async () => {
 		headless: true
 	})
 
-	page.on('pageerror', (error) => {
-		if (error.toString && error.toString().includes('CookieDeprecationLabel')) return false // GTM bug: https://github.com/replete/biscuitman/issues/4
-		console.error('Page error:', error)
-	})
-
 	page.on('console', (msg) => {
-		let text = msg.text()
+		const text = msg.text()
+		const location = msg.location()
 		if (msg.type() === 'error') {
+			// Squash 404 errors
 			if (text.startsWith('Failed to load resource:')) return false
-			console.log('Console error:', msg.text())
+
+			// Raise errors if it originated from a locally-served resource
+			if (location && location.url && location.url.startsWith(global.__SERVERURL__)) {
+				console.error('Console error:', msg.text())
+			} else return false
 		}
 	})
 })
