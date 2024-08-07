@@ -29,23 +29,6 @@
   - (Will be tested more definitively with browserstack at some point)
   - source styles use CSS Nesting which is explicitly processed out for compatibility
 - Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
-```html
-<!-- experimental ESM version: -->
-<script type="module" id="biscuitman-init">
-	import biscuitman from './dist/esm/biscuitman.withcss.mjs';
-	let bm = biscuitman.create({
-		// ...options
-	}).on('save', data => {
-		// optional event callback
-		console.log('ESM version: consents were saved', data.data)
-	}).on('revoke', data => {
-		// optional event callback
-		if (data.section === 'analytics') {
-			console.log('ESM version: analytics was revoked')
-		}
-	})
-</script>
-```
 - Preliminary e2e tests:
 ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
@@ -136,12 +119,34 @@ While you have the option to enable or disable some or all of these cookies, not
 -->
 <script src="biscuitman.withcss.min.js"></script>
 
-<!--   or include separately: -->
-<script src="biscuitman.min.js"></script>
+<!-- or, if you want to load CSS separately: -->
+<head>
+	<link rel="stylesheet" href="biscuitman.min.css"/>
+	<script src="biscuitman.min.js"></script>
+</head>
 
-<style>@import url(biscuitman.min.css);</style>
-<link rel="stylesheet" href="biscuitman.min.css"/>
+```
 
+## Experimental ESM version
+
+I've included an ESM version as an alternative packaging format. Longterm it's better to not have two versions, so this may or not become the main version. Consider it an alternate packaging format at this point.
+
+```html
+<!-- Experimental ESM version: -->
+<script type="module" id="biscuitman-init">
+	import biscuitman from './dist/esm/biscuitman.withcss.mjs';
+	let bm = biscuitman.create({
+		// ...options
+	}).on('save', data => {
+		// optional event callback
+		console.log('ESM version: consents were saved', data.data)
+	}).on('revoke', data => {
+		// optional event callback
+		if (data.section === 'analytics') {
+			console.log('ESM version: analytics was revoked')
+		}
+	})
+</script>
 ```
 
 ## Theme CSS
@@ -238,7 +243,6 @@ This isn't a problem for testing the UI, but is a problem for the tests running 
 Visiting `https://localhost:3000` should now work without warnings.
 
 
-
 ### Building
 `npm run build` - creates project distributes via `run.js` a custom build script requiring `Node v20`
 
@@ -248,6 +252,8 @@ Jest is set up with puppeteer to run some integration tests. We're using `@swc/j
 `npm run test` - Launches pupeeter integration tests in a browser (in http mode only)
 
 `npm run coverage` - run jest tests with coverage saved to `/coverage/`
+
+This project is tested with BrowserStack.
 
 
 ## Support development
