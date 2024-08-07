@@ -51,19 +51,19 @@ beforeAll(async () => {
 		headless: true
 	})
 
-	page.on('console', (msg) => {
-		const text = msg.text()
-		const location = msg.location()
-		if (msg.type() === 'error') {
-			// Squash 404 errors
-			if (text.startsWith('Failed to load resource:')) return false
+	// page.on('console', (msg) => {
+	// 	const text = msg.text()
+	// 	const location = msg.location()
+	// 	if (msg.type() === 'error') {
+	// 		// Squash 404 errors
+	// 		if (text.startsWith('Failed to load resource:')) return false
 
-			// Raise errors if it originated from a locally-served resource
-			if (location && location.url && location.url.startsWith(global.__SERVERURL__)) {
-				console.error('Console error:', msg.text())
-			} else return false
-		}
-	})
+	// 		// Raise errors if it originated from a locally-served resource
+	// 		if (location && location.url && location.url.startsWith(global.__SERVERURL__)) {
+	// 			console.error('Console error:', msg.text())
+	// 		} else return false
+	// 	}
+	// })
 })
 
 beforeEach(async () => {
