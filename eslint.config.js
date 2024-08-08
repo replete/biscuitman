@@ -21,7 +21,7 @@ export default [
 			quotes: [2, 'single'],
 			'object-curly-spacing': [2, 'always'],
 			'no-unused-vars': [2, { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': true }],
-			indent: ['warn', 'tab', { 
+			indent: ['warn', 'tab', {
 				ignoredNodes: [
 					'ConditionalExpression',
 					'TemplateLiteral'
@@ -38,7 +38,7 @@ export default [
 			'no-loop-func': 2,
 			'dot-location': ['error', 'property']
 		},
-	}, 
+	},
 	{
 		files: ['src/*.js','src/*.mjs'],
 		languageOptions: {
@@ -49,7 +49,7 @@ export default [
 		rules: {
 
 		}
-	}, 
+	},
 	{
 		files: ['jest.setup.js', '__tests__/**/*.js'],
 		rules: {

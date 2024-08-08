@@ -1,9 +1,12 @@
 import fs from 'fs'
+import browserSync from 'browser-sync'
 import swc from '@swc/core'
 import { transform as transformCss, browserslistToTargets, Features } from 'lightningcss'
 import browserslist from 'browserslist'
-import browserSync from 'browser-sync'
 import { Readable } from 'stream'
+import { ESLint } from 'eslint'
+import compat from 'eslint-plugin-compat'
+import globals from 'globals'
 import doiuse from 'doiuse/stream'
 import zlib from 'zlib'
 const { readFile, writeFile } = fs.promises
@@ -11,6 +14,8 @@ const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
 const { name, version, browserslist: browserlistString } = JSON.parse(await readFile('./package.json'))
 const comment = `/*! ${name}.js ${version} */`
 
+let seen = new Set()
+fs.writeFileSync('output.txt', JSON.stringify(compat.configs['flat/recommended'], (key, value) => (typeof value === 'object' && seen.has(value)) ? undefined : (seen.add(value), value), 2), seen = new Set())
 const filenames = {
 	css: 'biscuitman.css',
 	minCss: 'biscuitman.min.css',
@@ -71,7 +76,7 @@ export async function scripts(skipFileSave) {
 		})
 
 	const minJs = swc.transform(sourceJs, {
-		sourceMaps: false,	
+		sourceMaps: false,
 		isModule: false,
 		env: {
 			targets: browserlistString
@@ -111,7 +116,7 @@ export async function scripts(skipFileSave) {
 		})
 
 	const minMjs = swc.transform(sourceMjs, {
-		sourceMaps: false,	
+		sourceMaps: false,
 		isModule: true,
 		env: {
 			targets: browserlistString
@@ -148,7 +153,7 @@ ${css[0]}\`;
 	d.head.appendChild(css)
 })(document);`
 	let jsCssMin = `${js[1].replace(/[\n\t]/g, '')};((d)=>{let c=d.createElement('style');c.textContent=\`${comment}${css[1]}\`;d.head.appendChild(c)})(document);`
-	
+
 	let mjsCss = `${js[2]}
 if (typeof BMCSS === 'undefined') {
 	let css=document.createElement('style');
@@ -176,46 +181,52 @@ ${css[0]}\`;
 
 function getCompressedSizes(text) {
 	return `(${(text.length / 1024).toFixed(2)}kB) `
-	+ `(${ (zlib.gzipSync(text).length / 1024).toFixed(2)}kB/gz) ` 
+	+ `(${ (zlib.gzipSync(text).length / 1024).toFixed(2)}kB/gz) `
 	+ `(${ (zlib.brotliCompressSync(text).length / 1024).toFixed(2)}kB/br)`
 }
 
 export async function report() {
-	log('report', 'Running browser compatibility report')
-	// eslint-plugin-compat is not compatible with eslint 9, and wasn't that helpful anyway
+	log('report', 'Running browser compatibility reports...')
+	await Promise.all([
+		cssreport(),
+		jsreport()
+	])
+}
 
-	// log('report : js','Checking JS browser compatibility...')
-	// let js = await scripts(true)
-	// const eslint = new ESLint({
-	// 	overrideConfig: {
-	// 		parserOptions: {
-	// 			ecmaVersion: 2018,
-	// 		  },
-	// 		extends: [
-	// 			'plugin:compat/recommended'
-	// 		],
-	// 		plugins: ['compat'],
-	// 		rules: {
-	// 			'compat/compat': 'error'
-	// 		},
-	// 		settings: {
-	// 			browsers: browserslist(browserlistString)
-	// 		},
-	// 		env: {
-	// 		  browser: true,
-	// 		  es6: true,
-	// 		}
-	// 	}
-	// })
+export async function jsreport() {
+	// TODO: This doesn't work
+	log('js report','Checking JS browser compatibility...')
+	let js = await scripts(true)
+	const eslint = new ESLint({
+		overrideConfigFile: true,
+		overrideConfig: {
+			...compat.configs['flat/recommended'],
+			languageOptions: {
+				ecmaVersion: 2018,
+				globals: {
+					...globals.browser
+				}
+			},
+			rules: {
+				'compat/compat': 'error',
+				...compat.configs['flat/recommended'].rules
+			},
+			settings: {
+				browsers: 'last 10 years'
+			}
+		}
+	})
 
-	// const lint = await eslint.lintText(js[0])
-	// const formatter = await eslint.loadFormatter('stylish')
-	// const jsReport = formatter.format(lint)
-	// if (jsReport.length === 0) {
-	// 	log('report: js','✅ No JS Compatibilty warnings')
-	// } else log('report: js', jsReport)
+	const lint = await eslint.lintText(js[0])
+	const formatter = await eslint.loadFormatter('stylish')
+	const jsReport = formatter.format(lint)
+	if (jsReport.length === 0) {
+		log('js report','✅ No JS Compatibilty warnings')
+	} else log('js report', jsReport)
+}
 
-	log('report: css','Checking CSS browser compatibility...')
+export async function cssreport() {
+	log('css report','Checking CSS browser compatibility...')
 	let css = await styles(true)
 	let cssReportData = []
 	new Readable({
@@ -229,12 +240,12 @@ export async function report() {
 			ignore: []
 		}))
 		.on('data',usageInfo => {
-			log('report: css', usageInfo.message.replace('<streaming css input>:',''))
+			log('css report', usageInfo.message.replace('<streaming css input>:',''))
 			cssReportData.push(usageInfo)
 		})
 		.on('end', async () => {
 			await writeFile('cssreport.json', JSON.stringify({ report: cssReportData }))
-			log('report: css','Saved cssreport.json (see compatibility table on index.html')
+			log('css report','Saved cssreport.json (see compatibility table on index.html')
 		})
 }
 
@@ -267,11 +278,11 @@ export async function serve() {
 	bs.init({
 		server: './',
 		files: ['./dist/*','index.html','./src/*.css','./src/*.js', './src/*.mjs'], // watch
-		port: 3000, 
+		port: 3000,
 		https: { // required for https cookies
 			key: './server.key',
 			cert: './server.crt'
-		}, 
+		},
 		open: false,
 		notify: false
 	})
@@ -287,6 +298,7 @@ async function main() {
 			case 'scripts': scripts(); break
 			case 'build': build(); break
 			case 'report': report(); break
+			case 'jsreport': jsreport(); break
 			default: break
 		}
 	}
