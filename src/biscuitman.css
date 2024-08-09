@@ -1,4 +1,4 @@
-/* 
+/*
 	Biscuitman JS Styles
 	https://github.com/replete/biscuitman
 
@@ -23,7 +23,7 @@
 	z-index: 3;
 	display:none;
 
-	html.bm-show & {
+	.bm-show & {
 		display:block
 	}
 
@@ -176,7 +176,7 @@
 			margin-bottom: -24px;
 			width: 100%;
 			height: 25px;
-			background: linear-gradient(180deg, var(--bg) 20%, transparent);
+			background: linear-gradient(180deg, var(--bg) 20%, rgba(255,255,255,0)); /* rgba is safari < 15 fix */
 			pointer-events: none;
 			z-index: 1;
 		}
@@ -188,7 +188,7 @@
 			top: -24px;
 			width: 100%;
 			height: 25px;
-			background: linear-gradient(0deg, var(--bg) 20%, transparent);
+			background: linear-gradient(0deg, var(--bg) 20%, rgba(255,255,255,0)); /* rgba is safari < 15 fix */
 			pointer-events: none;
 		}
 	}
@@ -376,4 +376,11 @@
 			opacity: 0;
 		}
 	}
+}
+
+/* https://github.com/GoogleChrome/dialog-polyfill?tab=readme-ov-file#stacking-context */
+.bm-dialog-polyfill .biscuitman dialog {
+	position:fixed;
+	top:50%;
+	transform: translateY(-50%);
 }

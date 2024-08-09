@@ -16,6 +16,7 @@
 		more: 'Show more',
 		noCookies: 'No cookies to display',
 		acceptNonEU: false,
+		dialogPolyfillUrl: '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js'
 		// message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 		// info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
 		// Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
@@ -39,6 +40,7 @@
 		// advertisementMessage: 'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
 		// uncategorizedTitle: 'Uncategorized',
 		// uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
+
 	}
 	const o = { ...defaults, ...w.biscuitman }
 
@@ -103,6 +105,7 @@
 </dialog>`.replaceAll('{link}',`<a href="${o.linkURL}">${o.linkText}</a>`)
 		ui.querySelectorAll('button').forEach(b => b.addEventListener('click', buttonHandler))
 		dialog = ui.querySelector('dialog')
+		if (!dialog.showModal || !dialog.close) loadDialogPolyfill()
 		dialog.addEventListener('close', closeModalHandler)
 		dialog.addEventListener('cancel', cancelModalHandler)
 		const moreLink = ui.querySelector('.more')
@@ -249,7 +252,7 @@
 		dispatch('save', { data: consents })
 		clearStorages()
 		insertScripts()
-		dialog.close()
+		if (dialog.open) dialog.close()
 		displayUI(false)
 	}
 
@@ -322,4 +325,21 @@
 		dispatch('update', { data: getConsents() })
 		openModal()
 	}
+
+	function loadDialogPolyfill() {
+		// https://github.com/GoogleChrome/dialog-polyfill
+		h.classList.add('bm-dialog-polyfill')
+		const script = d.createElement('script')
+		script.src = o.dialogPolyfillUrl
+		script.onload = () => {
+			w.dialogPolyfill.registerDialog(dialog)
+		}
+		d.head.appendChild(script)
+
+		const link = d.createElement('link')
+		link.rel = 'stylesheet'
+		link.href = o.dialogPolyfillUrl.slice(0,-2) + 'css'
+		d.head.appendChild(link)
+	}
+
 })(document, window, Object, document.documentElement, 'biscuitman')

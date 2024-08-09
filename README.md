@@ -4,7 +4,7 @@
 
 #### [View demo](https://replete.github.io/biscuitman)
 
-100kB+ seemed too heavy for a cookie popup so I wrote this. It's currently < 4kB gz/br, including CSS. It's designed to be as small as possible with an adequate featureset for basic website cookie consent.
+100kB+ seemed too heavy for a cookie popup so I wrote this. It's around 4kB gz/br, including CSS. It's designed to be as small as possible with an adequate featureset for basic website cookie consent.
 
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
@@ -21,16 +21,10 @@
 - include optional link in any text
 - CSS classes on `<html>` element for consents
 - Progressively enhanced CSS
-- Ideal experience browser support (targeted via browserlist string `>= 2%, last 2 years`):
-  - Chrome/Edge 105+ (should be fine in many earlier versions, TBD)
-  - Safari 15.4+
-  - Firefox 121+ (should be fine in many earlier versions, TBD)
-  - If JS fails in an old browser, it will probably be fixable by updating `browserlist` in `package.json` then rebuilding
-  - (Will be tested more definitively with browserstack at some point)
-  - source styles use CSS Nesting which is explicitly processed out for compatibility
+- Dialog polyfill loads as required (see [Browser Support](#browser-support))
 - Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
 - Preliminary e2e tests:
-![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
+![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg) ([failing due to GTM.js bug](https://github.com/replete/biscuitman/issues/4), pass locally)
 
 ## How to use
 [View demo](https://replete.github.io/biscuitman) for a more detailed example
@@ -74,6 +68,7 @@
 		// more: '(Show more)', // Show more button text
 		// noCookies: 'No cookies to display', // Displayed in expanded sections within modal
 		// acceptNonEU: false, // When enabled biscuitman checks browser locale timezone to see if it matches EU, if not it will auto consent
+		//dialogPolyfillUrl: '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js' // extends browser support, overridable if you want to self-host. Grab the .css too, and host in the same place.
 
 		message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 		// {link} inside any configuration string will be replaced with an <a> link
@@ -151,7 +146,7 @@ I've included an ESM version as an alternative packaging format. Longterm it's b
 
 ## Theme CSS
 
-It's easy enough to theme the included styles by overriding CSS variables. They are shortened for filsize savings, but straightforward:
+It's easy enough to theme the included styles by overriding CSS variables. They are shortened but straightforward:
 
 ```css
 /* hacker mode */
@@ -185,15 +180,22 @@ html.bm-show::after {
 
 ## Browser Support
 
-With browserlist, we're targeting `">= 2%, last 2 years"`. This project is tested with BrowserStack. The earliest versions tested working are:
+With browserlist, we're targeting `">= 2%, last 2 years"`. The earliest versions tested working are:
 
 - Chrome/Edge/Opera: 85+ (released June 2020)
 - Firefox: 98+ (released March 2022)
-- Safari Desktop+iOS: 15.4+ (released March 2022)
-	- I couldn't easily test 15.0-15.3, 14.1 is broken though
+- Safari (inc iOS): 15.4+ (released March 2022)
 - Samsung Internet: 14+ (released April 2021)
 
-Currently if this is used in a browser that breaks interactivity (e.g. Safari 14.1, released April 2021), the site is unusable. It might be worth catching errors for unsupported browsers and removing the UI altogether for these extreme edge cases of users not updating their browsers.
+With `v0.3.19`, a [polyfill for dialog](https://github.com/GoogleChrome/dialog-polyfill) is loaded as necessary, extending the support to include these browsers (tested):
+
+- Safari (inc iOS): 13.1+ (released March 2020)
+- Firefox: 77+ (released June 2020)
+- Firefox Android: 79+ (released August 2020)
+
+If you need to support earlier than these browsers, you will need to start loading polyfills for missing javascript features, starting with `String.prototype.replaceAll`. [Cloudflare's polyfill CDN site](https://cdnjs.cloudflare.com/polyfill) will help you generate a package which will need to load before biscuitman.
+
+This project is tested with BrowserStack.
 
 ## Globals
 - `biscuitman` – configuration object, must be `window.biscuitman` (`biscuitman.create(options)` for ESM version)
@@ -213,10 +215,12 @@ Currently if this is used in a browser that breaks interactivity (e.g. Safari 14
 - `bmOpen()` – Opens My Consent Settings modal (you might want to link this on your Privacy policy or footer nav)
 	- example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>`
 
+The ESM version currently does still use some globals.
+
 ## CSS Classes
 
 - `biscuitman` on UI container
-- `bm-{sectionName}`, `bm-no-{sectionName}`, `bm-show` on `<html>`
+- `bm-{sectionName}`, `bm-no-{sectionName}`, `bm-show` and sometimes `bm-dialog-polyfill` on `<html>`
 - `--bm-height` CSS variable written to `<html style="--bm-height:0px;">`
 
 ## Events
@@ -241,22 +245,22 @@ document.addEventListener('biscuitman:open', (e) => {
 
 ## Development
 
-`npm run dev` fires up a browsersync dev server on `https://localhost:3000`.
+`npm run dev` fires up a browserSync development server on `https://localhost:3000`.
 
-We need to use `https://` to be able to delete Secure cookies.
+We need `https://` active to be able to delete Secure cookies.
 
 ### Fix NET::ERR_CERT_AUTHORITY_INVALID error
 
-This isn't a problem for testing the UI, but is a problem for the tests running headless browsers. To fix this:
+To prevent invalid certificate warnings, you can generate a local SSL key with `mkcert`:
 - Install `mkcert` ([Installation instructions](https://github.com/FiloSottile/mkcert#installation)) and then run:
-- run `npm run makecerts`, to create `server.crt` and `server.key` for browserSync
+- run `npm run makecerts`, to generate `server.crt` and `server.key` for browserSync dev server
 - if you're using another solution for local SSL certs, generate `server.crt` and `server.key` manually and place them in the root
 
 Visiting `https://localhost:3000` should now work without warnings.
 
 
 ### Building
-`npm run build` - creates project distributes via `run.js` a custom build script requiring `Node v20`
+`npm run build` - creates project distributes via `run.js`, a custom build script requiring `Node v20`
 
 ### Tests
 Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up. This is only chromium for now, but at some point it would be good to implement browserStack selenium tests to automate browser compatibility checks.

@@ -14,8 +14,6 @@ const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
 const { name, version, browserslist: browserlistString } = JSON.parse(await readFile('./package.json'))
 const comment = `/*! ${name}.js ${version} */`
 
-let seen = new Set()
-fs.writeFileSync('output.txt', JSON.stringify(compat.configs['flat/recommended'], (key, value) => (typeof value === 'object' && seen.has(value)) ? undefined : (seen.add(value), value), 2), seen = new Set())
 const filenames = {
 	css: 'biscuitman.css',
 	minCss: 'biscuitman.min.css',
@@ -194,7 +192,7 @@ export async function report() {
 }
 
 export async function jsreport() {
-	// TODO: This doesn't work
+	// TODO: This doesn't work, rip it out
 	log('js report','Checking JS browser compatibility...')
 	let js = await scripts(true)
 	const eslint = new ESLint({
@@ -263,7 +261,7 @@ export async function serve() {
 	bs.watch('./src/biscuitman.js', async (event, file) => {
 		if (event === 'change') {
 			console.log(`${file} has changed`)
-			await scripts()
+			await build()
 			bs.reload()
 		}
 	})
@@ -279,10 +277,10 @@ export async function serve() {
 		server: './',
 		files: ['./dist/*','index.html','./src/*.css','./src/*.js', './src/*.mjs'], // watch
 		port: 3000,
-		https: { // required for https cookies
-			key: './server.key',
-			cert: './server.crt'
-		},
+		// https: { // required for https cookies
+		// 	key: './server.key',
+		// 	cert: './server.crt'
+		// },
 		open: false,
 		notify: false
 	})
