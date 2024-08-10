@@ -117,6 +117,9 @@
 	</script>
 	<script type="text/plain" data-consent="analytics" src="https://static.klaviyo.com/onsite/js/klaviyo.js" id="js-analytics-klaviyo"></script>
 
+	<!-- Polyfill js features for pre-2020 browsers -->
+	<script src="//cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=String.prototype.replaceAll%2CObject.fromEntries"></script>
+
 	<!-- Biscuitman config -->
 	<script type="module" id="js-biscuitman-init">
 		import biscuitman from './dist/esm/biscuitman.withcss.mjs'
@@ -174,6 +177,33 @@ While you have the option to enable or disable some or all of these cookies, not
 		// Prove module is a singleton:
 		let bm2 = biscuitman.create({})
 		console.log('is biscuitman esm a singleton:', bm === bm2)
+	</script>
+
+	<script type="text/javascript" id="js-biscuitman-dialog-polyfill">
+		/*	biscuitman.js Dialog Polyfill
+
+			Include this script to extend browser support to:
+			- Safari (inc iOS): 13.1+ (released March 2020)
+			- Firefox: 77+ (released June 2020)
+			- Firefox Android: 79+ (released August 2020)
+
+			https://github.com/GoogleChrome/dialog-polyfill
+		*/
+		(function(d, h){
+			let dialog = d.querySelector('.biscuitman dialog');
+			if (!dialog.showModal || !dialog.close) {
+				h.classList.add('bm-dialog-polyfill');
+				let s = d.createElement('script');
+				s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
+				s.onload = () => { window.dialogPolyfill.registerDialog(dialog) };
+				d.head.appendChild(s);
+
+				let l = d.createElement('link');
+				l.rel = 'stylesheet';
+				l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
+				d.head.appendChild(l);
+			}
+		})(document, document.documentElement);
 	</script>
 
 	<style>

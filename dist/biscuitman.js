@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.19 */
+/*! biscuitman.js 0.3.20 */
 ((d, w, O, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -18,8 +18,7 @@
         info: '',
         more: 'Show more',
         noCookies: 'No cookies to display',
-        acceptNonEU: false,
-        dialogPolyfillUrl: '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js'
+        acceptNonEU: false
     };
     const o = {
         ...defaults,
@@ -83,7 +82,6 @@
 </dialog>`.replaceAll('{link}', `<a href="${o.linkURL}">${o.linkText}</a>`);
         ui.querySelectorAll('button').forEach((b)=>b.addEventListener('click', buttonHandler));
         dialog = ui.querySelector('dialog');
-        if (!dialog.showModal || !dialog.close) loadDialogPolyfill();
         dialog.addEventListener('close', closeModalHandler);
         dialog.addEventListener('cancel', cancelModalHandler);
         const moreLink = ui.querySelector('.more');
@@ -314,18 +312,4 @@
         });
         openModal();
     };
-    function loadDialogPolyfill() {
-        // https://github.com/GoogleChrome/dialog-polyfill
-        h.classList.add('bm-dialog-polyfill');
-        const script = d.createElement('script');
-        script.src = o.dialogPolyfillUrl;
-        script.onload = ()=>{
-            w.dialogPolyfill.registerDialog(dialog);
-        };
-        d.head.appendChild(script);
-        const link = d.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = o.dialogPolyfillUrl.slice(0, -2) + 'css';
-        d.head.appendChild(link);
-    }
 })(document, window, Object, document.documentElement, 'biscuitman');

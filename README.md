@@ -1,4 +1,4 @@
-# biscuitman.js 🍪 Lightweight Consent Manager
+# biscuitman.js 🍪 Lightweight Consent Manager ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
 ![screenshot of main UI](media/ui.webp)
 
@@ -21,10 +21,8 @@
 - include optional link in any text
 - CSS classes on `<html>` element for consents
 - Progressively enhanced CSS
-- Dialog polyfill loads as required (see [Browser Support](#browser-support))
 - Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
-- Preliminary e2e tests:
-![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg) ([failing due to GTM.js bug](https://github.com/replete/biscuitman/issues/4), pass locally)
+- This project is tested with BrowserStack.
 
 ## How to use
 [View demo](https://replete.github.io/biscuitman) for a more detailed example
@@ -68,7 +66,6 @@
 		// more: '(Show more)', // Show more button text
 		// noCookies: 'No cookies to display', // Displayed in expanded sections within modal
 		// acceptNonEU: false, // When enabled biscuitman checks browser locale timezone to see if it matches EU, if not it will auto consent
-		//dialogPolyfillUrl: '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js' // extends browser support, overridable if you want to self-host. Grab the .css too, and host in the same place.
 
 		message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 		// {link} inside any configuration string will be replaced with an <a> link
@@ -187,15 +184,47 @@ With browserlist, we're targeting `">= 2%, last 2 years"`. The earliest versions
 - Safari (inc iOS): 15.4+ (released March 2022)
 - Samsung Internet: 14+ (released April 2021)
 
-With `v0.3.19`, a [polyfill for dialog](https://github.com/GoogleChrome/dialog-polyfill) is loaded as necessary, extending the support to include these browsers (tested):
+### Extend browser support with Dialog polyfill
 
-- Safari (inc iOS): 13.1+ (released March 2020)
-- Firefox: 77+ (released June 2020)
-- Firefox Android: 79+ (released August 2020)
+Include this script _after_  biscuitman.js to extend browser support to:
+- Safari (inc iOS) 13.1+ (released March 2020)
+- Firefox 77+ (released June 2020)
+- Firefox Android 79+ (released August 2020)
 
-If you need to support earlier than these browsers, you will need to start loading polyfills for missing javascript features, starting with `String.prototype.replaceAll`. [Cloudflare's polyfill CDN site](https://cdnjs.cloudflare.com/polyfill) will help you generate a package which will need to load before biscuitman.
+```html
+<script type="text/javascript" id="js-biscuitman-dialog-polyfill">
+	// https://github.com/GoogleChrome/dialog-polyfill
+	(function(d, h){
+		let dialog = d.querySelector('.biscuitman dialog');
+		if (!dialog) return;
+		if (!dialog.showModal || !dialog.close) {
+			h.classList.add('bm-dialog-polyfill');
+			let s = d.createElement('script');
+			s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
+			s.onload = () => { window.dialogPolyfill.registerDialog(dialog) };
+			d.head.appendChild(s);
 
-This project is tested with BrowserStack.
+			let l = d.createElement('link');
+			l.rel = 'stylesheet';
+			l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
+			d.head.appendChild(l);
+		}
+	})(document, document.documentElement);
+</script>
+```
+
+### Extend browser support even further with javascript polyfills
+
+You can extend support to these browsers, by including this script _before_ biscuitman.js:
+- Safari 11.1+ (released Jan 2018)
+- Firefox 55+ (released August 2017)
+- Chrome 60+ (released July 2017)
+
+```html
+<script src="//cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=String.prototype.replaceAll%2CObject.fromEntries"></script>
+```
+
+If you need to support earlier than these browsers, you will need to start loading polyfills for missing javascript features.
 
 ## Globals
 - `biscuitman` – configuration object, must be `window.biscuitman` (`biscuitman.create(options)` for ESM version)
@@ -263,7 +292,7 @@ Visiting `https://localhost:3000` should now work without warnings.
 `npm run build` - creates project distributes via `run.js`, a custom build script requiring `Node v20`
 
 ### Tests
-Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up. This is only chromium for now, but at some point it would be good to implement browserStack selenium tests to automate browser compatibility checks.
+Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up.
 
 `npm run test` - Launches pupeeter integration tests in a browser (in http mode only)
 
