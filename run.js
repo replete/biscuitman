@@ -277,10 +277,10 @@ export async function serve() {
 		server: './',
 		files: ['./dist/*','index.html','./src/*.css','./src/*.js', './src/*.mjs'], // watch
 		port: 3000,
-		// https: { // required for https cookies
-		// 	key: './server.key',
-		// 	cert: './server.crt'
-		// },
+		https: { // required for https cookies
+			key: './server.key',
+			cert: './server.crt'
+		},
 		open: false,
 		notify: false
 	})

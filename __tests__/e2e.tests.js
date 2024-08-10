@@ -11,7 +11,7 @@ let appVersions = [
 
 appVersions.forEach(([filename])=>{
 	describe(`a fresh load of ${filename}`, () => {
-		
+
 		beforeEach(async ()=> {
 			setHTML(filename)
 			await page.goto(__SERVERURL__, { waitUntil: 'domcontentloaded' })
@@ -133,7 +133,7 @@ function setHTML(filename) {
 	let isModule = filename.endsWith('.mjs')
 	let config = {
 		message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
-		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities. 
+		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
 Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
 While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
 		linkText: 'Privacy Policy',
