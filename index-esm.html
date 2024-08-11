@@ -117,12 +117,28 @@
 	</script>
 	<script type="text/plain" data-consent="analytics" src="https://static.klaviyo.com/onsite/js/klaviyo.js" id="js-analytics-klaviyo"></script>
 
-	<!-- Polyfill js features for pre-2020 browsers -->
-	<script src="//cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=String.prototype.replaceAll%2CObject.fromEntries"></script>
 
 	<!-- Biscuitman config -->
 	<script type="module" id="js-biscuitman-init">
 		import biscuitman from './dist/esm/biscuitman.withcss.mjs'
+
+		// optional: extend browser support with dialog polyfill
+		// https://github.com/replete/biscuitman?tab=readme-ov-file#browser-support
+		document.addEventListener('bm:render', ({ detail }) => {
+			let { dialog } = detail
+			if (dialog.showModal && dialog.close) return
+			document.documentElement.classList.add('bm-dialog-polyfill')
+			let s = document.createElement('script')
+			s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
+			s.onload = () => { dialogPolyfill.registerDialog(dialog) }
+			document.head.appendChild(s)
+
+			let l = document.createElement('link')
+			l.rel = 'stylesheet'
+			l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
+			document.head.appendChild(l)
+		})
+
 		let bm = biscuitman.create({
 			message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 			info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
@@ -168,8 +184,8 @@ While you have the option to enable or disable some or all of these cookies, not
 		.on('save', data => {
 			console.log('ESM version: consents were saved', data.data)
 		})
-		.on('revoke', data => {
-			if (data.section === 'analytics') {
+		.on('revoke', ({ section }) => {
+			if (section === 'analytics') {
 				console.log('ESM version: analytics was revoked')
 			}
 		})
@@ -177,33 +193,6 @@ While you have the option to enable or disable some or all of these cookies, not
 		// Prove module is a singleton:
 		let bm2 = biscuitman.create({})
 		console.log('is biscuitman esm a singleton:', bm === bm2)
-	</script>
-
-	<script type="text/javascript" id="js-biscuitman-dialog-polyfill">
-		/*	biscuitman.js Dialog Polyfill
-
-			Include this script to extend browser support to:
-			- Safari (inc iOS): 13.1+ (released March 2020)
-			- Firefox: 77+ (released June 2020)
-			- Firefox Android: 79+ (released August 2020)
-
-			https://github.com/GoogleChrome/dialog-polyfill
-		*/
-		(function(d, h){
-			let dialog = d.querySelector('.biscuitman dialog');
-			if (!dialog.showModal || !dialog.close) {
-				h.classList.add('bm-dialog-polyfill');
-				let s = d.createElement('script');
-				s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
-				s.onload = () => { window.dialogPolyfill.registerDialog(dialog) };
-				d.head.appendChild(s);
-
-				let l = d.createElement('link');
-				l.rel = 'stylesheet';
-				l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
-				d.head.appendChild(l);
-			}
-		})(document, document.documentElement);
 	</script>
 
 	<style>
@@ -216,12 +205,13 @@ While you have the option to enable or disable some or all of these cookies, not
 
 	<header>
 		<h1>🍪 biscuitman.js</h1>
-		<h2>Lightweight Consent Manager <small>(ESM version)</small></h2>
+		<h2>Lightweight Consent Manager <br><small id="version" style="opacity:0.7"></small></h2>
 		<div>
 			<button onclick="bmInvalidate()">Invalidate consent</button>
 			<button onclick="bmUpdate()">Update consent</button>
 		</div>
 		<pre id="consents"></pre>
+		<script>fetch('./package.json').then(res => res.json()).then(data => version.textContent = `v${data.version} (ESM)`)</script>
 	</header>
 	<div class="container">
 		<p style="text-align:center"><a class="img" href="https://github.com/replete/biscuitman"><img src="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" style="width:50px;"/>README @ Github repo</a></p>

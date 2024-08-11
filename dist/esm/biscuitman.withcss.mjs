@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.20 */
+/*! biscuitman.js 0.4.0 */
 const { document: d, window: w, Object: O } = globalThis;
 const h = d.documentElement;
 const bm = 'biscuitman';
@@ -92,6 +92,10 @@ function render() {
         }));
     d.body.appendChild(ui);
     w.addEventListener('resize', updateBannerHeight);
+    dispatch('render', {
+        dialog,
+        ui
+    });
 }
 const updateBannerHeight = ()=>{
     h.style.setProperty('--bm-height', `${ui.offsetHeight}px`);
@@ -146,12 +150,14 @@ function openModal() {
     dialog.showModal();
 }
 function dispatch(eventName, data) {
-    const name = `${bm}:${eventName}`;
+    const name = `bm:${eventName}`;
     const payload = {
         ...data !== undefined && data,
         time: +new Date()
     };
-    d.dispatchEvent(new CustomEvent(name, payload));
+    d.dispatchEvent(new CustomEvent(name, {
+        detail: payload
+    }));
     console.debug(name, payload);
     if (listeners[name]) listeners[name].forEach((callback)=>callback(payload));
 }
@@ -352,7 +358,7 @@ export default {
 if (typeof BMCSS === 'undefined') {
 	let css=document.createElement('style');
 	css.id = 'BMCSS';
-	css.textContent=`/*! biscuitman.js 0.3.20 */
+	css.textContent=`/*! biscuitman.js 0.4.0 */
 .biscuitman {
   --ui: 0, 0, 0;
   --tx: #444;

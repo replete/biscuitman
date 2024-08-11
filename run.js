@@ -258,7 +258,10 @@ export async function serve() {
 		}
 	})
 
-	bs.watch('./src/biscuitman.js', async (event, file) => {
+	bs.watch([
+		'./src/biscuitman.js',
+		'./src/biscuitman.mjs'
+	], async (event, file) => {
 		if (event === 'change') {
 			console.log(`${file} has changed`)
 			await build()

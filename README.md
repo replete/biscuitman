@@ -4,7 +4,7 @@
 
 #### [View demo](https://replete.github.io/biscuitman)
 
-100kB+ seemed too heavy for a cookie popup so I wrote this. It's around 4kB gz/br, including CSS. It's designed to be as small as possible with an adequate featureset for basic website cookie consent.
+100kB+ seemed too heavy for a cookie popup so I wrote this, it's around 4kB compressed including CSS, designed to be as small as possible and versatile enough for basic website 'cookie' consent management.
 
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
@@ -22,7 +22,6 @@
 - CSS classes on `<html>` element for consents
 - Progressively enhanced CSS
 - Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
-- This project is tested with BrowserStack.
 
 ## How to use
 [View demo](https://replete.github.io/biscuitman) for a more detailed example
@@ -121,7 +120,7 @@ While you have the option to enable or disable some or all of these cookies, not
 
 ## Experimental ESM version
 
-I've included an ESM version as an alternative packaging format. Longterm it's better to not have two versions, so this may or not become the main version. Consider it an alternate packaging format at this point.
+ESM version supplied as an alternative packaging format. Long-term it's better to not have two versions, so this may or not become the main version. Consider it an alternate packaging format at this point. [see ESM demo](https://replete.github.io/biscuitman/index-esm.html)
 
 ```html
 <!-- Experimental ESM version: -->
@@ -186,45 +185,51 @@ With browserlist, we're targeting `">= 2%, last 2 years"`. The earliest versions
 
 ### Extend browser support with Dialog polyfill
 
-Include this script _after_  biscuitman.js to extend browser support to:
+Include this script alongside the biscuitman config to extend browser support to:
 - Safari (inc iOS) 13.1+ (released March 2020)
 - Firefox 77+ (released June 2020)
 - Firefox Android 79+ (released August 2020)
 
 ```html
-<script type="text/javascript" id="js-biscuitman-dialog-polyfill">
-	// https://github.com/GoogleChrome/dialog-polyfill
-	(function(d, h){
-		let dialog = d.querySelector('.biscuitman dialog');
-		if (!dialog) return;
-		if (!dialog.showModal || !dialog.close) {
-			h.classList.add('bm-dialog-polyfill');
-			let s = d.createElement('script');
-			s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
-			s.onload = () => { window.dialogPolyfill.registerDialog(dialog) };
-			d.head.appendChild(s);
+<script type="text/javascript" id="js-biscuitman-config">
+	biscuitman = {...}
 
-			let l = d.createElement('link');
-			l.rel = 'stylesheet';
-			l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
-			d.head.appendChild(l);
-		}
-	})(document, document.documentElement);
+	// optional: extend browser support with dialog polyfill
+	// https://github.com/replete/biscuitman?tab=readme-ov-file#browser-support
+	document.addEventListener('bm:render', ({ detail }) => {
+		let { dialog } = detail
+		if (dialog.showModal && dialog.close) return
+		document.documentElement.classList.add('bm-dialog-polyfill')
+		let s = document.createElement('script')
+		s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
+		s.onload = () => { dialogPolyfill.registerDialog(dialog) }
+		document.head.appendChild(s)
+
+		let l = document.createElement('link')
+		l.rel = 'stylesheet'
+		l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
+		document.head.appendChild(l)
+	})
 </script>
 ```
 
 ### Extend browser support even further with javascript polyfills
 
-You can extend support to these browsers, by including this script _before_ biscuitman.js:
+You can extend support to these browsers, by including the following script _before_ biscuitman.js:
 - Safari 11.1+ (released Jan 2018)
-- Firefox 55+ (released August 2017)
-- Chrome 60+ (released July 2017)
+- Safari iOS 11.3+ (released Mar 2018)
+- Firefox 55+ (released Aug 2017)
+- Chrome 60+ (released Jul 2017)
 
 ```html
 <script src="//cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=String.prototype.replaceAll%2CObject.fromEntries"></script>
 ```
 
-If you need to support earlier than these browsers, you will need to start loading polyfills for missing javascript features.
+Obviously a third party hosted polyfill is not good for performance, so in this scenario you'd want to self-host the `replaceAll` and `Object.fromEntries` polyfills.
+
+This does not apply to the ESM version, the support for ESM more like 2020.
+
+If you need to support earlier than these browsers, biscuitman would need to be compiled for an earlier javascript target as things like the spread operator are unsupported in earlier versions, which is possible by specifying an earlier `browserlist` target in package.json.
 
 ## Globals
 - `biscuitman` – configuration object, must be `window.biscuitman` (`biscuitman.create(options)` for ESM version)
@@ -254,22 +259,25 @@ The ESM version currently does still use some globals.
 
 ## Events
 
-Custom events prefixed with `biscuitman:` are fired on `document`. The easiest way to see how events work is to view the `console.debug()` calls in the [demo](https://replete.github.io/biscuitman).
-- `biscuitman:open` => `{time: 1718915128298}` modal opened
-- `biscuitman:close` => `{time: 1718915128298}` modal closed
-- `biscuitman:button` => `{id: "settings", time: 1718915128298}` button clicked
-- `biscuitman:save` => `{data: {consentTime: 1718914784624, advertisement:true, advertisement: fal..}, time: 1718914784624}` consent choice saved
-- `biscuitman:inject` =>  `{el: $Element, parent?: $Element, id?: 'script-id', time: 1718914784624}` script injected to DOM. if parent exists, it's a new tag inserted after a `src` script loaded which also had text content (a 'dependent' script = tidier convenient markup)
-- `biscuitman:invalidate` => `{data: {...consentObjectJustDeleted}, time: 1718915128298}` consent invalidated
-- `biscuitman:revoke` => `{section: 'analytics', time: 1718914784624}` returns section that was revoked if updated consent changed from true to false
-- `biscuitman:update` => `{data: {...currentConsentObject}, time: 1718914784624}` returns current consent object and time
-- `biscuitman:delete` => `{localStorage|cookie: 'cookieName', time: 1718914784624}` fires when consent is rejected or invalidated and cookies/localStorage entries are deleted
+Custom events prefixed with `bm:` are fired on `document`. The easiest way to see how events work is to view the `console.debug()` calls in the [demo](https://replete.github.io/biscuitman).
+- `bm:open` => `{time: 1718915128298}` modal opened
+- `bm:close` => `{time: 1718915128298}` modal closed
+- `bm:button` => `{id: "settings", time: 1718915128298}` button clicked
+- `bm:save` => `{data: {consentTime: 1718914784624, advertisement:true, advertisement: fal..}, time: 1718914784624}` consent choice saved
+- `bm:inject` =>  `{el: $Element, parent?: $Element, id?: 'script-id', time: 1718914784624}` script injected to DOM. if parent exists, it's a new tag inserted after a `src` script loaded which also had text content (a 'dependent' script = tidier convenient markup)
+- `bm:invalidate` => `{data: {...consentObjectJustDeleted}, time: 1718915128298}` consent invalidated
+- `bm:revoke` => `{section: 'analytics', time: 1718914784624}` returns section that was revoked if updated consent changed from true to false
+- `bm:update` => `{data: {...currentConsentObject}, time: 1718914784624}` returns current consent object and time
+- `bm:delete` => `{localStorage|cookie: 'cookieName', time: 1718914784624}` fires when consent is rejected or invalidated and cookies/localStorage entries are deleted
 
 You can watch for these events like this:
 ```js
-document.addEventListener('biscuitman:open', (e) => {
-	console.log('modal opened')
-}, true);
+document.addEventListener('bm:save', ({ detail }) => {
+	let { data, time } = detail
+	console.log(data)
+})
+
+TODO: Switch to `postMessage` to support web workers.
 ```
 
 ## Development

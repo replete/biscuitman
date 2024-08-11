@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.3.20 */
+/*! biscuitman.js 0.4.0 */
 ((d, w, O, h, bm)=>{
     const defaults = {
         key: 'myconsent',
@@ -145,12 +145,14 @@
         dialog.showModal();
     }
     function dispatch(eventName, data) {
-        const name = `${bm}:${eventName}`;
+        const name = `bm:${eventName}`;
         const payload = {
             ...data !== undefined && data,
             time: +new Date()
         };
-        d.dispatchEvent(new CustomEvent(name, payload));
+        d.dispatchEvent(new CustomEvent(name, {
+            detail: payload
+        }));
         console.debug(name, payload);
     }
     // Data:

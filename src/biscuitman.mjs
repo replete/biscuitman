@@ -118,6 +118,7 @@ function render() {
 	}))
 	d.body.appendChild(ui)
 	w.addEventListener('resize', updateBannerHeight)
+	dispatch('render', { dialog, ui })
 }
 
 const updateBannerHeight = () => { h.style.setProperty('--bm-height', `${ui.offsetHeight}px`) }
@@ -163,12 +164,12 @@ function openModal() {
 }
 
 function dispatch(eventName, data) {
-	const name = `${bm}:${eventName}`
+	const name = `bm:${eventName}`
 	const payload = {
 		...(data !== undefined && data),
 		time: +new Date()
 	}
-	d.dispatchEvent(new CustomEvent(name, payload))
+	d.dispatchEvent(new CustomEvent(name, { detail: payload }))
 	console.debug(name, payload)
 	if (listeners[name]) listeners[name].forEach(callback => callback(payload))
 }
