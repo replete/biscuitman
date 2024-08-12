@@ -1,10 +1,5 @@
 const { document: d, window: w, Object: O } = globalThis
 const h = d.documentElement
-const bm = 'biscuitman'
-
-let instance
-let options
-let listeners = {}
 
 const defaults = {
 	key: 'myconsent',
@@ -47,11 +42,13 @@ const defaults = {
 	// uncategorizedTitle: 'Uncategorized',
 	// uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
 }
+let options
 
 // UI & Events:
 
 const ui = document.createElement('div')
 let dialog
+let listeners = {}
 
 function render() {
 	ui.classList.add('biscuitman')
@@ -89,8 +86,8 @@ function render() {
 				<details>
 					<summary>
 						<b>${options[`${section}Title`]}</b>
-						<label for="${bm}_${section}" class="${disabledProp} ${checkedProp}">
-							<input type="checkbox" id="${bm}_${section}" ${disabledProp} ${checkedProp} data-s="${section}"/>
+						<label for="bm_${section}" class="${disabledProp} ${checkedProp}">
+							<input type="checkbox" id="bm_${section}" ${disabledProp} ${checkedProp} data-s="${section}"/>
 						</label>
 						<p>${options[`${section}Message`]}</p>
 					</summary>
@@ -129,7 +126,6 @@ const displayUI = (show) => {
 
 const applyCssClasses = () => {
 	let { consentTime, ...consents } = getConsents()
-	// if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
 	if (!consentTime) consents = O.fromEntries(options.sections.slice(1).map(sectionName => [sectionName, false]))
 
 	for (let [name, granted] of O.entries(consents)) {
@@ -298,6 +294,7 @@ function handleNonEUConsent() {
 	}
 }
 
+let instance
 
 function create(config = {}) {
 	if (instance) return instance
@@ -351,13 +348,13 @@ function create(config = {}) {
 		invalidate,
 		update,
 		on: (event, callback) => {
-			const eventName = `${bm}:${event}`
+			const eventName = `bm:${event}`
 			if (!listeners[eventName]) listeners[eventName] = []
 			listeners[eventName].push(callback)
 			return instance
 		},
 		off: (event, callback) => {
-			const eventName = `${bm}:${event}`
+			const eventName = `bm:${event}`
 			if (!listeners[eventName]) return
 			listeners[eventName] = listeners[eventName].filter(cb => cb !== callback)
 		}

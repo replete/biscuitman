@@ -1,5 +1,5 @@
-/*! biscuitman.js 0.4.0 */
-((d, w, O, h, bm)=>{
+/*! biscuitman.js 0.4.1 */
+((d, w, O, h)=>{
     const defaults = {
         key: 'myconsent',
         global: 'Consent',
@@ -28,7 +28,7 @@
     const ui = d.createElement('div');
     let dialog;
     function render() {
-        ui.classList.add(bm);
+        ui.classList.add('biscuitman');
         ui.innerHTML = `
 <article>
 	<b>${o.title}</b>
@@ -60,8 +60,8 @@
 				<details>
 					<summary>
 						<b>${o[`${section}Title`]}</b>
-						<label for="${bm}_${section}" class="${disabledProp} ${checkedProp}">
-							<input type="checkbox" id="${bm}_${section}" ${disabledProp} ${checkedProp} data-s="${section}"/>
+						<label for="bm_${section}" class="${disabledProp} ${checkedProp}">
+							<input type="checkbox" id="bm_${section}" ${disabledProp} ${checkedProp} data-s="${section}"/>
 						</label>
 						<p>${o[`${section}Message`]}</p>
 					</summary>
@@ -101,7 +101,6 @@
     };
     const applyCssClasses = ()=>{
         let { consentTime, ...consents } = getConsents();
-        // if (!consentTime) h.className = h.className.replace(/\bbm-[^\s]+(\s+|$)/g, '').trim();
         if (!consentTime) consents = O.fromEntries(o.sections.slice(1).map((sectionName)=>[
                 sectionName,
                 false
@@ -314,4 +313,4 @@
         });
         openModal();
     };
-})(document, window, Object, document.documentElement, 'biscuitman');
+})(document, window, Object, document.documentElement);

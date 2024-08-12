@@ -90,9 +90,9 @@ appVersions.forEach(([filename])=>{
 
 		test('should hide UI and save consents correctly after selecting some sections', async () => {
 			await page.click('button[data-id=settings]')
-			await page.click('[for=biscuitman_analytics]')
-			await page.click('[for=biscuitman_functional]')
-			await page.click('[for=biscuitman_performance]')
+			await page.click('[for=bm_analytics]')
+			await page.click('[for=bm_functional]')
+			await page.click('[for=bm_performance]')
 
 			await page.click('button[data-id=save]')
 
