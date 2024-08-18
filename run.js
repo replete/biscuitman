@@ -4,9 +4,6 @@ import swc from '@swc/core'
 import { transform as transformCss, browserslistToTargets, Features } from 'lightningcss'
 import browserslist from 'browserslist'
 import { Readable } from 'stream'
-import { ESLint } from 'eslint'
-import compat from 'eslint-plugin-compat'
-import globals from 'globals'
 import doiuse from 'doiuse/stream'
 import zlib from 'zlib'
 const { readFile, writeFile } = fs.promises
@@ -186,41 +183,8 @@ function getCompressedSizes(text) {
 export async function report() {
 	log('report', 'Running browser compatibility reports...')
 	await Promise.all([
-		cssreport(),
-		jsreport()
+		cssreport()
 	])
-}
-
-export async function jsreport() {
-	// TODO: This doesn't work, rip it out
-	log('js report','Checking JS browser compatibility...')
-	let js = await scripts(true)
-	const eslint = new ESLint({
-		overrideConfigFile: true,
-		overrideConfig: {
-			...compat.configs['flat/recommended'],
-			languageOptions: {
-				ecmaVersion: 2018,
-				globals: {
-					...globals.browser
-				}
-			},
-			rules: {
-				'compat/compat': 'error',
-				...compat.configs['flat/recommended'].rules
-			},
-			settings: {
-				browsers: 'last 10 years'
-			}
-		}
-	})
-
-	const lint = await eslint.lintText(js[0])
-	const formatter = await eslint.loadFormatter('stylish')
-	const jsReport = formatter.format(lint)
-	if (jsReport.length === 0) {
-		log('js report','✅ No JS Compatibilty warnings')
-	} else log('js report', jsReport)
 }
 
 export async function cssreport() {
@@ -299,7 +263,6 @@ async function main() {
 			case 'scripts': scripts(); break
 			case 'build': build(); break
 			case 'report': report(); break
-			case 'jsreport': jsreport(); break
 			default: break
 		}
 	}
