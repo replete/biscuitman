@@ -332,7 +332,7 @@
   display: none;
   position: fixed;
   bottom: 0;
-  box-shadow: 0 -2px 10px #00000029;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, .16);
 }
 
 .bm-show .biscuitman {
@@ -465,7 +465,7 @@
     max-width: 860px;
     max-height: 80vh;
     margin: auto;
-    box-shadow: 0 0 8px #0000004d;
+    box-shadow: 0 0 8px rgba(0, 0, 0, .3);
   }
 }
 
@@ -494,7 +494,7 @@
 
 .biscuitman .bm-dialog > b:after {
   content: "";
-  background: linear-gradient(180deg, var(--bg) 20%, #fff0);
+  background: linear-gradient(180deg, var(--bg) 20%, rgba(255, 255, 255, 0));
   pointer-events: none;
   z-index: 1;
   width: 100%;
@@ -507,7 +507,7 @@
 
 .biscuitman .bm-dialog nav:after {
   content: "";
-  background: linear-gradient(0deg, var(--bg) 20%, #fff0);
+  background: linear-gradient(0deg, var(--bg) 20%, rgba(255, 255, 255, 0));
   pointer-events: none;
   width: 100%;
   height: 25px;
@@ -580,7 +580,7 @@
   border-radius: 5px;
   padding: 10px;
   list-style: none;
-  box-shadow: 0 2px 4px #0000001a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
 }
 
 .biscuitman details[open] summary b:after {
@@ -605,8 +605,8 @@
 .biscuitman summary b:after {
   content: "";
   border: 5px solid rgba(var(--ui), .4);
-  border-top-color: #0000;
-  border-left-color: #0000;
+  border-top-color: rgba(0, 0, 0, 0);
+  border-left-color: rgba(0, 0, 0, 0);
   border-radius: 2px;
   width: 1em;
   height: 1em;
@@ -639,7 +639,12 @@
   display: flex;
 }
 
-.biscuitman dl dt, .biscuitman dl dd {
+.biscuitman dl dt {
+  color: var(--tx);
+  font-size: 12px;
+}
+
+.biscuitman dl dd {
   color: var(--tx);
   font-size: 12px;
 }
