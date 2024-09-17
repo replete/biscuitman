@@ -65,6 +65,7 @@
 		// more: '(Show more)', // Show more button text
 		// noCookies: 'No cookies to display', // Displayed in expanded sections within modal
 		// acceptNonEU: false, // When enabled biscuitman checks browser locale timezone to see if it matches EU, if not it will auto consent
+		dialogPolyfill: '/dist/dialog-polyfill.withcss.min.js', // set to false to disable dialog polyfill loading
 
 		message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 		// {link} inside any configuration string will be replaced with an <a> link
@@ -176,46 +177,29 @@ html.bm-show::after {
 
 ## Browser Support
 
-With browserlist, we're targeting `">= 2%, last 2 years"`. The earliest versions tested working are:
+Biscuitman is written in modern Javascript and transpiled `swc` to target browsers less than two years old. The included distributables are tested to support the following browsers:
 
 - Chrome/Edge/Opera: 85+ (released June 2020)
 - Firefox: 98+ (released March 2022)
 - Safari (inc iOS): 15.4+ (released March 2022)
 - Samsung Internet: 14+ (released April 2021)
 
-### Extend browser support with Dialog polyfill
+### \<Dialog\> polyfill
 
-Include this script alongside the biscuitman config to extend browser support to:
+To support older than the browsers above, a polyfill for `<dialog>` is required. Biscuitman checks for this and will load the [dialog polyfill](https://github.com/GoogleChrome/dialog-polyfill) automatically if it is not already loaded, and then correctly bind.
+
+For this to work, you must host `dist/dialog-polyfill.withcss.js` and set the biscuitman config property, `dialogPolyfill`, to the correct URL.
+
+This will extend the browser support to:
 - Safari (inc iOS) 13.1+ (released March 2020)
 - Firefox 77+ (released June 2020)
 - Firefox Android 79+ (released August 2020)
 
-```html
-<script type="text/javascript" id="js-biscuitman-config">
-	biscuitman = {...}
+If the dialog polyfill is already loaded (`window.dialogPolyfill` exists), the polyfill will not be loaded again. To disable this on-demand functionality altogether, set `dialogPolyfill` property to `false`.
 
-	// optional: extend browser support with dialog polyfill
-	// https://github.com/replete/biscuitman?tab=readme-ov-file#browser-support
-	document.addEventListener('bm:render', ({ detail }) => {
-		let { dialog } = detail
-		if (dialog.showModal && dialog.close) return
-		document.documentElement.classList.add('bm-dialog-polyfill')
-		let s = document.createElement('script')
-		s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
-		s.onload = () => { dialogPolyfill.registerDialog(dialog) }
-		document.head.appendChild(s)
+### Extending Browser support
 
-		let l = document.createElement('link')
-		l.rel = 'stylesheet'
-		l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
-		document.head.appendChild(l)
-	})
-</script>
-```
-
-### Extend browser support even further with javascript polyfills
-
-You can extend support to these browsers, by including the following script _before_ biscuitman.js:
+You can extend support to the following browsers by including the following script _before_ biscuitman.js:
 - Safari 11.1+ (released Jan 2018)
 - Safari iOS 11.3+ (released Mar 2018)
 - Firefox 55+ (released Aug 2017)
@@ -225,14 +209,11 @@ You can extend support to these browsers, by including the following script _bef
 <script src="//cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=String.prototype.replaceAll%2CObject.fromEntries"></script>
 ```
 
-Obviously a third party hosted polyfill is not good for performance, so in this scenario you'd want to self-host the `replaceAll` and `Object.fromEntries` polyfills.
-
-This does not apply to the ESM version, the support for ESM more like 2020.
-
-If you need to support earlier than these browsers, biscuitman would need to be compiled for an earlier javascript target as things like the spread operator are unsupported in earlier versions, which is possible by specifying an earlier `browserlist` target in package.json.
+Obviously a third party hosted polyfill is not good for performance, so in this scenario you'd want to self-host the `replaceAll` and `Object.fromEntries` polyfills. This is the lazy approach, if you really need to support older browsers it would make more sense to rebuild biscuitman with an earlier javascript target (update `package.json` `browserlist` property and rebuild with `npm run build`). If there was enough need for this, I'd consider adding a build target for older browsers and release as `biscuitman.legacy.js`.
 
 ## Globals
-- `biscuitman` – configuration object, must be `window.biscuitman` (`biscuitman.create(options)` for ESM version)
+- `biscuitman` – configuration object, must be `window.biscuitman`
+	- `biscuitman.create(options)` for the ESM version
 - `Consent` – object for accessing consents (override: `global` in config)
 	```
 	{
@@ -249,7 +230,6 @@ If you need to support earlier than these browsers, biscuitman would need to be 
 - `bmOpen()` – Opens My Consent Settings modal (you might want to link this on your Privacy policy or footer nav)
 	- example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>`
 
-The ESM version currently does still use some globals.
 
 ## CSS Classes
 
@@ -276,8 +256,6 @@ document.addEventListener('bm:save', ({ detail }) => {
 	let { data, time } = detail
 	console.log(data)
 })
-
-TODO: Switch to `postMessage` to support web workers.
 ```
 
 ## Development

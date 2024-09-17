@@ -8,7 +8,8 @@ import doiuse from 'doiuse/stream'
 import zlib from 'zlib'
 const { readFile, writeFile } = fs.promises
 const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
-const { name, version, browserslist: browserlistString } = JSON.parse(await readFile('./package.json'))
+const packageJson = JSON.parse(await readFile('./package.json'))
+const { name, version, browserslist: browserlistString } = packageJson
 const comment = `/*! ${name}.js ${version} */`
 
 const filenames = {
@@ -21,7 +22,9 @@ const filenames = {
 	mjs: 'biscuitman.mjs',
 	minMjs: 'biscuitman.min.mjs',
 	mjsWithCss: 'biscuitman.withcss.mjs',
-	minMjsWithCss: 'biscuitman.withcss.min.mjs'
+	minMjsWithCss: 'biscuitman.withcss.min.mjs',
+	dialogPolyfillJsWithCss: 'dialog-polyfill.withcss.js',
+	dialogPolyfillJsWithCssMin: 'dialog-polyfill.withcss.min.js'
 }
 
 export async function styles(skipFileSave) {
@@ -170,6 +173,46 @@ ${css[0]}\`;
 	log('build',`Saved dist/${filenames.minJsWithCss} ${getCompressedSizes(jsCssMin)}`)
 	log('build',`Saved dist/esm/${filenames.mjsWithCss} ${getCompressedSizes(mjsCss)}`)
 	log('build',`Saved dist/esm/${filenames.minMjsWithCss} ${getCompressedSizes(mjsCssMin)}`)
+
+	// Build Dialog Polyfill
+	const dialogPolyfillJs = await readFile('node_modules/dialog-polyfill/dist/dialog-polyfill.js', 'utf8')
+	const dialogPolyfillJsMin = await swc.transform(dialogPolyfillJs, {
+		sourceMaps: false,
+		isModule: false,
+		jsc: {
+			minify: {
+				compress: {
+					unused: true
+				},
+				mangle: false
+			}
+		},
+		minify: true
+	})
+
+	const dialogPolyfillCss = await readFile('node_modules/dialog-polyfill/dist/dialog-polyfill.css', 'utf8')
+	const dialogPolyfillCssMin = transformCss({
+		code: Buffer.from(dialogPolyfillCss),
+		minify: true,
+		sourceMap: false
+	})
+
+	const dialogPolyfillJsCss = `${comment}/* dialog-polyfill.js ${packageJson.devDependencies['dialog-polyfill']}*/
+${dialogPolyfillJs}
+((d)=>{
+	let css=d.createElement('style');
+	css.textContent=\`${comment}
+${dialogPolyfillCss}\`;
+	d.head.appendChild(css)
+})(document);`
+	const dialogPolyfillJsCssMin = `${comment}/* dialog-polyfill.js ${packageJson.devDependencies['dialog-polyfill']}*/${dialogPolyfillJsMin.code};((d)=>{let c=d.createElement('style');c.textContent=\`${comment}${dialogPolyfillCssMin.code}\`;d.head.appendChild(c)})(document);`
+
+	await Promise.all([
+		writeFile(`dist/${filenames.dialogPolyfillJsWithCss}`, dialogPolyfillJsCss),
+		writeFile(`dist/${filenames.dialogPolyfillJsWithCssMin}`, dialogPolyfillJsCssMin),
+	])
+	log('build',`Saved dist/${filenames.dialogPolyfillJsWithCss}`)
+	log('build',`Saved dist/${filenames.dialogPolyfillJsWithCssMin} ${getCompressedSizes(dialogPolyfillJsCssMin)}`)
 
 	console.timeEnd('Build Time')
 }

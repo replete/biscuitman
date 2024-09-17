@@ -16,6 +16,7 @@
 		more: 'Show more',
 		noCookies: 'No cookies to display',
 		acceptNonEU: false,
+		dialogPolyfill: '/dist/dialog-polyfill.withcss.min.js', // set to false to disable dialog polyfill loading
 		// message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 		// info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
 		// Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
@@ -106,6 +107,7 @@
 		dialog = ui.querySelector('dialog')
 		dialog.addEventListener('close', closeModalHandler)
 		dialog.addEventListener('cancel', cancelModalHandler)
+		if (o.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog)
 		const moreLink = ui.querySelector('.more')
 		if (moreLink) moreLink.addEventListener('click', moreLink.remove)
 		ui.querySelectorAll('[data-s]').forEach(checkbox => checkbox.addEventListener('change', e => {
@@ -164,6 +166,20 @@
 		}
 		d.dispatchEvent(new CustomEvent(name, { detail: payload }))
 		console.debug(name, payload)
+	}
+
+	function loadDialogPolyfill(dialog) {
+		function mount() {
+			d.documentElement.classList.add('bm-dialog-polyfill')
+			w.dialogPolyfill.registerDialog(dialog)
+		}
+		if (w.dialogPolyfill) mount()
+		else {
+			const script = d.createElement('script')
+			script.onload = mount
+			script.src = o.dialogPolyfill
+			d.head.appendChild(script)
+		}
 	}
 
 	// Data:

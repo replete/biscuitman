@@ -18,7 +18,8 @@
         info: '',
         more: 'Show more',
         noCookies: 'No cookies to display',
-        acceptNonEU: false
+        acceptNonEU: false,
+        dialogPolyfill: '/dist/dialog-polyfill.withcss.min.js'
     };
     const o = {
         ...defaults,
@@ -84,6 +85,7 @@
         dialog = ui.querySelector('dialog');
         dialog.addEventListener('close', closeModalHandler);
         dialog.addEventListener('cancel', cancelModalHandler);
+        if (o.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog);
         const moreLink = ui.querySelector('.more');
         if (moreLink) moreLink.addEventListener('click', moreLink.remove);
         ui.querySelectorAll('[data-s]').forEach((checkbox)=>checkbox.addEventListener('change', (e)=>{
@@ -153,6 +155,19 @@
             detail: payload
         }));
         console.debug(name, payload);
+    }
+    function loadDialogPolyfill(dialog) {
+        function mount() {
+            d.documentElement.classList.add('bm-dialog-polyfill');
+            w.dialogPolyfill.registerDialog(dialog);
+        }
+        if (w.dialogPolyfill) mount();
+        else {
+            const script = d.createElement('script');
+            script.onload = mount;
+            script.src = o.dialogPolyfill;
+            d.head.appendChild(script);
+        }
     }
     // Data:
     const getConsents = ()=>w[o.global] || {};

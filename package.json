@@ -25,7 +25,7 @@
     "lint": "eslint",
     "coverage": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --runInBand --openHandlesTimeout=2000 --collectCoverage --",
     "makecerts": "mkcert -cert-file server.crt -key-file server.key localhost 127.0.0.1 ::1",
-	"http": "npx http-server -p 8000"
+    "http": "npx http-server -p 8000"
   },
   "test": "npm run test",
   "devDependencies": {
@@ -34,6 +34,7 @@
     "@swc/jest": "^0.2.36",
     "browser-sync": "^3.0.2",
     "browserslist": "^4.23.3",
+    "dialog-polyfill": "^0.5.6",
     "doiuse": "^6.0.2",
     "eslint": "^9.10.0",
     "globals": "^15.9.0",

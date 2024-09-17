@@ -160,23 +160,6 @@ While you have the option to enable or disable some or all of these cookies, not
 			acceptNonEU: false,
 			force: false
 		}
-
-		// optional: extend browser support with dialog polyfill
-		// https://github.com/replete/biscuitman?tab=readme-ov-file#browser-support
-		document.addEventListener('bm:render', ({ detail }) => {
-			let { dialog } = detail
-			if (dialog.showModal && dialog.close) return
-			document.documentElement.classList.add('bm-dialog-polyfill')
-			let s = document.createElement('script')
-			s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
-			s.onload = () => { dialogPolyfill.registerDialog(dialog) }
-			document.head.appendChild(s)
-
-			let l = document.createElement('link')
-			l.rel = 'stylesheet'
-			l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
-			document.head.appendChild(l)
-		})
 	</script>
 
 	<!-- optional polyfills for 2017/18+ browsers: https://github.com/replete/biscuitman?tab=readme-ov-file#browser-support -->

@@ -19,7 +19,8 @@ const defaults = {
     info: '',
     more: 'Show more',
     noCookies: 'No cookies to display',
-    acceptNonEU: false
+    acceptNonEU: false,
+    dialogPolyfill: '/dist/dialog-polyfill.withcss.min.js'
 };
 let options;
 // UI & Events:
@@ -83,6 +84,7 @@ function render() {
     dialog = ui.querySelector('dialog');
     dialog.addEventListener('close', closeModalHandler);
     dialog.addEventListener('cancel', cancelModalHandler);
+    if (options.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog);
     const moreLink = ui.querySelector('.more');
     if (moreLink) moreLink.addEventListener('click', moreLink.remove);
     ui.querySelectorAll('[data-s]').forEach((checkbox)=>checkbox.addEventListener('change', (e)=>{
@@ -157,6 +159,19 @@ function dispatch(eventName, data) {
     }));
     console.debug(name, payload);
     if (listeners[name]) listeners[name].forEach((callback)=>callback(payload));
+}
+function loadDialogPolyfill(dialog) {
+    function mount() {
+        d.documentElement.classList.add('bm-dialog-polyfill');
+        w.dialogPolyfill.registerDialog(dialog);
+    }
+    if (w.dialogPolyfill) mount();
+    else {
+        const script = d.createElement('script');
+        script.onload = mount;
+        script.src = options.dialogPolyfill;
+        d.head.appendChild(script);
+    }
 }
 // Data:
 const getConsents = ()=>w[options.global] || {};

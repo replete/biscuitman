@@ -122,23 +122,6 @@
 	<script type="module" id="js-biscuitman-init">
 		import biscuitman from './dist/esm/biscuitman.withcss.mjs'
 
-		// optional: extend browser support with dialog polyfill
-		// https://github.com/replete/biscuitman?tab=readme-ov-file#browser-support
-		document.addEventListener('bm:render', ({ detail }) => {
-			let { dialog } = detail
-			if (dialog.showModal && dialog.close) return
-			document.documentElement.classList.add('bm-dialog-polyfill')
-			let s = document.createElement('script')
-			s.src = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.js';
-			s.onload = () => { dialogPolyfill.registerDialog(dialog) }
-			document.head.appendChild(s)
-
-			let l = document.createElement('link')
-			l.rel = 'stylesheet'
-			l.href = '//cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.6/dialog-polyfill.min.css';
-			document.head.appendChild(l)
-		})
-
 		let bm = biscuitman.create({
 			message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 			info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
