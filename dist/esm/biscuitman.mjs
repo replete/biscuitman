@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.4.1 */
+/*! biscuitman.js 0.4.2 */
 const { document: d, window: w, Object: O } = globalThis;
 const h = d.documentElement;
 const defaults = {

@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.4.1 */
+/*! biscuitman.js 0.4.2 */
 ((d, w, O, h)=>{
     const defaults = {
         key: 'myconsent',

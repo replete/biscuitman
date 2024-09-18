@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.4.1 */
+/*! biscuitman.js 0.4.2 */
 const { document: d, window: w, Object: O } = globalThis;
 const h = d.documentElement;
 const defaults = {
@@ -367,7 +367,7 @@ export default {
 if (typeof BMCSS === 'undefined') {
 	let css=document.createElement('style');
 	css.id = 'BMCSS';
-	css.textContent=`/*! biscuitman.js 0.4.1 */
+	css.textContent=`/*! biscuitman.js 0.4.2 */
 .biscuitman {
   --ui: 0, 0, 0;
   --tx: #444;
