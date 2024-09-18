@@ -145,9 +145,19 @@ export async function scripts(skipFileSave) {
 	return Promise.all([js, minJs, mjs, minMjs])
 }
 
-/* async function buildLegacy() {
+async function buildLegacy() {
+	// Disable legacy builds for now
+	/*
+		2024-09-18
+		Latest progress Firefox 25, Chrome 30, Safari 7, IE 11 Js mostly
+		working but for Symbol.iterator call. Solution probably to swap
+		out swc ES5 transpilation for babel.
+	*/
+	if (packageJson) return
 	const legacyBrowserlistString = 'ie >=11, chrome >=30, firefox >=25, safari >=7' // 2013 browsers
+	const legacyComment = comment.replace('biscuitman','biscuitman (legacy)')
 
+	// Legacy Styles
 	const sourceStyles = await readFile(`src/${filenames.css}`, 'utf8')
 	let processedStyles = transformCss({
 		code: Buffer.from(sourceStyles),
@@ -156,18 +166,20 @@ export async function scripts(skipFileSave) {
 		targets: browserslistToTargets(browserslist(legacyBrowserlistString)),
 		include: Features.Nesting
 	})
+	// Flatten CSS custom properties
 	let flatCss = `${processedStyles.code}`
 		.replaceAll('var(--ui)','0,0,0')
 		.replaceAll('var(--tx)','#444')
 		.replaceAll('var(--bg)','#fff')
 		.replaceAll('var(--c)','#105d89')
 
-	let css = `${comment}\n` + flatCss
+	let css = `${legacyComment}\n` + flatCss
 	await writeFile(`dist/${filenames.legacyCss}`, css)
 	log('css',`Saved dist/${filenames.legacyCss}`)
 
+	// Legacy JS
 	const sourceJs = await readFile(`src/${filenames.js}`, 'utf8')
-	const legacyPolyfills = await readFile('src/legacyPolyfills.js')
+	const legacyPolyfills = await readFile('src/legacyPolyfills.js', 'utf8')
 
 	const legacyJs = swc.transform(`${legacyPolyfills};${sourceJs}`, {
 		sourceMaps: false,
@@ -183,12 +195,16 @@ export async function scripts(skipFileSave) {
 		},
 		minify: false,
 	}).then(async ({ code }) => {
+		// Bugfix swc transpilation helper
+		code = code
+			.replace('var ownKeys = Object.keys(source);','var ownKeys = Object.keys(typeof source === "object" ? source : {});') // bugfix swc transpilation
 		await writeFile(`dist/${filenames.legacyJs}`, `${comment}\n${code}`)
 		log('js',`Saved dist/${filenames.legacyJs}`)
+		return code
 	})
 
 
-	const minLegacyJs = swc.transform(legacyJs.code, {
+	const minLegacyJs = swc.transform(await legacyJs, {
 		sourceMaps: false,
 		isModule: false,
 		env: {
@@ -214,7 +230,7 @@ export async function scripts(skipFileSave) {
 	})
 
 	return Promise.all([legacyJs, minLegacyJs])
-} */
+}
 
 export async function build() {
 	console.time('Build Time')
@@ -273,8 +289,8 @@ ${css[0]}\`;
 		code: Buffer.from(dialogPolyfillCss),
 		minify: true,
 		sourceMap: false
-		//TODO: This outputs compressed HEX RGBA which might not work for older browsers
 	})
+	//TODO: This outputs compressed HEX RGBA which might not work for older browsers
 
 	const dialogPolyfillJsCss = `${comment}/* dialog-polyfill.js ${packageJson.devDependencies['dialog-polyfill']}*/
 ${dialogPolyfillJs}
@@ -293,7 +309,7 @@ ${dialogPolyfillJs}
 	log('build',`Saved dist/${filenames.dialogPolyfillJsWithCssMin} ${getCompressedSizes(dialogPolyfillJsCssMin)}`)
 
 	// Legacy version (WIP: Chrome 37, IE11 etc)
-	// buildLegacy()
+	buildLegacy()
 
 	console.timeEnd('Build Time')
 }

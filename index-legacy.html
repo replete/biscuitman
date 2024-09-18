@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Biscuitman.js Sandbox</title>
+	<link rel="stylesheet" href="dist/biscuitman.legacy.css"/>
+</head>
+<body>
+
+	<!-- Google Analytics -->
+	<script type="text/javascript" id="js-analytics-gtm-setup">
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'G-TEST');
+	</script>
+	<script type="text/plain" data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" id="js-analytics-gtm">
+		/*
+			Normally <script> tags with src property will not evaluate embedded script content,
+			but in this scenario you might want some code to run after a file has loaded,
+			so biscuitman handles this for you:
+
+			If a biscuitman inactive script (text/plain) has both src AND embedded script content
+			like the one you are readiing now, biscuitman will inject the embedded script as separate
+			adjacent script tag after the parent script has loaded and executed.
+		*/
+		console.log('google tag manager loaded:', !!google_tag_manager) // only available once loaded
+	</script>
+
+	<!-- Statcounter -->
+	<script id="js-analytics-statcounter-setup">
+		// not handled by biscuitman
+		var sc_project=9999999999999999999
+		var sc_invisible=1
+		var sc_security="beefbeef"
+		var sc_https=1
+	</script>
+	<script type="text/plain" data-consent="analytics" async src="https://statcounter.com/counter/counter.js" id="js-analytics-statcounter"></script>
+
+	<!-- Matomo Analytics -->
+	<script type="text/javascript" id="js-analytics-matomo-setup">
+		var _mtm = window._mtm = window._mtm || [];
+		_mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+    	_mtm.push({'idSite': '9999999999999999999'});
+	</script>
+	<script type="text/plain" data-consent="analytics" defer src="https://cdn.matomo.cloud/demo-web.matomo.org/container_bugnCohE.js" id="js-analytics-matomo">
+		console.log('Matomo loaded:', !!Matomo) // only available once loaded
+	</script>
+
+	<!-- Jotjar Analytics -->
+	<script type="text/plain" data-consent="analytics" id="js-analytics-hotjar">
+		(function(h,o,t,j,a,r){
+		  h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+		  h._hjSettings={hjid:000000,hjsv:6};
+		  a=o.getElementsByTagName('head')[0];
+		  r=o.createElement('script');r.async=1;
+		  r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+		  a.appendChild(r);
+		})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+	  </script>
+
+	  <!-- Mixpanel Analytics -->
+	  <script type="text/plain" data-consent="analytics" id="js-analytics-mixpanel">
+		(function(f,b){
+		  if(!b.__SV){
+			var e,g,i,h;
+			window.mixpanel=b;
+			b._i=[];
+			b.init=function(e,f,c){
+			  function g(a,d){
+				var b=d.split(".");
+				2==b.length&&(a=a[b[0]],d=b[1]);
+				a[d]=function(){
+				  a.push([d].concat(Array.prototype.slice.call(arguments,0)))
+				}
+			  }
+			  var a=b;
+			  "undefined"!==typeof c?a=b[c]=[]:c="mixpanel";
+			  a.people=a.people||[];
+			  a.toString=function(a){
+				var d="mixpanel";
+				"mixpanel"!==c&&(d+="."+c);
+				a||(d+=" (stub)");
+				return d
+			  };
+			  a.people.toString=function(){
+				return a.toString(1)+".people (stub)"
+			  };
+			  i="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");
+			  for(h=0;h<i.length;h++)g(a,i[h]);
+			  b._i.push([e,f,c])
+			};
+			b.__SV=1.2;
+			e=f.createElement("script");
+			e.type="text/javascript";
+			e.async=!0;
+			e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";
+			g=f.getElementsByTagName("script")[0];
+			g.parentNode.insertBefore(e,g)
+		  }
+		})(document,window.mixpanel||[]);
+		mixpanel.init("FAKE_TOKEN");
+	  </script>
+
+	<!-- misc analytics -->
+	<script type="text/plain" data-consent="analytics" id="js-analytics-misc">
+		console.log('analytics consent granted: This script will be inserted when analytics consent is granted')
+	</script>
+
+	<script type="text/plain" data-consent="analytics" id="js-analytics-klaviyo-setup">
+		var _learnq = _learnq || [];
+		_learnq.push(['identify', {
+		  // Change the line below to dynamically print the user's email.
+		  '$email' : '{{ email }}'
+		}]);
+	</script>
+	<script type="text/plain" data-consent="analytics" src="https://static.klaviyo.com/onsite/js/klaviyo.js" id="js-analytics-klaviyo"></script>
+
+	<!-- Biscuitman config -->
+	<script id="js-biscuitman-config">
+		biscuitman = {
+			message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
+			info: 'Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.\nAdditionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.\nWhile you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.',
+			linkText: 'Privacy Policy',
+			linkURL: 'https://domain.com/privacy-policy',
+			sections: ['essential','functional','analytics','performance','advertisement','uncategorized'],
+			essentialTitle: 'Essential',
+			essentialMessage: 'Essential cookies are required for basic site functionality',
+			essentialCookies: {
+				'myconsent': 'This key is required to store your consent preferences'
+			},
+			functionalTitle: 'Functional',
+			functionalMessage: 'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
+			functionalCookies: {
+				'biscuitselector':'Your favourite biscuit is stored here'
+			},
+			analyticsTitle: 'Analytics',
+			analyticsMessage: 'Analytical cookies allow us to understand visitor interactions with the website, offering insights into metrics like visitor count, bounce rate, and traffic source',
+			analyticsCookies: {
+				'_ga': 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
+				'_ga_*': 'Google Analytics uses this cookie for storing page view count',
+				'sc_is_visitor_unique': 'Statcounter uses this as a visit counter',
+				'sc_medium_source': 'Statcounter uses this to store the referring website',
+				'statcounter.com/localstorage/': 'Statcounter uses this to count',
+				'_pk_*': 'Matomo/Piwik analytics',
+				'_hj*': 'Hotjar analytics',
+				'mp_*': 'Mixpanel analytics',
+				'_kvyo_*': 'Klaviyo analytics',
+				'__kla_id': 'Klaviyo analytics'
+			},
+			performanceTitle: 'Performance',
+			performanceMessage: 'Performance cookies allow us to understand critical website performance indicators, contributing to an enhanced user experience for visitors',
+			advertisementTitle: 'Advertisement',
+			advertisementMessage: 'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
+			uncategorizedTitle: 'Uncategorized',
+			uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
+			acceptNonEU: false,
+			force: false
+		}
+	</script>
+
+	<!-- Biscuitman: load -->
+	<script src="dist/biscuitman.legacy.js" id="js-biscuitman"></script>
+
+	<header>
+		<h1>🍪 biscuitman.js</h1>
+		<h2>Lightweight Consent Manager <br><small id="version" style="opacity:0.7"></small></h2>
+		<div>
+			<button onclick="bmInvalidate()">Invalidate consent</button>
+			<button onclick="bmUpdate()">Update consent</button>
+		</div>
+		<pre id="consents"></pre>
+	</header>
+	<div class="container">
+		<p style="text-align:center"><a class="img" href="https://github.com/replete/biscuitman"><img src="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" style="width:50px;"/>README @ Github repo</a></p>
+
+		<!-- Notices-->
+		<h2>This page uses real analytics scripts with dummy IDs</h2>
+		<h3 id="localhost"></h3>
+
+		<!-- Storages-->
+		<h3>localStorage contents (refreshed once/s):</h3>
+		<div id="localstorage" class="update"></div>
+		<h4>document cookies (refreshed once/s):</h4>
+		<div id="cookies"></div>
+		<script>
+			window.setInterval(function() {
+				var consentData = localStorage.getItem('myconsent') || '';
+				consents.textContent = consentData.split(',').join(',\n');
+
+				var localStorageData = {};
+				for (var i = 0; i < localStorage.length; i++) {
+					var key = localStorage.key(i);
+					localStorageData[key] = localStorage.getItem(key);
+				}
+				localstorage.textContent = JSON.stringify(localStorageData, null, 2);
+
+				cookies.textContent = document.cookie.split(' ').join('\n');
+			}, 1000);
+
+			if (location.hostname === 'localhost') {
+				localhost.textContent = 'Warning: Rejecting or Invalidating on localhost will wipe matching wildcard cookies set by another local app running at localhost';
+			}
+		</script>
+
+		<!-- CSS Feature Compatibility -->
+
+		<!-- Exciting page content -->
+		<h2>History of Biscuits</h2>
+		<p>The origins of biscuits trace back centuries, with evidence of early biscuit-like snacks dating back to ancient civilizations. However, the modern biscuit, as we know it today, evolved during the Middle Ages in Europe. Initially, biscuits were hard, dry baked goods made primarily from flour, water, and sometimes sugar.</p>
+		<p>Over time, biscuit recipes diversified, incorporating various ingredients such as butter, eggs, and flavorings. The Industrial Revolution further transformed biscuit production, enabling mass manufacturing and distribution.</p>
+
+		<!-- Functional component example -->
+		<h2>Favourite Biscuit Selector</h2>
+		<div class="biscuit-selector">
+			<button id="richtea">Rich Tea</button>
+			<button id="hobnobs">Hobnobs</button>
+			<button id="custardcream">Custard Cream</button>
+			<button id="bourbons">Bourbons</button>
+		</div>
+		<script>
+			var selectedBiscuit = localStorage.getItem('biscuitselector');
+			if (selectedBiscuit) {
+				var el = document.getElementById(selectedBiscuit);
+				if (el) {
+					el.classList.add('selected');
+				} else {
+					localStorage.removeItem('biscuitselector');
+				}
+			}
+
+			var biscuitButtons = document.querySelectorAll('.biscuit-selector button');
+			for (var i = 0; i < biscuitButtons.length; i++) {
+				biscuitButtons[i].addEventListener('click', function(e) {
+					for (var j = 0; j < biscuitButtons.length; j++) {
+						biscuitButtons[j].classList.remove('selected');
+					}
+					e.target.classList.add('selected');
+					if (Consent.functional) {
+						localStorage.setItem('biscuitselector', e.target.id);
+					}
+				});
+			}
+		</script>
+
+		<h2>Popular Biscuit Varieties</h2>
+
+		<h3>Rich Tea</h3>
+		<p>Rich tea biscuits are renowned for their delicate texture and subtle sweetness. Originating in the United Kingdom, rich tea biscuits are often enjoyed dunked in tea, coffee, or hot chocolate. These biscuits are commonly round-shaped with pin-prick patterns on the surface.</p>
+
+		<h3>Hobnobs</h3>
+		<p>Hobnobs, a staple in British biscuit assortments, boast a hearty oat flavor and a satisfying crunch. These biscuits are distinguishable by their rough texture and thick consistency, making them ideal for dunking or enjoying on their own.</p>
+
+		<h3>Custard Creams</h3>
+		<p>Custard creams are classic sandwich biscuits consisting of two layers of biscuit with a creamy, custard-flavored filling in between. With their nostalgic appeal and comforting taste, custard creams are a favorite among both children and adults.</p>
+
+		<h3>Bourbons</h3>
+		<p>Bourbons are distinctive chocolate sandwich biscuits featuring a dark chocolate-flavored filling sandwiched between two chocolate biscuits. Named after the French royal house of Bourbon, these biscuits offer a rich and indulgent treat for chocolate lovers.</p>
+
+		<h3>Jaffa Cakes</h3>
+		<p>While technically not biscuits but often included in biscuit assortments, Jaffa Cakes are a beloved snack consisting of a sponge cake base topped with a layer of orange-flavored jelly and coated in chocolate. The combination of tangy orange and rich chocolate makes Jaffa Cakes a delightful treat for any occasion.</p>
+
+	</div>
+
+	<!-- Page styles -->
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #f5f5f5;
+			font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		}
+		* {
+			box-sizing: border-box;
+		}
+		header {
+			min-height:35vw;
+			display:flex;
+			flex-direction:column;
+			justify-content:flex-end;
+			background: url(media/readmebanner.webp) no-repeat center 50% #7E745D;
+			background-size:cover;
+			background-blend-mode: multiply;
+			color: #fff;
+			padding: 30px 20px;
+			text-align: center;
+			text-shadow: 2px 2px 4px rgba(0,0,0,.75);
+			margin: 0 auto;
+
+			a {
+				color: #fff
+			}
+		}
+		h1 {
+			font-size:5vw;
+			margin:0;
+		}
+		header h2 {
+			color: #FAE6AE;
+			font-size:4vw;
+			margin: 0em 0 .4em 0;
+		}
+		.container {
+			max-width: 800px;
+			margin: 20px auto;
+			padding: 0 20px;
+		}
+		p {
+			line-height: 1.6;
+		}
+		img {
+			max-width: 100%;
+			height: auto;
+			display: block;
+			margin: 20px auto;
+		}
+
+		a.img { display:inline-flex; flex-direction: column}
+
+		#cookies, #localstorage {
+			font-family:monospace;
+			background: #ddd;
+			padding:15px;
+			font-size:13px;
+			overflow-y:scroll;
+			white-space: pre;
+		}
+
+		#cssreport {
+			overflow-y:scroll
+		}
+
+		#cssreport table tr :is(td, th):first-of-type {
+			min-width:175px;
+			text-align:left;
+		}
+
+		#cssreport table tr :is(td, th) {
+			border-bottom:1px solid #ccc;
+			padding:6px;
+			text-align:center
+		}
+
+		#cssreport table tr :is(td, th):first-of-type {
+			padding-left:0;
+		}
+
+		.table {
+				font-size:14px;
+			}
+		.table th:first-of-type {
+			text-align:left;
+		}
+
+		.biscuit-selector {
+			display:flex;
+			width:100%;
+			gap:10px;
+			padding:10px;
+		}
+
+		@media (max-width: 600px) {
+			.biscuit-selector {
+				flex-direction:column;
+			}
+		}
+
+		.biscuit-selector button {
+			padding:20px;
+			font-size:18px;
+			border:3px solid #ccc;
+			background: #eee;
+			font-weight:bold;
+			flex-grow:1;
+		}
+
+		.biscuit-selector button:active {
+			border-color:#666;
+			background-color:#aaa;
+		}
+
+		.biscuit-selector button.selected {
+			color: green;
+			background:#00FF0066;
+			border-color:green;
+		}
+
+		.bm-no-functional .biscuit-selector {
+			background: #ccc;
+			pointer-events:none;
+			user-select:none;
+			opacity:0.5;
+			border:1px solid #aaa;
+		}
+	</style>
+</body>
+</html>
