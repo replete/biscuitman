@@ -14,7 +14,8 @@ export default [
 		ignores: [
 			'dist/**/*.js',
 			'dist/**/*.mjs',
-			'./coverage/**/*.js'],
+			'./coverage/**/*.js',
+			'src/legacyPolyfills.js'],
 		rules: {
 			...pluginJs.configs.recommended.rules,
 			semi: [2, 'never'],
@@ -45,9 +46,6 @@ export default [
 			globals: {
 				...globals.browser
 			}
-		},
-		rules: {
-
 		}
 	},
 	{

@@ -25,7 +25,7 @@
     "lint": "eslint",
     "coverage": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --runInBand --openHandlesTimeout=2000 --collectCoverage --",
     "makecerts": "mkcert -cert-file server.crt -key-file server.key localhost 127.0.0.1 ::1",
-    "http": "npx http-server -p 8000"
+    "http": "npx http-server -p 8000 -a 0.0.0.0"
   },
   "test": "npm run test",
   "devDependencies": {
@@ -42,8 +42,7 @@
     "jest-extended": "^4.0.2",
     "jest-puppeteer": "^10.1.1",
     "lightningcss": "^1.27.0",
-    "puppeteer": "^23.3.1",
-    "zlib": "^1.0.5"
+    "puppeteer": "^23.3.1"
   },
   "browserslist": ">= 2%, last 2 years",
   "author": "replete",

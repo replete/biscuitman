@@ -5,7 +5,8 @@ import { transform as transformCss, browserslistToTargets, Features } from 'ligh
 import browserslist from 'browserslist'
 import { Readable } from 'stream'
 import doiuse from 'doiuse/stream'
-import zlib from 'zlib'
+import zlib from 'node:zlib'
+
 const { readFile, writeFile } = fs.promises
 const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
 const packageJson = JSON.parse(await readFile('./package.json'))
@@ -24,7 +25,11 @@ const filenames = {
 	mjsWithCss: 'biscuitman.withcss.mjs',
 	minMjsWithCss: 'biscuitman.withcss.min.mjs',
 	dialogPolyfillJsWithCss: 'dialog-polyfill.withcss.js',
-	dialogPolyfillJsWithCssMin: 'dialog-polyfill.withcss.min.js'
+	dialogPolyfillJsWithCssMin: 'dialog-polyfill.withcss.min.js',
+	legacyJs: 'biscuitman.legacy.js',
+	legacyMinJs: 'biscuitman.legacy.min.js',
+	legacyCss: 'biscuitman.legacy.css',
+	legacyMinCss: 'biscuitman.legacy.min.css',
 }
 
 export async function styles(skipFileSave) {
@@ -35,7 +40,8 @@ export async function styles(skipFileSave) {
 		minify: false,
 		sourceMap: false,
 		targets: browserslistToTargets(browserslist(browserlistString)),
-		include: Features.Nesting
+		include: Features.Nesting,
+		exclude: Features.Colors | Features.LogicalProperties
 	})
 	let css = `${comment}\n` + processedStyles.code
 	if (!skipFileSave) await writeFile(`dist/${filenames.css}`, css)
@@ -46,7 +52,8 @@ export async function styles(skipFileSave) {
 		minify: true,
 		sourceMap: false,
 		targets: browserslistToTargets(browserslist(browserlistString)),
-		include: Features.Nesting
+		include: Features.Nesting,
+		exclude: Features.Colors | Features.LogicalProperties
 	})
 	let minCss = comment + minifiedStyles.code
 	if (!skipFileSave) await writeFile(`dist/${filenames.minCss}`, minCss)
@@ -138,6 +145,77 @@ export async function scripts(skipFileSave) {
 	return Promise.all([js, minJs, mjs, minMjs])
 }
 
+/* async function buildLegacy() {
+	const legacyBrowserlistString = 'ie >=11, chrome >=30, firefox >=25, safari >=7' // 2013 browsers
+
+	const sourceStyles = await readFile(`src/${filenames.css}`, 'utf8')
+	let processedStyles = transformCss({
+		code: Buffer.from(sourceStyles),
+		minify: false,
+		sourceMap: false,
+		targets: browserslistToTargets(browserslist(legacyBrowserlistString)),
+		include: Features.Nesting
+	})
+	let flatCss = `${processedStyles.code}`
+		.replaceAll('var(--ui)','0,0,0')
+		.replaceAll('var(--tx)','#444')
+		.replaceAll('var(--bg)','#fff')
+		.replaceAll('var(--c)','#105d89')
+
+	let css = `${comment}\n` + flatCss
+	await writeFile(`dist/${filenames.legacyCss}`, css)
+	log('css',`Saved dist/${filenames.legacyCss}`)
+
+	const sourceJs = await readFile(`src/${filenames.js}`, 'utf8')
+	const legacyPolyfills = await readFile('src/legacyPolyfills.js')
+
+	const legacyJs = swc.transform(`${legacyPolyfills};${sourceJs}`, {
+		sourceMaps: false,
+		isModule: false,
+		env: {
+			targets: legacyBrowserlistString,
+		},
+		jsc: {
+			parser: {
+				syntax: 'ecmascript',
+				target: 'es5',
+			},
+		},
+		minify: false,
+	}).then(async ({ code }) => {
+		await writeFile(`dist/${filenames.legacyJs}`, `${comment}\n${code}`)
+		log('js',`Saved dist/${filenames.legacyJs}`)
+	})
+
+
+	const minLegacyJs = swc.transform(legacyJs.code, {
+		sourceMaps: false,
+		isModule: false,
+		env: {
+			targets: legacyBrowserlistString
+		},
+		jsc: {
+			parser: {
+				target: 'es5'
+			},
+			minify: {
+				compress: {
+					unused: true
+				},
+				mangle: true
+			}
+		},
+		minify: true
+	}).then(async ({ code }) => {
+		code = comment + code.replace(/[\n\t]/g,'')
+		await writeFile(`dist/${filenames.legacyMinJs}`, code)
+		log('js',`Saved dist/${filenames.legacyMinJs}`)
+		return code
+	})
+
+	return Promise.all([legacyJs, minLegacyJs])
+} */
+
 export async function build() {
 	console.time('Build Time')
 	let js = await scripts()
@@ -195,17 +273,17 @@ ${css[0]}\`;
 		code: Buffer.from(dialogPolyfillCss),
 		minify: true,
 		sourceMap: false
+		//TODO: This outputs compressed HEX RGBA which might not work for older browsers
 	})
 
 	const dialogPolyfillJsCss = `${comment}/* dialog-polyfill.js ${packageJson.devDependencies['dialog-polyfill']}*/
 ${dialogPolyfillJs}
-((d)=>{
-	let css=d.createElement('style');
-	css.textContent=\`${comment}
-${dialogPolyfillCss}\`;
+(function(d) {
+	var css=d.createElement('style');
+	css.textContent='${comment}${dialogPolyfillCssMin.code}';
 	d.head.appendChild(css)
 })(document);`
-	const dialogPolyfillJsCssMin = `${comment}/* dialog-polyfill.js ${packageJson.devDependencies['dialog-polyfill']}*/${dialogPolyfillJsMin.code};((d)=>{let c=d.createElement('style');c.textContent=\`${comment}${dialogPolyfillCssMin.code}\`;d.head.appendChild(c)})(document);`
+	const dialogPolyfillJsCssMin = `${comment}/* dialog-polyfill.js ${packageJson.devDependencies['dialog-polyfill']}*/${dialogPolyfillJsMin.code};(function(d){var c=d.createElement('style');c.textContent='${comment}${dialogPolyfillCssMin.code}';d.head.appendChild(c)})(document);`
 
 	await Promise.all([
 		writeFile(`dist/${filenames.dialogPolyfillJsWithCss}`, dialogPolyfillJsCss),
@@ -213,6 +291,9 @@ ${dialogPolyfillCss}\`;
 	])
 	log('build',`Saved dist/${filenames.dialogPolyfillJsWithCss}`)
 	log('build',`Saved dist/${filenames.dialogPolyfillJsWithCssMin} ${getCompressedSizes(dialogPolyfillJsCssMin)}`)
+
+	// Legacy version (WIP: Chrome 37, IE11 etc)
+	// buildLegacy()
 
 	console.timeEnd('Build Time')
 }

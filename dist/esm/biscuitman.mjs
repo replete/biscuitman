@@ -92,10 +92,6 @@ function render() {
         }));
     d.body.appendChild(ui);
     w.addEventListener('resize', updateBannerHeight);
-    dispatch('render', {
-        dialog,
-        ui
-    });
 }
 const updateBannerHeight = ()=>{
     h.style.setProperty('--bm-height', `${ui.offsetHeight}px`);
