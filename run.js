@@ -6,6 +6,11 @@ import browserslist from 'browserslist'
 import { Readable } from 'stream'
 import doiuse from 'doiuse/stream'
 import zlib from 'node:zlib'
+// Legacy build tooling:
+import babel from '@babel/core'
+import { rollup } from 'rollup'
+import builder from 'core-js-builder'
+import resolve from '@rollup/plugin-node-resolve'
 
 const { readFile, writeFile } = fs.promises
 const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
@@ -153,8 +158,8 @@ async function buildLegacy() {
 		working but for Symbol.iterator call. Solution probably to swap
 		out swc ES5 transpilation for babel.
 	*/
-	if (packageJson) return
-	const legacyBrowserlistString = 'ie >=11, chrome >=30, firefox >=25, safari >=7' // 2013 browsers
+	// if (packageJson) return
+	const legacyBrowserlistString = 'ie 11, chrome 30, firefox 25, safari 7' // 2013 browsers
 	const legacyComment = comment.replace('biscuitman','biscuitman (legacy)')
 
 	// Legacy Styles
@@ -179,57 +184,103 @@ async function buildLegacy() {
 
 	// Legacy JS
 	const sourceJs = await readFile(`src/${filenames.js}`, 'utf8')
-	const legacyPolyfills = await readFile('src/legacyPolyfills.js', 'utf8')
+	const legacyPolyfillsJs = await readFile('src/legacyPolyfills.js', 'utf8')
 
-	const legacyJs = swc.transform(`${legacyPolyfills};${sourceJs}`, {
-		sourceMaps: false,
-		isModule: false,
-		env: {
-			targets: legacyBrowserlistString,
-		},
-		jsc: {
-			parser: {
-				syntax: 'ecmascript',
-				target: 'es5',
-			},
-		},
-		minify: false,
-	}).then(async ({ code }) => {
-		// Bugfix swc transpilation helper
-		code = code
-			.replace('var ownKeys = Object.keys(source);','var ownKeys = Object.keys(typeof source === "object" ? source : {});') // bugfix swc transpilation
-		await writeFile(`dist/${filenames.legacyJs}`, `${comment}\n${code}`)
-		log('js',`Saved dist/${filenames.legacyJs}`)
-		return code
-	})
+	// const polyfillBundle = await builder({
+	// 	targets: legacyBrowserlistString,
+	// 	modules: ['es.object.from-entries','es.object.entries'],
+	// })
 
-
-	const minLegacyJs = swc.transform(await legacyJs, {
-		sourceMaps: false,
-		isModule: false,
-		env: {
-			targets: legacyBrowserlistString
-		},
-		jsc: {
-			parser: {
-				target: 'es5'
-			},
-			minify: {
-				compress: {
-					unused: true
+	const { code } = await babel.transformAsync(sourceJs, {
+		presets: [
+			['@babel/preset-env', {
+				targets: {
+					browsers: legacyBrowserlistString.split(', ')
 				},
-				mangle: true
-			}
-		},
-		minify: true
-	}).then(async ({ code }) => {
-		code = comment + code.replace(/[\n\t]/g,'')
-		await writeFile(`dist/${filenames.legacyMinJs}`, code)
-		log('js',`Saved dist/${filenames.legacyMinJs}`)
-		return code
+				modules: false,
+			}],
+		],
 	})
 
-	return Promise.all([legacyJs, minLegacyJs])
+	const bundle = await rollup({
+		input: 'virtual-entry',
+		plugins: [
+			{
+				name: 'virtual-entry',
+				resolveId(id) {
+					return id === 'virtual-entry' ? id : null
+				},
+				load(id) {
+					return id === 'virtual-entry' ? `${legacyPolyfillsJs}\n/* POLYFILLS ABOVE */\n${code}` : null
+				},
+			},
+			resolve({ browser: true }),
+		],
+	})
+
+	const { output } = await bundle.generate({
+		format: 'iife',
+		name: 'app',
+	})
+
+	await writeFile(`dist/${filenames.legacyJs}`, output[0].code)
+
+	console.log('Build complete. Output written to dist/biscuitman.legacy.js')
+
+
+	// const legacyPolyfills = await readFile('src/legacyPolyfills.js', 'utf8')
+
+	// const legacyJs = swc.transform(`${legacyPolyfills};${sourceJs}`, {
+	// 	sourceMaps: false,
+	// 	isModule: false,
+	// 	env: {
+	// 		targets: legacyBrowserlistString,
+	// 	},
+	// 	jsc: {
+	// 		parser: {
+	// 			syntax: 'ecmascript',
+	// 			target: 'es5',
+	// 		},
+	// 	},
+	// 	minify: false,
+	// }).then(async ({ code }) => {
+	// 	// Bugfix swc transpilation helper
+	// 	code = code.replace(
+	// 		'var ownKeys = Object.keys(source);',
+	// 		'var ownKeys = Object.keys(typeof source === "object" ? source : {});'
+	// 	)
+	// 	await writeFile(`dist/${filenames.legacyJs}`, `${comment}\n${code}`)
+	// 	log('js',`Saved dist/${filenames.legacyJs}`)
+	// 	return code
+	// })
+
+
+	// const minLegacyJs = swc.transform(await legacyJs, {
+	// 	sourceMaps: false,
+	// 	isModule: false,
+	// 	env: {
+	// 		targets: legacyBrowserlistString
+	// 	},
+	// 	jsc: {
+	// 		parser: {
+	// 			target: 'es5'
+	// 		},
+	// 		minify: {
+	// 			compress: {
+	// 				unused: true
+	// 			},
+	// 			mangle: true
+	// 		}
+	// 	},
+	// 	minify: true
+	// }).then(async ({ code }) => {
+	// 	code = comment + code.replace(/[\n\t]/g,'')
+	// 	await writeFile(`dist/${filenames.legacyMinJs}`, code)
+	// 	log('js',`Saved dist/${filenames.legacyMinJs}`)
+	// 	return code
+	// })
+
+	// return Promise.all([legacyJs, minLegacyJs])
 }
 
 export async function build() {
