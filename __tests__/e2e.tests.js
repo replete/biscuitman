@@ -6,7 +6,11 @@ let appVersions = [
 	['biscuitman.mjs'],
 	['biscuitman.min.mjs'],
 	['biscuitman.withcss.mjs'],
-	['biscuitman.withcss.min.mjs']
+	['biscuitman.withcss.min.mjs'],
+	['biscuitman-legacy.js'],
+	['biscuitman-legacy.min.js'],
+	['biscuitman-legacy.withcss.js'],
+	['biscuitman-legacy.withcss.min.js']
 ]
 
 appVersions.forEach(([filename])=>{

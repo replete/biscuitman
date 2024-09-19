@@ -4,29 +4,11 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Biscuitman.js Sandbox</title>
-	<link rel="stylesheet" href="dist/biscuitman.legacy.css"/>
+	<link rel="stylesheet" href="dist/biscuitman-legacy.css"/>
 </head>
 <body>
 
 	<!-- Google Analytics -->
-	<script type="text/javascript" id="js-analytics-gtm-setup">
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-		gtag('config', 'G-TEST');
-	</script>
-	<script type="text/plain" data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-TEST" id="js-analytics-gtm">
-		/*
-			Normally <script> tags with src property will not evaluate embedded script content,
-			but in this scenario you might want some code to run after a file has loaded,
-			so biscuitman handles this for you:
-
-			If a biscuitman inactive script (text/plain) has both src AND embedded script content
-			like the one you are readiing now, biscuitman will inject the embedded script as separate
-			adjacent script tag after the parent script has loaded and executed.
-		*/
-		console.log('google tag manager loaded:', !!google_tag_manager) // only available once loaded
-	</script>
 
 	<!-- Statcounter -->
 	<script id="js-analytics-statcounter-setup">
@@ -161,7 +143,7 @@
 	</script>
 
 	<!-- Biscuitman: load -->
-	<script src="dist/biscuitman.legacy.js" id="js-biscuitman"></script>
+	<script src="dist/biscuitman-legacy.js" id="js-biscuitman"></script>
 
 	<header>
 		<h1>🍪 biscuitman.js</h1>

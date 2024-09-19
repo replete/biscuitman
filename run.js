@@ -9,7 +9,6 @@ import zlib from 'node:zlib'
 // Legacy build tooling:
 import babel from '@babel/core'
 import { rollup } from 'rollup'
-import builder from 'core-js-builder'
 import resolve from '@rollup/plugin-node-resolve'
 
 const { readFile, writeFile } = fs.promises
@@ -31,10 +30,12 @@ const filenames = {
 	minMjsWithCss: 'biscuitman.withcss.min.mjs',
 	dialogPolyfillJsWithCss: 'dialog-polyfill.withcss.js',
 	dialogPolyfillJsWithCssMin: 'dialog-polyfill.withcss.min.js',
-	legacyJs: 'biscuitman.legacy.js',
-	legacyMinJs: 'biscuitman.legacy.min.js',
-	legacyCss: 'biscuitman.legacy.css',
-	legacyMinCss: 'biscuitman.legacy.min.css',
+	legacyJs: 'biscuitman-legacy.js',
+	legacyMinJs: 'biscuitman-legacy.min.js',
+	legacyCss: 'biscuitman-legacy.css',
+	legacyMinCss: 'biscuitman-legacy.min.css',
+	legacyJsWithCss: 'biscuitman-legacy.withcss.js',
+	minLegacyJsWithCss: 'biscuitman-legacy.withcss.min.js'
 }
 
 export async function styles(skipFileSave) {
@@ -45,8 +46,7 @@ export async function styles(skipFileSave) {
 		minify: false,
 		sourceMap: false,
 		targets: browserslistToTargets(browserslist(browserlistString)),
-		include: Features.Nesting,
-		exclude: Features.Colors | Features.LogicalProperties
+		include: Features.Nesting
 	})
 	let css = `${comment}\n` + processedStyles.code
 	if (!skipFileSave) await writeFile(`dist/${filenames.css}`, css)
@@ -57,8 +57,7 @@ export async function styles(skipFileSave) {
 		minify: true,
 		sourceMap: false,
 		targets: browserslistToTargets(browserslist(browserlistString)),
-		include: Features.Nesting,
-		exclude: Features.Colors | Features.LogicalProperties
+		include: Features.Nesting
 	})
 	let minCss = comment + minifiedStyles.code
 	if (!skipFileSave) await writeFile(`dist/${filenames.minCss}`, minCss)
@@ -151,16 +150,8 @@ export async function scripts(skipFileSave) {
 }
 
 async function buildLegacy() {
-	// Disable legacy builds for now
-	/*
-		2024-09-18
-		Latest progress Firefox 25, Chrome 30, Safari 7, IE 11 Js mostly
-		working but for Symbol.iterator call. Solution probably to swap
-		out swc ES5 transpilation for babel.
-	*/
-	// if (packageJson) return
 	const legacyBrowserlistString = 'ie 11, chrome 30, firefox 25, safari 7' // 2013 browsers
-	const legacyComment = comment.replace('biscuitman','biscuitman (legacy)')
+	const legacyComment = comment.replace('biscuitman.js','biscuitman-legacy.js')
 
 	// Legacy Styles
 	const sourceStyles = await readFile(`src/${filenames.css}`, 'utf8')
@@ -177,20 +168,27 @@ async function buildLegacy() {
 		.replaceAll('var(--tx)','#444')
 		.replaceAll('var(--bg)','#fff')
 		.replaceAll('var(--c)','#105d89')
+		.replaceAll('var(--height)','1.2em')
+		.replaceAll('var(--width)','2.3em')
+		.replaceAll('var(--gap)','2px')
+	let legacyCss = flatCss
+	await writeFile(`dist/${filenames.legacyCss}`, `${legacyComment}\n` + legacyCss)
+	log('legacy',`Saved dist/${filenames.legacyCss}`)
 
-	let css = `${legacyComment}\n` + flatCss
-	await writeFile(`dist/${filenames.legacyCss}`, css)
-	log('css',`Saved dist/${filenames.legacyCss}`)
+	let legacyMinifiedCss = transformCss({
+		code: Buffer.from(legacyCss),
+		minify: true,
+		sourceMap: false,
+		targets: browserslistToTargets(browserslist(legacyBrowserlistString)),
+		include: Features.Nesting
+	})
+	let legacyMinCss = legacyComment + legacyMinifiedCss.code
+	await writeFile(`dist/${filenames.legacyMinCss}`, legacyMinCss)
+	log('legacy',`Saved dist/${filenames.legacyMinCss}`)
 
 	// Legacy JS
 	const sourceJs = await readFile(`src/${filenames.js}`, 'utf8')
 	const legacyPolyfillsJs = await readFile('src/legacyPolyfills.js', 'utf8')
-
-	// const polyfillBundle = await builder({
-	// 	targets: legacyBrowserlistString,
-	// 	modules: ['es.object.from-entries','es.object.entries'],
-	// })
-
 	const { code } = await babel.transformAsync(sourceJs, {
 		presets: [
 			['@babel/preset-env', {
@@ -200,8 +198,12 @@ async function buildLegacy() {
 				modules: false,
 			}],
 		],
+		plugins: [
+			['@babel/plugin-transform-for-of', {
+				assumeArray: true // Fixes IE11
+			}]
+		]
 	})
-
 	const bundle = await rollup({
 		input: 'virtual-entry',
 		plugins: [
@@ -211,76 +213,63 @@ async function buildLegacy() {
 					return id === 'virtual-entry' ? id : null
 				},
 				load(id) {
-					return id === 'virtual-entry' ? `${legacyPolyfillsJs}\n/* POLYFILLS ABOVE */\n${code}` : null
+					return id === 'virtual-entry' ? `${legacyPolyfillsJs}\n${code}` : null
 				},
 			},
 			resolve({ browser: true }),
 		],
 	})
-
 	const { output } = await bundle.generate({
 		format: 'iife',
 		name: 'app',
 	})
+	const legacyJs = output[0].code
+	await writeFile(`dist/${filenames.legacyJs}`, `${legacyComment}\n${legacyJs}`)
+	log('legacy',`Saved dist/${filenames.legacyJs}`)
 
-	await writeFile(`dist/${filenames.legacyJs}`, output[0].code)
+	const legacyJsMin = swc.transform(await legacyJs, {
+		sourceMaps: false,
+		isModule: false,
+		env: {
+			targets: legacyBrowserlistString
+		},
+		jsc: {
+			parser: {
+				target: 'es5'
+			},
+			minify: {
+				compress: {
+					unused: true
+				},
+				mangle: true
+			}
+		},
+		minify: true
+	}).then(async ({ code }) => {
+		code = legacyComment + code.replace(/[\n\t]/g,'')
+		await writeFile(`dist/${filenames.legacyMinJs}`, code)
+		log('legacy',`Saved dist/${filenames.legacyMinJs}`)
+		return code
+	})
 
-	console.log('Build complete. Output written to dist/biscuitman.legacy.js')
+	// Legacy JS with CSS
+	let legacyJsCss = `${legacyComment}
+${legacyJs}
+(function(d){
+	var css=d.createElement('style');
+	css.textContent='${legacyComment}${legacyMinCss}';
+	d.head.appendChild(css);
+})(document);`
+	let legacyJsCssMin = `${await legacyJsMin};(function(d){var c=d.createElement('style');c.textContent='${legacyComment}${legacyMinCss}';d.head.appendChild(c)})(document);`
 
+	Promise.all([
+		writeFile(`dist/${filenames.legacyJsWithCss}`, legacyJsCss),
+		writeFile(`dist/${filenames.minLegacyJsWithCss}`, legacyJsCssMin),
+	])
+	log('legacy',`Saved dist/${filenames.legacyJsWithCss} ${getCompressedSizes(legacyJsCss)}`)
+	log('legacy',`Saved dist/${filenames.minLegacyJsWithCss} ${getCompressedSizes(legacyJsCssMin)}`)
 
-	// const legacyPolyfills = await readFile('src/legacyPolyfills.js', 'utf8')
-
-	// const legacyJs = swc.transform(`${legacyPolyfills};${sourceJs}`, {
-	// 	sourceMaps: false,
-	// 	isModule: false,
-	// 	env: {
-	// 		targets: legacyBrowserlistString,
-	// 	},
-	// 	jsc: {
-	// 		parser: {
-	// 			syntax: 'ecmascript',
-	// 			target: 'es5',
-	// 		},
-	// 	},
-	// 	minify: false,
-	// }).then(async ({ code }) => {
-	// 	// Bugfix swc transpilation helper
-	// 	code = code.replace(
-	// 		'var ownKeys = Object.keys(source);',
-	// 		'var ownKeys = Object.keys(typeof source === "object" ? source : {});'
-	// 	)
-	// 	await writeFile(`dist/${filenames.legacyJs}`, `${comment}\n${code}`)
-	// 	log('js',`Saved dist/${filenames.legacyJs}`)
-	// 	return code
-	// })
-
-
-	// const minLegacyJs = swc.transform(await legacyJs, {
-	// 	sourceMaps: false,
-	// 	isModule: false,
-	// 	env: {
-	// 		targets: legacyBrowserlistString
-	// 	},
-	// 	jsc: {
-	// 		parser: {
-	// 			target: 'es5'
-	// 		},
-	// 		minify: {
-	// 			compress: {
-	// 				unused: true
-	// 			},
-	// 			mangle: true
-	// 		}
-	// 	},
-	// 	minify: true
-	// }).then(async ({ code }) => {
-	// 	code = comment + code.replace(/[\n\t]/g,'')
-	// 	await writeFile(`dist/${filenames.legacyMinJs}`, code)
-	// 	log('js',`Saved dist/${filenames.legacyMinJs}`)
-	// 	return code
-	// })
-
-	// return Promise.all([legacyJs, minLegacyJs])
+	return Promise.all([legacyJsMin])
 }
 
 export async function build() {
@@ -341,7 +330,6 @@ ${css[0]}\`;
 		minify: true,
 		sourceMap: false
 	})
-	//TODO: This outputs compressed HEX RGBA which might not work for older browsers
 
 	const dialogPolyfillJsCss = `${comment}/* dialog-polyfill.js ${packageJson.devDependencies['dialog-polyfill']}*/
 ${dialogPolyfillJs}
@@ -360,7 +348,7 @@ ${dialogPolyfillJs}
 	log('build',`Saved dist/${filenames.dialogPolyfillJsWithCssMin} ${getCompressedSizes(dialogPolyfillJsCssMin)}`)
 
 	// Legacy version (WIP: Chrome 37, IE11 etc)
-	buildLegacy()
+	await buildLegacy()
 
 	console.timeEnd('Build Time')
 }

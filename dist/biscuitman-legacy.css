@@ -1,4 +1,4 @@
-/*! biscuitman (legacy).js 0.4.2 */
+/*! biscuitman-legacy.js 0.5.0 */
 .biscuitman {
   --ui: 0, 0, 0;
   --tx: #444;
@@ -361,10 +361,10 @@
   --height: 1.2em;
   --width: 2.3em;
   --gap: 2px;
-  height: var(--height);
-  width: var(--width);
+  height: 1.2em;
+  width: 2.3em;
   background-color: rgba(0,0,0, .3);
-  border-radius: var(--height);
+  border-radius: 1.2em;
   margin-top: -2px;
   display: block;
   position: absolute;
@@ -378,11 +378,11 @@
 .biscuitman label:before {
   content: "";
   background: #fff;
-  height: calc(var(--height)  - calc(var(--gap) * 2));
-  width: calc(var(--height)  - calc(var(--gap) * 2));
-  height: var(--height);
-  width: var(--height);
-  left: var(--gap);
+  height: calc(1.2em  - calc(2px * 2));
+  width: calc(1.2em  - calc(2px * 2));
+  height: 1.2em;
+  width: 1.2em;
+  left: 2px;
   -webkit-transform-origin: center;
   transform-origin: center;
   border-radius: 100%;

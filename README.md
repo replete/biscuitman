@@ -121,7 +121,7 @@ While you have the option to enable or disable some or all of these cookies, not
 
 ## Experimental ESM version
 
-ESM version supplied as an alternative packaging format. Long-term it's better to not have two versions, so this may or not become the main version. Consider it an alternate packaging format at this point. [see ESM demo](https://replete.github.io/biscuitman/index-esm.html)
+ESM version supplied as an alternative packaging format. Long-term it's better to not have two versions, so this may or not become the main version. Consider it an alternate packaging format at this point. ([ESM demo](https://replete.github.io/biscuitman/index-esm.html))
 
 ```html
 <!-- Experimental ESM version: -->
@@ -177,7 +177,7 @@ html.bm-show::after {
 
 ## Browser Support
 
-Biscuitman is written in modern Javascript and transpiled `swc` to target browsers less than two years old. The included distributables are tested to support the following browsers:
+Biscuitman is written in modern Javascript and transpiled with `swc` to target browsers less than two years old. The included distributables are tested to support the following browsers:
 
 - Chrome/Edge/Opera: 85+ (released June 2020)
 - Firefox: 98+ (released March 2022)
@@ -186,9 +186,9 @@ Biscuitman is written in modern Javascript and transpiled `swc` to target browse
 
 ### \<Dialog\> polyfill
 
-To support older than the browsers above, a polyfill for `<dialog>` is required. Biscuitman checks for this and will load the [dialog polyfill](https://github.com/GoogleChrome/dialog-polyfill) automatically if it is not already loaded, and then correctly bind.
+To support older than the browsers above, a polyfill for `<dialog>` is required. Biscuitman checks for this automatically and loads a [polyfill for dialog](https://github.com/GoogleChrome/dialog-polyfill) on-demand (if it is not already loaded), and then correctly binds the UI.
 
-For this to work, you must host `dist/dialog-polyfill.withcss.js` and set the biscuitman config property, `dialogPolyfill`, to the correct URL.
+For this to work, you must host `dist/dialog-polyfill.withcss.js` and set the config property `dialogPolyfill` to the correct URL.
 
 This will extend the browser support to:
 - Safari (inc iOS) 13.1+ (released March 2020)
@@ -197,19 +197,19 @@ This will extend the browser support to:
 
 If the dialog polyfill is already loaded (`window.dialogPolyfill` exists), the polyfill will not be loaded again. To disable this on-demand functionality altogether, set `dialogPolyfill` property to `false`.
 
-### Extending Browser support
+### Legacy Browser Support
 
-You can extend support to the following browsers by including the following script _before_ biscuitman.js:
-- Safari 11.1+ (released Jan 2018)
-- Safari iOS 11.3+ (released Mar 2018)
-- Firefox 55+ (released Aug 2017)
-- Chrome 60+ (released Jul 2017)
+If you need to support really old browsers, use `biscuitman-legacy.js`, `biscuitman-legacy.min.js` or `biscuitman-legacy.withcss.js` to extend the browser support to:
+- Safari 7+ / 6.2+ (released Oct 2013)
+- Chrome 30+ (released Oct 2013)
+- Firefox 24+ (released Sep 2013)
+- Chrome 24+ (released Jan 2013)
+- IE 11+ (released Oct 2013)
 
-```html
-<script src="//cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=String.prototype.replaceAll%2CObject.fromEntries"></script>
-```
+This legacy version is transpiled to ES5 and includes required polyfills to make itself functional on these ancient browsers. This makes the distributables roughtly double the filesize of the modern versions.
 
-Obviously a third party hosted polyfill is not good for performance, so in this scenario you'd want to self-host the `replaceAll` and `Object.fromEntries` polyfills. This is the lazy approach, if you really need to support older browsers it would make more sense to rebuild biscuitman with an earlier javascript target (update `package.json` `browserlist` property and rebuild with `npm run build`). If there was enough need for this, I'd consider adding a build target for older browsers and release as `biscuitman.legacy.js`.
+In these extremely old browsers, the functionality is intact and the UI is usable but it may look slightly janky as the browser is missing CSS features like `gap` resulting in missing gaps between buttons.
+
 
 ## Globals
 - `biscuitman` – configuration object, must be `window.biscuitman`
@@ -262,7 +262,8 @@ document.addEventListener('bm:save', ({ detail }) => {
 
 `npm run dev` fires up a browserSync development server on `https://localhost:3000`.
 
-We need `https://` active to be able to delete Secure cookies.
+We need `https://` to be able to delete Secure cookies.
+
 
 ### Fix NET::ERR_CERT_AUTHORITY_INVALID error
 
@@ -272,7 +273,6 @@ To prevent invalid certificate warnings, you can generate a local SSL key with `
 - if you're using another solution for local SSL certs, generate `server.crt` and `server.key` manually and place them in the root
 
 Visiting `https://localhost:3000` should now work without warnings.
-
 
 ### Building
 `npm run build` - creates project distributes via `run.js`, a custom build script requiring `Node v20`
