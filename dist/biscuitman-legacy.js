@@ -704,8 +704,12 @@
 	          saveConsents(false);
 	      }
 	    };
+	    ui.onchange = function (e) {
+	      if (!e.target.dataset.s) return;
+	      e.target.parentElement.classList.toggle('checked', e.target.checked);
+	    };
 	    dialog = ui.querySelector('dialog');
-	    if (o.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog);
+	    if (o.dialogPolyfill && !dialog.close) loadDialogPolyfill(dialog);
 	    dialog.onclose = function () {
 	      return dispatch('close');
 	    };
@@ -717,11 +721,6 @@
 	        return e.key === 'Escape' ? e.preventDefault() : null;
 	      };
 	    }
-	    ui.querySelectorAll('[data-s]').forEach(function (checkbox) {
-	      return checkbox.addEventListener('change', function (e) {
-	        checkbox.parentElement.classList.toggle('checked', e.target.checked);
-	      });
-	    });
 	    d.body.appendChild(ui);
 	    w.addEventListener('resize', updateBannerHeight);
 	  }

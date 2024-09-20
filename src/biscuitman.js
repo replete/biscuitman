@@ -116,22 +116,23 @@
 				case 'reject': saveConsents(false)
 			}
 		}
+		ui.onchange = e => {
+			if (!e.target.dataset.s) return
+			e.target.parentElement.classList.toggle('checked', e.target.checked)
+		}
 		dialog = ui.querySelector('dialog')
-		if (o.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog)
+		if (o.dialogPolyfill && !dialog.close) loadDialogPolyfill(dialog)
 		dialog.onclose = () => dispatch('close')
 		if (o.force) {
 			dialog.oncancel = e => e.preventDefault()
 			dialog.onkeydown = e => e.key === 'Escape' ? e.preventDefault() : null
 		}
-		ui.querySelectorAll('[data-s]').forEach(checkbox => checkbox.addEventListener('change', e => {
-			checkbox.parentElement.classList.toggle('checked', e.target.checked)
-		}))
 		d.body.appendChild(ui)
 		w.addEventListener('resize', updateBannerHeight)
 	}
 
 	const updateBannerHeight = () => { h.style.setProperty('--bm-height', `${ui.offsetHeight}px`) }
-	const displayUI = (show) => {
+	const displayUI = show => {
 		h.classList.toggle('bm-show', show)
 		updateBannerHeight()
 	}

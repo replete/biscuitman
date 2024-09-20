@@ -58,21 +58,21 @@ function render() {
     <b>${options.title}</b>
 	<p>${options.message}</p>
 	<nav>
-		<button data-id="accept">${options.accept}</button>
-		<button data-id="settings">${options.settings}</button>
-		<button data-id="reject">${options.reject}</button>
+		<button data-id=accept>${options.accept}</button>
+		<button data-id=settings>${options.settings}</button>
+		<button data-id=reject>${options.reject}</button>
 	</nav>
 </article>
 <dialog>
-	<div class="bm-dialog">
+	<div class=bm-dialog>
 		<b>${options.settingsTitle}</b>
-		<button data-id="close"${options.force ? ' disabled' : ''}>×</button>
-		<div class="bm-sections">
+		<button data-id=close${options.force ? ' disabled' : ''}>×</button>
+		<div class=bm-sections>
 			<p><span>${options.message}</span></p>
 			<p>${options.info.split('\n').map((line, i, arr) =>
 				`<span>${line}</span>
 				${arr.length > 1 && options.enableMore && i == 0 ?
-				`<a class="more" href="javascript:void(0)">${options.more}</a>` : ''
+				`<a data-id=more href=javascript:void(0)>${options.more}</a>` : ''
 				}`).join('')}
 			</p>
 			${options.sections.map(section => {
@@ -87,8 +87,8 @@ function render() {
 				<details>
 					<summary>
 						<b>${options[`${section}Title`]}</b>
-						<label for="bm_${section}" class="${disabledProp} ${checkedProp}">
-							<input type="checkbox" id="bm_${section}" ${disabledProp} ${checkedProp} data-s="${section}"/>
+						<label for=bm_${section} class="${disabledProp} ${checkedProp}">
+							<input type=checkbox id=bm_${section} ${disabledProp} ${checkedProp} data-s="${section}"/>
 						</label>
 						<p>${options[`${section}Message`]}</p>
 					</summary>
@@ -99,9 +99,9 @@ function render() {
 			</section>`}).join('')}
 		</div>
 		<nav>
-			<button data-id="accept">${options.accept}</button>
-			<button data-id="save">${options.save}</button>
-			<button data-id="reject">${options.reject}</button>
+			<button data-id=accept>${options.accept}</button>
+			<button data-id=save>${options.save}</button>
+			<button data-id=reject>${options.reject}</button>
 		</nav>
 	</div>
 </dialog>`.replaceAll('{link}',`<a href="${options.linkURL}">${options.linkText}</a>`)
@@ -119,7 +119,7 @@ function render() {
 		}
 	}
 	dialog = ui.querySelector('dialog')
-	if (options.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog)
+	if (options.dialogPolyfill && !dialog.close) loadDialogPolyfill(dialog)
 	dialog.onclose = () => dispatch('close')
 	if (options.force) {
 		dialog.oncancel = e => e.preventDefault()
@@ -133,7 +133,7 @@ function render() {
 }
 
 const updateBannerHeight = () => { h.style.setProperty('--bm-height', `${ui.offsetHeight}px`) }
-const displayUI = (show) => {
+const displayUI = show => {
 	h.classList.toggle('bm-show', show)
 	updateBannerHeight()
 }
