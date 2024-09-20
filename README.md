@@ -1,11 +1,12 @@
 # biscuitman.js 🍪 Lightweight Consent Manager ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
 
-![screenshot of main UI](media/ui.webp)
+Biscuitman is a super lightweight, customizable consent manager for your website. Weighing in around 3-4kB compressed, its designed to be fast-loading and easy to implement with a flat configuration object.
 
+![screenshot of main UI](media/ui.webp)
 #### [View demo](https://replete.github.io/biscuitman)
 
-100kB+ seemed too heavy for a cookie popup so I wrote this, it's around 4kB compressed including CSS, designed to be as small as possible and versatile enough for basic website 'cookie' consent management.
 
+## Features overview
 - Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
 - Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
 - Optionally shows user specific cookie (or localStorage item) details
@@ -16,12 +17,13 @@
 - Simple flat configuration object
 - Injects scripts when granular consent is granted (`<script data-consent="analytics" type="text/plain" src="..."></script>`)
 - Injects embedded 'after' `<script>` from script tags with `src` properties on onload (= less markup)
-- Mobile-first
-- 'show more' functionality for long disclaimer text
+- Mobile-first responsive design
+- 'Show more' functionality for long disclaimer text
 - include optional link in any text
 - CSS classes on `<html>` element for consents
 - Progressively enhanced CSS
 - Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
+- Legacy version included for supporting 2013+ era browsers
 
 ## How to use
 [View demo](https://replete.github.io/biscuitman) for a more detailed example
