@@ -1,0 +1,6 @@
+# Exclude all files from export
+*               export-ignore
+
+# Include only the dist folder
+!/dist          !export-ignore
+!/dist/**       !export-ignore
