@@ -80,16 +80,39 @@ function render() {
 		</nav>
 	</div>
 </dialog>`.replaceAll('{link}', `<a href="${options.linkURL}">${options.linkText}</a>`);
-    ui.querySelectorAll('button').forEach((b)=>b.addEventListener('click', buttonHandler));
+    ui.onclick = (e)=>{
+        let id = e.target.dataset.id;
+        if (!id) return;
+        dispatch('button', {
+            id
+        });
+        switch(id){
+            case 'more':
+                e.target.remove();
+                break;
+            case 'accept':
+                saveConsents(true);
+                break;
+            case 'close':
+                dialog.close();
+                break;
+            case 'settings':
+                openModal();
+                break;
+            case 'save':
+                saveConsents();
+                break;
+            case 'reject':
+                saveConsents(false);
+        }
+    };
     dialog = ui.querySelector('dialog');
+    if (options.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog);
     dialog.onclose = ()=>dispatch('close');
     if (options.force) {
         dialog.oncancel = (e)=>e.preventDefault();
         dialog.onkeydown = (e)=>e.key === 'Escape' ? e.preventDefault() : null;
     }
-    if (options.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog);
-    const moreLink = ui.querySelector('.more');
-    if (moreLink) moreLink.addEventListener('click', moreLink.remove);
     ui.querySelectorAll('[data-s]').forEach((checkbox)=>checkbox.addEventListener('change', (e)=>{
             checkbox.parentElement.classList.toggle('checked', e.target.checked);
         }));
@@ -114,28 +137,6 @@ const applyCssClasses = ()=>{
         h.classList.toggle(`bm-no-${name}`, !granted);
     }
 };
-function buttonHandler(e) {
-    let id = e.target.dataset.id;
-    dispatch('button', {
-        id
-    });
-    switch(id){
-        case 'accept':
-            saveConsents(true);
-            break;
-        case 'close':
-            dialog.close();
-            break;
-        case 'settings':
-            openModal();
-            break;
-        case 'save':
-            saveConsents();
-            break;
-        case 'reject':
-            saveConsents(false);
-    }
-}
 function openModal() {
     dispatch('open');
     dialog.showModal();

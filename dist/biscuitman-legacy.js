@@ -663,7 +663,7 @@
 	  function render() {
 	    ui.className = 'biscuitman';
 	    ui.innerHTML = "\n<article>\n\t<b>".concat(o.title, "</b>\n\t<p>").concat(o.message, "</p>\n\t<nav>\n\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t<button data-id=settings>").concat(o.settings, "</button>\n\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t</nav>\n</article>\n<dialog>\n\t<div class=bm-dialog>\n\t\t<b>").concat(o.settingsTitle, "</b>\n\t\t<button data-id=close").concat(o.force ? ' disabled' : '', ">\xD7</button>\n\t\t<div class=bm-sections>\n\t\t\t<p><span>").concat(o.message, "</span></p>\n\t\t\t<p>").concat(o.info.split('\n').map(function (line, i, arr) {
-	      return "<span>".concat(line, "</span>\n\t\t\t\t").concat(arr.length > 1 && o.enableMore && i == 0 ? "<a class=more href=javascript:void(0)>".concat(o.more, "</a>") : '');
+	      return "<span>".concat(line, "</span>\n\t\t\t\t").concat(arr.length > 1 && o.enableMore && i == 0 ? "<a data-id=more href=javascript:void(0)>".concat(o.more, "</a>") : '');
 	    }).join(''), "\n\t\t\t</p>\n\t\t\t").concat(o.sections.map(function (section) {
 	      var hasConsent = getConsents()[section];
 	      var isEssential = section === 'essential';
@@ -678,10 +678,34 @@
 	        return "<dl><dt>".concat(k, "</dt><dd>").concat(v, "</dd></dl>");
 	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t</section>");
 	    }).join(''), "\n\t\t</div>\n\t\t<nav>\n\t\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t\t<button data-id=save>").concat(o.save, "</button>\n\t\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t\t</nav>\n\t</div>\n</dialog>").replaceAll('{link}', "<a href=\"".concat(o.linkURL, "\">").concat(o.linkText, "</a>"));
-	    ui.querySelectorAll('button').forEach(function (b) {
-	      return b.addEventListener('click', buttonHandler);
-	    });
+	    ui.onclick = function (e) {
+	      var id = e.target.dataset.id;
+	      if (!id) return;
+	      dispatch('button', {
+	        id: id
+	      });
+	      switch (id) {
+	        case 'more':
+	          e.target.remove();
+	          break;
+	        case 'accept':
+	          saveConsents(true);
+	          break;
+	        case 'close':
+	          dialog.close();
+	          break;
+	        case 'settings':
+	          openModal();
+	          break;
+	        case 'save':
+	          saveConsents();
+	          break;
+	        case 'reject':
+	          saveConsents(false);
+	      }
+	    };
 	    dialog = ui.querySelector('dialog');
+	    if (o.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog);
 	    dialog.onclose = function () {
 	      return dispatch('close');
 	    };
@@ -693,9 +717,6 @@
 	        return e.key === 'Escape' ? e.preventDefault() : null;
 	      };
 	    }
-	    if (o.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog);
-	    var moreLink = ui.querySelector('.more');
-	    if (moreLink) moreLink.addEventListener('click', moreLink.remove);
 	    ui.querySelectorAll('[data-s]').forEach(function (checkbox) {
 	      return checkbox.addEventListener('change', function (e) {
 	        checkbox.parentElement.classList.toggle('checked', e.target.checked);
@@ -726,28 +747,6 @@
 	      h.classList.toggle("bm-no-".concat(name), !granted);
 	    }
 	  };
-	  function buttonHandler(e) {
-	    var id = e.target.dataset.id;
-	    dispatch('button', {
-	      id: id
-	    });
-	    switch (id) {
-	      case 'accept':
-	        saveConsents(true);
-	        break;
-	      case 'close':
-	        dialog.close();
-	        break;
-	      case 'settings':
-	        openModal();
-	        break;
-	      case 'save':
-	        saveConsents();
-	        break;
-	      case 'reject':
-	        saveConsents(false);
-	    }
-	  }
 	  function openModal() {
 	    dispatch('open');
 	    dialog.showModal();

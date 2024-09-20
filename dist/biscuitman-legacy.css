@@ -246,7 +246,7 @@
   display: inline-block;
 }
 
-.biscuitman .bm-sections > p .more ~ span {
+.biscuitman .bm-sections > p [data-id="more"] ~ span {
   display: none;
 }
 

@@ -220,7 +220,7 @@
 				padding-bottom: 5px;
 			}
 
-			.more ~ span {
+			[data-id=more] ~ span {
 				display: none;
 			}
 		}
