@@ -661,9 +661,9 @@
 	  var ui = d.createElement('div');
 	  var dialog;
 	  function render() {
-	    ui.classList.add('biscuitman');
-	    ui.innerHTML = "\n<article>\n\t<b>".concat(o.title, "</b>\n\t<p>").concat(o.message, "</p>\n\t<nav>\n\t\t<button data-id=\"accept\">").concat(o.accept, "</button>\n\t\t<button data-id=\"settings\">").concat(o.settings, "</button>\n\t\t<button data-id=\"reject\">").concat(o.reject, "</button>\n\t</nav>\n</article>\n<dialog>\n\t<div class=\"bm-dialog\">\n\t\t<b>").concat(o.settingsTitle, "</b>\n\t\t<button data-id=\"close\"").concat(o.force ? ' disabled' : '', ">\xD7</button>\n\t\t<div class=\"bm-sections\">\n\t\t\t<p><span>").concat(o.message, "</span></p>\n\t\t\t<p>").concat(o.info.split('\n').map(function (line, i, arr) {
-	      return "<span>".concat(line, "</span>\n\t\t\t\t").concat(arr.length > 1 && o.enableMore && i == 0 ? "<a class=\"more\" href=\"javascript:void(0)\">".concat(o.more, "</a>") : '');
+	    ui.className = 'biscuitman';
+	    ui.innerHTML = "\n<article>\n\t<b>".concat(o.title, "</b>\n\t<p>").concat(o.message, "</p>\n\t<nav>\n\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t<button data-id=settings>").concat(o.settings, "</button>\n\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t</nav>\n</article>\n<dialog>\n\t<div class=bm-dialog>\n\t\t<b>").concat(o.settingsTitle, "</b>\n\t\t<button data-id=close").concat(o.force ? ' disabled' : '', ">\xD7</button>\n\t\t<div class=bm-sections>\n\t\t\t<p><span>").concat(o.message, "</span></p>\n\t\t\t<p>").concat(o.info.split('\n').map(function (line, i, arr) {
+	      return "<span>".concat(line, "</span>\n\t\t\t\t").concat(arr.length > 1 && o.enableMore && i == 0 ? "<a class=more href=javascript:void(0)>".concat(o.more, "</a>") : '');
 	    }).join(''), "\n\t\t\t</p>\n\t\t\t").concat(o.sections.map(function (section) {
 	      var hasConsent = getConsents()[section];
 	      var isEssential = section === 'essential';
@@ -671,19 +671,28 @@
 	      var checkedProp = isEssential ? 'checked' : '';
 	      if (hasConsent !== undefined) checkedProp = hasConsent ? 'checked' : '';
 	      var cookies = o["".concat(section, "Cookies")];
-	      return "\n\t\t\t<section>\n\t\t\t\t<details>\n\t\t\t\t\t<summary>\n\t\t\t\t\t\t<b>".concat(o["".concat(section, "Title")], "</b>\n\t\t\t\t\t\t<label for=\"bm_").concat(section, "\" class=\"").concat(disabledProp, " ").concat(checkedProp, "\">\n\t\t\t\t\t\t\t<input type=\"checkbox\" id=\"bm_").concat(section, "\" ").concat(disabledProp, " ").concat(checkedProp, " data-s=\"").concat(section, "\"/>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p>").concat(o["".concat(section, "Message")], "</p>\n\t\t\t\t\t</summary>\n\t\t\t\t\t").concat(cookies ? O.entries(cookies).map(function (_ref) {
+	      return "\n\t\t\t<section>\n\t\t\t\t<details>\n\t\t\t\t\t<summary>\n\t\t\t\t\t\t<b>".concat(o["".concat(section, "Title")], "</b>\n\t\t\t\t\t\t<label for=bm_").concat(section, " class=\"").concat(disabledProp, " ").concat(checkedProp, "\">\n\t\t\t\t\t\t\t<input type=checkbox id=bm_").concat(section, " ").concat(disabledProp, " ").concat(checkedProp, " data-s=\"").concat(section, "\"/>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p>").concat(o["".concat(section, "Message")], "</p>\n\t\t\t\t\t</summary>\n\t\t\t\t\t").concat(cookies ? O.entries(cookies).map(function (_ref) {
 	        var _ref2 = _slicedToArray(_ref, 2),
 	          k = _ref2[0],
 	          v = _ref2[1];
 	        return "<dl><dt>".concat(k, "</dt><dd>").concat(v, "</dd></dl>");
 	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t</section>");
-	    }).join(''), "\n\t\t</div>\n\t\t<nav>\n\t\t\t<button data-id=\"accept\">").concat(o.accept, "</button>\n\t\t\t<button data-id=\"save\">").concat(o.save, "</button>\n\t\t\t<button data-id=\"reject\">").concat(o.reject, "</button>\n\t\t</nav>\n\t</div>\n</dialog>").replaceAll('{link}', "<a href=\"".concat(o.linkURL, "\">").concat(o.linkText, "</a>"));
+	    }).join(''), "\n\t\t</div>\n\t\t<nav>\n\t\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t\t<button data-id=save>").concat(o.save, "</button>\n\t\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t\t</nav>\n\t</div>\n</dialog>").replaceAll('{link}', "<a href=\"".concat(o.linkURL, "\">").concat(o.linkText, "</a>"));
 	    ui.querySelectorAll('button').forEach(function (b) {
 	      return b.addEventListener('click', buttonHandler);
 	    });
 	    dialog = ui.querySelector('dialog');
-	    dialog.addEventListener('close', closeModalHandler);
-	    dialog.addEventListener('cancel', cancelModalHandler);
+	    dialog.onclose = function () {
+	      return dispatch('close');
+	    };
+	    if (o.force) {
+	      dialog.oncancel = function (e) {
+	        return e.preventDefault();
+	      };
+	      dialog.onkeydown = function (e) {
+	        return e.key === 'Escape' ? e.preventDefault() : null;
+	      };
+	    }
 	    if (o.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog);
 	    var moreLink = ui.querySelector('.more');
 	    if (moreLink) moreLink.addEventListener('click', moreLink.remove);
@@ -737,14 +746,7 @@
 	        break;
 	      case 'reject':
 	        saveConsents(false);
-	        break;
 	    }
-	  }
-	  function closeModalHandler() {
-	    dispatch('close');
-	  }
-	  function cancelModalHandler(e) {
-	    if (o.force) e.preventDefault();
 	  }
 	  function openModal() {
 	    dispatch('open');
@@ -851,7 +853,7 @@
 	      consentTime: +new Date()
 	    };
 	    o.sections.forEach(function (section) {
-	      if (section === 'essential') return false;
+	      if (section === 'essential') return;
 	      var sectionElement = ui.querySelector("[data-s=".concat(section, "]"));
 	      var sectionConsent = willReadValues ? sectionElement.checked : value;
 	      consents[section] = sectionConsent;
@@ -871,7 +873,7 @@
 	  function insertScripts() {
 	    var scripts = d.querySelectorAll('script[data-consent]');
 	    scripts.forEach(function (script) {
-	      if (!getConsents()[script.dataset.consent]) return false;
+	      if (!getConsents()[script.dataset.consent]) return;
 	      var newScript = d.createElement('script');
 	      for (var _i8 = 0, _script$attributes2 = script.attributes; _i8 < _script$attributes2.length; _i8++) {
 	        var _script$attributes2$_ = _script$attributes2[_i8],
@@ -943,6 +945,7 @@
 	    setConsents({});
 	    localStorage.removeItem(o.key);
 	    displayUI(true);
+	    if (o.force) dialog.showModal();
 	  };
 	  // <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
 	  w.bmUpdate = function () {

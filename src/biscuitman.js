@@ -50,27 +50,27 @@
 	let dialog
 
 	function render() {
-		ui.classList.add('biscuitman')
+		ui.className = 'biscuitman'
 		ui.innerHTML = `
 <article>
 	<b>${o.title}</b>
 	<p>${o.message}</p>
 	<nav>
-		<button data-id="accept">${o.accept}</button>
-		<button data-id="settings">${o.settings}</button>
-		<button data-id="reject">${o.reject}</button>
+		<button data-id=accept>${o.accept}</button>
+		<button data-id=settings>${o.settings}</button>
+		<button data-id=reject>${o.reject}</button>
 	</nav>
 </article>
 <dialog>
-	<div class="bm-dialog">
+	<div class=bm-dialog>
 		<b>${o.settingsTitle}</b>
-		<button data-id="close"${o.force ? ' disabled' : ''}>×</button>
-		<div class="bm-sections">
+		<button data-id=close${o.force ? ' disabled' : ''}>×</button>
+		<div class=bm-sections>
 			<p><span>${o.message}</span></p>
 			<p>${o.info.split('\n').map((line, i, arr) =>
 				`<span>${line}</span>
 				${arr.length > 1 && o.enableMore && i == 0 ?
-				`<a class="more" href="javascript:void(0)">${o.more}</a>` : ''
+				`<a class=more href=javascript:void(0)>${o.more}</a>` : ''
 				}`).join('')}
 			</p>
 			${o.sections.map(section => {
@@ -85,8 +85,8 @@
 				<details>
 					<summary>
 						<b>${o[`${section}Title`]}</b>
-						<label for="bm_${section}" class="${disabledProp} ${checkedProp}">
-							<input type="checkbox" id="bm_${section}" ${disabledProp} ${checkedProp} data-s="${section}"/>
+						<label for=bm_${section} class="${disabledProp} ${checkedProp}">
+							<input type=checkbox id=bm_${section} ${disabledProp} ${checkedProp} data-s="${section}"/>
 						</label>
 						<p>${o[`${section}Message`]}</p>
 					</summary>
@@ -97,16 +97,19 @@
 			</section>`}).join('')}
 		</div>
 		<nav>
-			<button data-id="accept">${o.accept}</button>
-			<button data-id="save">${o.save}</button>
-			<button data-id="reject">${o.reject}</button>
+			<button data-id=accept>${o.accept}</button>
+			<button data-id=save>${o.save}</button>
+			<button data-id=reject>${o.reject}</button>
 		</nav>
 	</div>
 </dialog>`.replaceAll('{link}',`<a href="${o.linkURL}">${o.linkText}</a>`)
 		ui.querySelectorAll('button').forEach(b => b.addEventListener('click', buttonHandler))
 		dialog = ui.querySelector('dialog')
-		dialog.addEventListener('close', closeModalHandler)
-		dialog.addEventListener('cancel', cancelModalHandler)
+		dialog.onclose = () => dispatch('close')
+		if (o.force) {
+			dialog.oncancel = e => e.preventDefault()
+			dialog.onkeydown = e => e.key === 'Escape' ? e.preventDefault() : null
+		}
 		if (o.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog)
 		const moreLink = ui.querySelector('.more')
 		if (moreLink) moreLink.addEventListener('click', moreLink.remove)
@@ -141,16 +144,8 @@
 			case 'close': dialog.close(); break
 			case 'settings': openModal(); break
 			case 'save': saveConsents(); break
-			case 'reject': saveConsents(false); break
+			case 'reject': saveConsents(false)
 		}
-	}
-
-	function closeModalHandler() {
-		dispatch('close')
-	}
-
-	function cancelModalHandler(e) {
-		if (o.force) e.preventDefault()
 	}
 
 	function openModal() {
@@ -162,7 +157,7 @@
 		const name = `bm:${eventName}`
 		const payload = {
 			...(data !== undefined && data),
-			time: +new Date()
+			time: +new Date
 		}
 		d.dispatchEvent(new CustomEvent(name, { detail: payload }))
 		console.debug(name, payload)
@@ -251,7 +246,7 @@
 			consentTime: +new Date()
 		}
 		o.sections.forEach(section => {
-			if (section === 'essential') return false
+			if (section === 'essential') return
 			let sectionElement = ui.querySelector(`[data-s=${section}]`)
 			let sectionConsent = willReadValues
 				? sectionElement.checked
@@ -272,7 +267,7 @@
 	function insertScripts() {
 		const scripts = d.querySelectorAll('script[data-consent]')
 		scripts.forEach(script => {
-			if (!getConsents()[script.dataset.consent]) return false
+			if (!getConsents()[script.dataset.consent]) return
 
 			const newScript = d.createElement('script')
 			for (let { name, value } of script.attributes) {
@@ -332,6 +327,7 @@
 		setConsents({})
 		localStorage.removeItem(o.key)
 		displayUI(true)
+		if (o.force) dialog.showModal()
 	}
 	// <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
 	w.bmUpdate = () => {

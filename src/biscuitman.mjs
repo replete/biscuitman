@@ -52,7 +52,7 @@ let dialog
 let listeners = {}
 
 function render() {
-	ui.classList.add('biscuitman')
+	ui.className = 'biscuitman'
 	ui.innerHTML = `
 <article>
     <b>${options.title}</b>
@@ -107,8 +107,11 @@ function render() {
 </dialog>`.replaceAll('{link}',`<a href="${options.linkURL}">${options.linkText}</a>`)
 	ui.querySelectorAll('button').forEach(b => b.addEventListener('click', buttonHandler))
 	dialog = ui.querySelector('dialog')
-	dialog.addEventListener('close', closeModalHandler)
-	dialog.addEventListener('cancel', cancelModalHandler)
+	dialog.onclose = () => dispatch('close')
+	if (options.force) {
+		dialog.oncancel = e => e.preventDefault()
+		dialog.onkeydown = e => e.key === 'Escape' ? e.preventDefault() : null
+	}
 	if (options.dialogPolyfill && !dialog.close || !dialog.showModal) loadDialogPolyfill(dialog)
 	const moreLink = ui.querySelector('.more')
 	if (moreLink) moreLink.addEventListener('click', moreLink.remove)
@@ -143,16 +146,8 @@ function buttonHandler(e) {
 		case 'close': dialog.close(); break
 		case 'settings': openModal(); break
 		case 'save': saveConsents(); break
-		case 'reject': saveConsents(false); break
+		case 'reject': saveConsents(false)
 	}
-}
-
-function closeModalHandler() {
-	dispatch('close')
-}
-
-function cancelModalHandler(e) {
-	if (options.force) e.preventDefault()
 }
 
 function openModal() {
@@ -164,7 +159,7 @@ function dispatch(eventName, data) {
 	const name = `bm:${eventName}`
 	const payload = {
 		...(data !== undefined && data),
-		time: +new Date()
+		time: +new Date
 	}
 	d.dispatchEvent(new CustomEvent(name, { detail: payload }))
 	console.debug(name, payload)
@@ -253,10 +248,10 @@ function clearStorages() {
 function saveConsents(value) {
 	const willReadValues = value === undefined
 	let consents = {
-		consentTime: +new Date()
+		consentTime: +new Date
 	}
 	options.sections.forEach(section => {
-		if (section === 'essential') return false
+		if (section === 'essential') return
 		let sectionElement = ui.querySelector(`[data-s=${section}]`)
 		let sectionConsent = willReadValues
 			? sectionElement.checked
@@ -277,7 +272,7 @@ function saveConsents(value) {
 function insertScripts() {
 	const scripts = d.querySelectorAll('script[data-consent]')
 	scripts.forEach(script => {
-		if (!getConsents()[script.dataset.consent]) return false
+		if (!getConsents()[script.dataset.consent]) return
 
 		const newScript = d.createElement('script')
 		for (let { name, value } of script.attributes) {
@@ -348,6 +343,7 @@ function create(config = {}) {
 		setConsents({})
 		localStorage.removeItem(options.key)
 		displayUI(true)
+		if (options.force) dialog.showModal()
 	}
 	// <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
 	const update = w.bmUpdate = () => {
