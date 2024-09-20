@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.5.1 */
+/*! biscuitman.js 0.5.2 */
 ((d, w, O, h)=>{
     const defaults = {
         key: 'myconsent',
@@ -331,7 +331,7 @@
 ;
 ((d)=>{
 	let css=d.createElement('style');
-	css.textContent=`/*! biscuitman.js 0.5.1 */
+	css.textContent=`/*! biscuitman.js 0.5.2 */
 .biscuitman {
   --ui: 0, 0, 0;
   --tx: #444;

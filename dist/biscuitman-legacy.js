@@ -1,4 +1,4 @@
-/*! biscuitman-legacy.js 0.5.1 */
+/*! biscuitman-legacy.js 0.5.2 */
 (function () {
 	'use strict';
 
