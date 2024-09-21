@@ -1,64 +1,64 @@
 {
-  "name": "biscuitman",
-  "version": "0.5.2",
-  "description": "Super lightweight open-source privacy consent manager for your website ",
-  "browser": "biscuitman.js",
-  "keywords": [
-    "privacy",
-    "cookie",
-    "cookies",
-    "trackers",
-    "cookie-consent",
-    "gdpr",
-    "consents",
-    "consent-manager"
-  ],
-  "type": "module",
-  "engines": {
-    "node": ">=20"
-  },
-  "scripts": {
-    "dev": "node ./run.js build serve",
-    "build": "node ./run.js build",
-    "report": "node ./run.js report",
-    "test": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --verbose --runInBand --openHandlesTimeout=2000",
-    "lint": "eslint",
-    "coverage": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --runInBand --openHandlesTimeout=2000 --collectCoverage --",
-    "makecerts": "mkcert -cert-file server.crt -key-file server.key localhost 127.0.0.1 ::1",
-    "http": "npx http-server -p 8000 -a 0.0.0.0"
-  },
-  "test": "npm run test",
-  "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@babel/plugin-transform-for-of": "^7.24.7",
-    "@babel/preset-env": "^7.25.4",
-    "@eslint/js": "^9.10.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@swc/core": "^1.7.26",
-    "@swc/jest": "^0.2.36",
-    "browser-sync": "^3.0.2",
-    "browserslist": "^4.23.3",
-    "dialog-polyfill": "^0.5.6",
-    "doiuse": "^6.0.2",
-    "eslint": "^9.10.0",
-    "globals": "^15.9.0",
-    "jest": "^29.7.0",
-    "jest-extended": "^4.0.2",
-    "jest-puppeteer": "^10.1.1",
-    "lightningcss": "^1.27.0",
-    "puppeteer": "^23.4.0",
-    "rollup": "^4.21.3"
-  },
-  "browserslist": ">= 2%, last 2 years",
-  "author": "replete",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/replete/biscuitman.git"
-  },
-  "bugs": {
-    "url": "https://github.com/replete/biscuitman/issues"
-  },
-  "funding": "https://buymeacoffee.com/replete",
-  "homepage": "https://replete.github.io/biscuitman"
+	"name": "biscuitman",
+	"version": "0.5.2",
+	"description": "Super lightweight open-source privacy consent manager for your website ",
+	"browser": "biscuitman.js",
+	"keywords": [
+		"privacy",
+		"cookie",
+		"cookies",
+		"trackers",
+		"cookie-consent",
+		"gdpr",
+		"consents",
+		"consent-manager"
+	],
+	"type": "module",
+	"engines": {
+		"node": ">=20"
+	},
+	"scripts": {
+		"dev": "node ./run.js build serve",
+		"build": "node ./run.js build",
+		"report": "node ./run.js report",
+		"test": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --verbose --runInBand --openHandlesTimeout=2000",
+		"lint": "eslint",
+		"coverage": "node --experimental-vm-modules --disable-warning=ExperimentalWarning ./node_modules/jest/bin/jest.js --runInBand --openHandlesTimeout=2000 --collectCoverage --",
+		"makecerts": "mkcert -cert-file server.crt -key-file server.key localhost 127.0.0.1 ::1",
+		"http": "npx http-server -p 8000 -a 0.0.0.0"
+	},
+	"test": "npm run test",
+	"devDependencies": {
+		"@babel/core": "^7.25.2",
+		"@babel/plugin-transform-for-of": "^7.24.7",
+		"@babel/preset-env": "^7.25.4",
+		"@eslint/js": "^9.10.0",
+		"@rollup/plugin-node-resolve": "^15.2.3",
+		"@swc/core": "^1.7.26",
+		"@swc/jest": "^0.2.36",
+		"browser-sync": "^3.0.2",
+		"browserslist": "^4.23.3",
+		"dialog-polyfill": "^0.5.6",
+		"doiuse": "^6.0.2",
+		"eslint": "^9.10.0",
+		"globals": "^15.9.0",
+		"jest": "^29.7.0",
+		"jest-extended": "^4.0.2",
+		"jest-puppeteer": "^10.1.1",
+		"lightningcss": "^1.27.0",
+		"puppeteer": "^23.4.0",
+		"rollup": "^4.21.3"
+	},
+	"browserslist": ">= 2%, last 2 years",
+	"author": "replete",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/replete/biscuitman.git"
+	},
+	"bugs": {
+		"url": "https://github.com/replete/biscuitman/issues"
+	},
+	"funding": "https://buymeacoffee.com/replete",
+	"homepage": "https://replete.github.io/biscuitman"
 }
