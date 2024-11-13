@@ -70,7 +70,7 @@
 			<p>${o.info.split('\n').map((line, i, arr) =>
 				`<span>${line}</span>
 				${arr.length > 1 && o.enableMore && i == 0 ?
-				`<a data-id=more href=javascript:void(0)>${o.more}</a>` : ''
+				`<a data-id=more href=# rel=nofollow>${o.more}</a>` : ''
 				}`).join('')}
 			</p>
 			${o.sections.map(section => {

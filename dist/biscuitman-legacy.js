@@ -1,4 +1,4 @@
-/*! biscuitman-legacy.js 0.5.2 */
+/*! biscuitman-legacy.js 0.5.3 */
 (function () {
 	'use strict';
 
@@ -663,7 +663,7 @@
 	  function render() {
 	    ui.className = 'biscuitman';
 	    ui.innerHTML = "\n<article>\n\t<b>".concat(o.title, "</b>\n\t<p>").concat(o.message, "</p>\n\t<nav>\n\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t<button data-id=settings>").concat(o.settings, "</button>\n\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t</nav>\n</article>\n<dialog>\n\t<div class=bm-dialog>\n\t\t<b>").concat(o.settingsTitle, "</b>\n\t\t<button data-id=close").concat(o.force ? ' disabled' : '', ">\xD7</button>\n\t\t<div class=bm-sections>\n\t\t\t<p><span>").concat(o.message, "</span></p>\n\t\t\t<p>").concat(o.info.split('\n').map(function (line, i, arr) {
-	      return "<span>".concat(line, "</span>\n\t\t\t\t").concat(arr.length > 1 && o.enableMore && i == 0 ? "<a data-id=more href=javascript:void(0)>".concat(o.more, "</a>") : '');
+	      return "<span>".concat(line, "</span>\n\t\t\t\t").concat(arr.length > 1 && o.enableMore && i == 0 ? "<a data-id=more href=# rel=nofollow>".concat(o.more, "</a>") : '');
 	    }).join(''), "\n\t\t\t</p>\n\t\t\t").concat(o.sections.map(function (section) {
 	      var hasConsent = getConsents()[section];
 	      var isEssential = section === 'essential';

@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.5.2 */
+/*! biscuitman.js 0.5.3 */
 ((d, w, O, h)=>{
     const defaults = {
         key: 'myconsent',
@@ -47,7 +47,7 @@
 		<div class=bm-sections>
 			<p><span>${o.message}</span></p>
 			<p>${o.info.split('\n').map((line, i, arr)=>`<span>${line}</span>
-				${arr.length > 1 && o.enableMore && i == 0 ? `<a data-id=more href=javascript:void(0)>${o.more}</a>` : ''}`).join('')}
+				${arr.length > 1 && o.enableMore && i == 0 ? `<a data-id=more href=# rel=nofollow>${o.more}</a>` : ''}`).join('')}
 			</p>
 			${o.sections.map((section)=>{
             let hasConsent = getConsents()[section];
@@ -331,7 +331,7 @@
 ;
 ((d)=>{
 	let css=d.createElement('style');
-	css.textContent=`/*! biscuitman.js 0.5.2 */
+	css.textContent=`/*! biscuitman.js 0.5.3 */
 .biscuitman {
   --ui: 0, 0, 0;
   --tx: #444;
