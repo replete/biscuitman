@@ -331,6 +331,7 @@
 	// <a onclick="bmUpdate()" href="javascript:void(0)">Update Consent Preferences</a>
 	w.bmUpdate = () => {
 		dispatch('update', { data: getConsents() })
+		displayUI(true)
 		openModal()
 	}
 

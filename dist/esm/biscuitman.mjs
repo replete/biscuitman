@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.5.3 */
+/*! biscuitman.js 0.5.4 */
 const { document: d, window: w, Object: O } = globalThis;
 const h = d.documentElement;
 const defaults = {
@@ -337,6 +337,7 @@ function create() {
         dispatch('update', {
             data: getConsents()
         });
+        displayUI(true);
         openModal();
     };
     initialize();

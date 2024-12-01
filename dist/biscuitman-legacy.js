@@ -1,4 +1,4 @@
-/*! biscuitman-legacy.js 0.5.3 */
+/*! biscuitman-legacy.js 0.5.4 */
 (function () {
 	'use strict';
 
@@ -950,6 +950,7 @@
 	    dispatch('update', {
 	      data: getConsents()
 	    });
+	    displayUI(true);
 	    openModal();
 	  };
 	})(document, window, Object, document.documentElement);

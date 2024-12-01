@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.5.3 *//* dialog-polyfill.js ^0.5.6*/
+/*! biscuitman.js 0.5.4 *//* dialog-polyfill.js ^0.5.6*/
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -868,6 +868,6 @@
 
 (function(d) {
 	var css=d.createElement('style');
-	css.textContent='/*! biscuitman.js 0.5.3 */dialog{color:#000;background:#fff;border:solid;width:fit-content;height:fit-content;margin:auto;padding:1em;display:block;position:absolute;left:0;right:0}dialog:not([open]){display:none}dialog+.backdrop{background:#0000001a;position:fixed;inset:0}._dialog_overlay{position:fixed;inset:0}dialog.fixed{position:fixed;top:50%;transform:translateY(-50%)}';
+	css.textContent='/*! biscuitman.js 0.5.4 */dialog{color:#000;background:#fff;border:solid;width:fit-content;height:fit-content;margin:auto;padding:1em;display:block;position:absolute;left:0;right:0}dialog:not([open]){display:none}dialog+.backdrop{background:#0000001a;position:fixed;inset:0}._dialog_overlay{position:fixed;inset:0}dialog.fixed{position:fixed;top:50%;transform:translateY(-50%)}';
 	d.head.appendChild(css)
 })(document);

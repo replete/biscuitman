@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.5.3 */
+/*! biscuitman.js 0.5.4 */
 ((d, w, O, h)=>{
     const defaults = {
         key: 'myconsent',
@@ -325,6 +325,7 @@
         dispatch('update', {
             data: getConsents()
         });
+        displayUI(true);
         openModal();
     };
 })(document, window, Object, document.documentElement);
