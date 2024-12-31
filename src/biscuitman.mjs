@@ -312,11 +312,11 @@ function create(config = {}) {
 	function initialize() {
 		setConsents(loadConsents() || {})
 
-		// Optional Non-EU auto-consent
-		handleNonEUConsent()
-
 		// Render UI
 		render()
+
+		// Optional Non-EU auto-consent
+		handleNonEUConsent()
 
 		// Wipe matching cookies/localStorages without consent
 		clearStorages()

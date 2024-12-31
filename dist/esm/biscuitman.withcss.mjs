@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.5.4 */
+/*! biscuitman.js 0.5.5 */
 const { document: d, window: w, Object: O } = globalThis;
 const h = d.documentElement;
 const defaults = {
@@ -65,10 +65,7 @@ function render() {
 						</label>
 						<p>${options[`${section}Message`]}</p>
 					</summary>
-					${cookies ? O.entries(cookies).map((param)=>{
-            let [k, v] = param;
-            return `<dl><dt>${k}</dt><dd>${v}</dd></dl>`;
-        }).join('') : `<dl><dd>${options.noCookies}</dd></dl>`}
+					${cookies ? O.entries(cookies).map(([k, v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : `<dl><dd>${options.noCookies}</dd></dl>`}
 				</details>
 			</section>`;
     }).join('')}
@@ -295,8 +292,7 @@ function handleNonEUConsent() {
     }
 }
 let instance;
-function create() {
-    let config = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+function create(config = {}) {
     if (instance) return instance;
     options = {
         ...defaults,
@@ -304,10 +300,10 @@ function create() {
     };
     function initialize() {
         setConsents(loadConsents() || {});
-        // Optional Non-EU auto-consent
-        handleNonEUConsent();
         // Render UI
         render();
+        // Optional Non-EU auto-consent
+        handleNonEUConsent();
         // Wipe matching cookies/localStorages without consent
         clearStorages();
         // Consent logic
@@ -366,7 +362,7 @@ export default {
 if (typeof BMCSS === 'undefined') {
 	let css=document.createElement('style');
 	css.id = 'BMCSS';
-	css.textContent=`/*! biscuitman.js 0.5.4 */
+	css.textContent=`/*! biscuitman.js 0.5.5 */
 .biscuitman {
   --ui: 0, 0, 0;
   --tx: #444;

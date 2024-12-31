@@ -1,4 +1,4 @@
-/*! biscuitman-legacy.js 0.5.4 */
+/*! biscuitman-legacy.js 0.5.5 */
 (function () {
 	'use strict';
 
@@ -909,6 +909,9 @@
 
 	  setConsents(loadConsents() || {});
 
+	  // Render UI
+	  render();
+
 	  // Optional Non-EU auto-consent
 	  var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	  var isEuropeTimezone = /^(GMT|UTC)$/.test(tz) || /(Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-1|GMT-2|UTC+1|UTC+2|UTC+3)/.test(tz);
@@ -916,9 +919,6 @@
 	    saveConsents(true);
 	    displayUI(false);
 	  }
-
-	  // Render UI
-	  render();
 
 	  // Wipe matching cookies/localStorages without consent
 	  clearStorages();

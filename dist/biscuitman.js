@@ -1,4 +1,4 @@
-/*! biscuitman.js 0.5.4 */
+/*! biscuitman.js 0.5.5 */
 ((d, w, O, h)=>{
     const defaults = {
         key: 'myconsent',
@@ -66,10 +66,7 @@
 						</label>
 						<p>${o[`${section}Message`]}</p>
 					</summary>
-					${cookies ? O.entries(cookies).map((param)=>{
-                let [k, v] = param;
-                return `<dl><dt>${k}</dt><dd>${v}</dd></dl>`;
-            }).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
+					${cookies ? O.entries(cookies).map(([k, v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
 				</details>
 			</section>`;
         }).join('')}
@@ -288,6 +285,8 @@
     }
     // Start:
     setConsents(loadConsents() || {});
+    // Render UI
+    render();
     // Optional Non-EU auto-consent
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const isEuropeTimezone = /^(GMT|UTC)$/.test(tz) || /(Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-1|GMT-2|UTC+1|UTC+2|UTC+3)/.test(tz);
@@ -295,8 +294,6 @@
         saveConsents(true);
         displayUI(false);
     }
-    // Render UI
-    render();
     // Wipe matching cookies/localStorages without consent
     clearStorages();
     // Consent logic
