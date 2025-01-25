@@ -1,6 +1,4 @@
-# Exclude all files from export
-*               export-ignore
-
-# Include only the dist folder
-!/dist          !export-ignore
-!/dist/**       !export-ignore
+# Only include the dist folder in release zips:
+* export-ignore
+\!/dist !export-ignore
+\!/dist/** !export-ignore
