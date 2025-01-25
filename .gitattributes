@@ -1,4 +1,3 @@
 # Only include the dist folder in release zips:
 * export-ignore
-\!/dist !export-ignore
-\!/dist/** !export-ignore
+dist/ !export-ignore
