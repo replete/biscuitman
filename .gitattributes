@@ -1,4 +1,10 @@
 # Only include the dist folder in release zips:
 * export-ignore
-\!/dist !export-ignore
-\!/dist/** !export-ignore
+dist !export-ignore
+dist/* !export-ignore
+dist/esm !export-ignore
+dist/esm/* !export-ignore
+src !export-ignore
+src/* !export-ignore
+README.md !export-ignore
+LICENSE.md !export-ignore
