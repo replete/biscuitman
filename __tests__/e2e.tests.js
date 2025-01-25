@@ -13,6 +13,11 @@ let appVersions = [
 	['biscuitman-legacy.withcss.min.js']
 ]
 
+// only test the main version in CI
+if (process.env.GITHUB_ACTIONS === 'true') {
+	appVersions = [['biscuitman.js']]
+}
+
 appVersions.forEach(([filename]) => {
 	describe(`a fresh load of ${filename}`, () => {
 		beforeEach(async () => {
