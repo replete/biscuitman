@@ -49,7 +49,7 @@
 		"puppeteer": "^24.1.1",
 		"rollup": "^4.32.0"
 	},
-	"browserslist": ">= 2%, last 2 years",
+	"browserslist": "since 2023, not dead",
 	"author": "replete",
 	"license": "MIT",
 	"repository": {
