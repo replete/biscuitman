@@ -13,10 +13,9 @@ let appVersions = [
 	['biscuitman-legacy.withcss.min.js']
 ]
 
-appVersions.forEach(([filename])=>{
+appVersions.forEach(([filename]) => {
 	describe(`a fresh load of ${filename}`, () => {
-
-		beforeEach(async ()=> {
+		beforeEach(async () => {
 			setHTML(filename)
 			await page.goto(__SERVERURL__, { waitUntil: 'domcontentloaded' })
 		})
@@ -40,7 +39,7 @@ appVersions.forEach(([filename])=>{
 
 		it('should have loaded CSS correctly', async () => {
 			const element = await page.$('.biscuitman [data-id=accept]')
-			const color = await page.evaluate(el => getComputedStyle(el).backgroundColor, element)
+			const color = await page.evaluate((el) => getComputedStyle(el).backgroundColor, element)
 			expect(color).toBe('rgb(16, 93, 137)') // #105d89
 		})
 
@@ -124,10 +123,7 @@ appVersions.forEach(([filename])=>{
 		test('should update consent preferences when "bmUpdate" is called', async () => {
 			await page.evaluate(() => window.bmUpdate())
 			const dialog = await page.$('dialog')
-			const dialogVisible = await page.evaluate(
-				(dialog) => dialog.open,
-				dialog
-			)
+			const dialogVisible = await page.evaluate((dialog) => dialog.open, dialog)
 			expect(dialogVisible).toBe(true)
 		})
 
@@ -170,7 +166,7 @@ appVersions.forEach(([filename])=>{
 			setHTML(
 				filename,
 				{
-					mockTimeZone: 'America/New_York',
+					mockTimeZone: 'America/New_York'
 				},
 				{
 					acceptNonEU: true
@@ -197,7 +193,7 @@ appVersions.forEach(([filename])=>{
 			setHTML(
 				filename,
 				{
-					mockTimeZone: 'Europe/Amsterdam',
+					mockTimeZone: 'Europe/Amsterdam'
 				},
 				{
 					acceptNonEU: true
@@ -207,7 +203,130 @@ appVersions.forEach(([filename])=>{
 
 			const banner = await page.$('.biscuitman article')
 			expect(await banner.isVisible()).toBe(true)
+		})
 
+		const testTimezones = [
+			['UTC', false],
+			['Europe/London', false],
+			['Asia/Tokyo', true],
+			['America/New_York', true],
+			['Australia/Sydney', true]
+		]
+		testTimezones.forEach(([zone, shouldAutoConsent]) => {
+			test(`should handle ${zone} timezone correctly`, async () => {
+				setHTML(filename, { mockTimeZone: zone }, { acceptNonEU: true })
+				await page.goto(__SERVERURL__)
+
+				const banner = await page.$('.biscuitman article')
+				expect(await banner.isVisible()).toBe(!shouldAutoConsent)
+			})
+		})
+
+		test('should properly inject scripts when consent given', async () => {
+			await page.click('button[data-id=accept]')
+
+			// Wait for script to be injected and transformed
+			await page.waitForSelector('script[src*="googletagmanager.com"]', {
+				timeout: 2000
+			})
+
+			const analyticsScripts = await page.$$eval('script[src*="googletagmanager.com"]', (els) =>
+				els.map((el) => el.src)
+			)
+			expect(analyticsScripts).toContain('https://www.googletagmanager.com/gtag/js?id=G-TEST')
+		})
+
+		test('should fire correct events', async () => {
+			await page.evaluate(() => {
+				window._bmEvents = []
+				;['save', 'revoke', 'inject', 'delete'].forEach((event) => {
+					document.addEventListener(`bm:${event}`, (e) => {
+						window._bmEvents.push({
+							type: event,
+							detail: JSON.parse(JSON.stringify(e.detail)) // Ensure serializable
+						})
+					})
+				})
+			})
+
+			await page.click('button[data-id=accept]')
+
+			await new Promise((resolve) => setTimeout(resolve, 100))
+			const events = await page.evaluate(() => window._bmEvents)
+
+			// Verify events
+			expect(events).toContainEqual(
+				expect.objectContaining({
+					type: 'save',
+					detail: expect.objectContaining({
+						data: expect.any(Object),
+						time: expect.any(Number)
+					})
+				})
+			)
+
+			// Should have inject events for analytics scripts
+			expect(events.some((e) => e.type === 'inject')).toBe(true)
+			// console.log('Collected events:', events)
+		})
+
+		test('should clean up cookies when consent revoked', async () => {
+			// Set some test cookies
+			await page.evaluate(() => {
+				document.cookie = '_ga=test;path=/'
+				localStorage.setItem('_ga_test', 'value')
+			})
+
+			await page.click('button[data-id=reject]')
+
+			// Verify cleanup
+			const cookies = await page.evaluate(() => document.cookie)
+			expect(cookies).not.toContain('_ga')
+
+			const storage = await page.evaluate(() => localStorage.getItem('_ga_test'))
+			expect(storage).toBeNull()
+		})
+
+		test('should maintain correct checkbox states', async () => {
+			await page.click('button[data-id=settings]')
+			await page.click('[for=bm_analytics]')
+
+			// Verify checkbox state persists after reopening
+			await page.click('button[data-id=close]')
+			await page.click('button[data-id=settings]')
+
+			const checked = await page.$eval('#bm_analytics', (el) => el.checked)
+			expect(checked).toBe(true)
+		})
+
+		test('should enforce modal in force mode', async () => {
+			setHTML(filename, null, { force: true })
+			await page.goto(__SERVERURL__)
+
+			const dialog = await page.$('dialog')
+			expect(await dialog.isVisible()).toBe(true)
+
+			// Verify can't close with ESC
+			await page.keyboard.press('Escape')
+			expect(await dialog.isVisible()).toBe(true)
+		})
+
+		test('should set correct HTML classes for consents', async () => {
+			await page.click('button[data-id=settings]')
+			await page.click('[for=bm_analytics]')
+			await page.click('button[data-id=save]')
+
+			const classes = await page.$eval('html', (el) => Array.from(el.classList))
+			expect(classes).toContain('bm-analytics')
+			expect(classes).not.toContain('bm-no-analytics')
+		})
+
+		test('should correctly render privacy policy link', async () => {
+			const link = await page.$('a[href="https://domain.com/privacy-policy"]')
+			expect(link).not.toBeNull()
+
+			const text = await page.evaluate((el) => el.textContent, link)
+			expect(text).toBe('Privacy Policy')
 		})
 	})
 })
@@ -215,45 +334,51 @@ appVersions.forEach(([filename])=>{
 function setHTML(filename, options, configOverride) {
 	let isModule = filename.endsWith('.mjs')
 	let config = {
-		message: 'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
+		message:
+			'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
 		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
 Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
 While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
 		linkText: 'Privacy Policy',
 		linkURL: 'https://domain.com/privacy-policy',
-		sections: ['essential','functional','analytics','performance','advertisement','uncategorized'],
+		sections: ['essential', 'functional', 'analytics', 'performance', 'advertisement', 'uncategorized'],
 		essentialTitle: 'Essential',
 		essentialMessage: 'Essential cookies are required for basic site functionality',
 		essentialCookies: {
-			'myconsent': 'This key is required to store your consent preferences'
+			myconsent: 'This key is required to store your consent preferences'
 		},
 		functionalTitle: 'Functional',
-		functionalMessage: 'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
+		functionalMessage:
+			'Functional cookies allow us to perform specific tasks such as sharing website content on social media platforms, gathering feedback, and enabling other third-party features',
 		functionalCookies: {
-			'biscuitselector':'Your favourite biscuit is stored here'
+			biscuitselector: 'Your favourite biscuit is stored here'
 		},
 		analyticsTitle: 'Analytics',
-		analyticsMessage: 'Analytical cookies allow us to understand visitor interactions with the website, offering insights into metrics like visitor count, bounce rate, and traffic source',
+		analyticsMessage:
+			'Analytical cookies allow us to understand visitor interactions with the website, offering insights into metrics like visitor count, bounce rate, and traffic source',
 		analyticsCookies: {
-			'_ga': 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
+			_ga: 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
 			'_ga_*': 'Google Analytics uses this cookie for storing page view count',
-			'sc_is_visitor_unique': 'Statcounter uses this as a visit counter',
-			'sc_medium_source': 'Statcounter uses this to store the referring website',
+			sc_is_visitor_unique: 'Statcounter uses this as a visit counter',
+			sc_medium_source: 'Statcounter uses this to store the referring website',
 			'statcounter.com/localstorage/': 'Statcounter uses this to count',
 			'_pk_*': 'Matomo/Piwik analytics',
 			'_hj*': 'Hotjar analytics',
 			'mp_*': 'Mixpanel analytics',
 			'_kvyo_*': 'Klaviyo analytics',
-			'__kla_id': 'Klaviyo analytics'
+			__kla_id: 'Klaviyo analytics'
 		},
 		performanceTitle: 'Performance',
-		performanceMessage: 'Performance cookies allow us to understand critical website performance indicators, contributing to an enhanced user experience for visitors',
+		performanceMessage:
+			'Performance cookies allow us to understand critical website performance indicators, contributing to an enhanced user experience for visitors',
 		advertisementTitle: 'Advertisement',
-		advertisementMessage: 'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
+		advertisementMessage:
+			'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
 		uncategorizedTitle: 'Uncategorized',
-		uncategorizedMessage: 'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
+		uncategorizedMessage:
+			'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
 		acceptNonEU: false,
-		force: false,
+		force: false
 	}
 
 	if (configOverride) config = { ...config, ...configOverride }
@@ -368,14 +493,16 @@ While you have the option to enable or disable some or all of these cookies, not
 	<script type="text/plain" data-consent="analytics" src="https://static.klaviyo.com/onsite/js/klaviyo.js" id="js-analytics-klaviyo"></script>
 
 `
-	if (isModule) html+=`
+	if (isModule)
+		html += `
 	<!-- Biscuitman config -->
 	<script type="module" id="js-biscuitman-init">
 		import biscuitman from '/dist/esm/${filename}'
 		let bm = biscuitman.create(${JSON.stringify(config)})
 	</script>
 `
-	else html+= `
+	else
+		html += `
 	<!-- Biscuitman config -->
 	<script id="js-biscuitman-config">
 		biscuitman = ${JSON.stringify(config)}
@@ -385,7 +512,7 @@ While you have the option to enable or disable some or all of these cookies, not
 	<script src="dist/${filename}" id="js-biscuitman"></script>
 
 `
-	html+= `
+	html += `
 	</body>
 	</html>`
 	global.__HTML__ = html
