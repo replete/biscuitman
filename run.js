@@ -362,11 +362,11 @@ function getCompressedSizes(text) {
 export async function report() {
 	log('report', 'Running browser compatibility reports...')
 	await Promise.all([
-		cssreport()
+		cssReport()
 	])
 }
 
-export async function cssreport() {
+export async function cssReport() {
 	log('css report','Checking CSS browser compatibility...')
 	let css = await styles(true)
 	let cssReportData = []
