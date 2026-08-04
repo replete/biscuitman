@@ -280,11 +280,19 @@ Visiting `https://localhost:3000` should now work without warnings.
 `npm run build` - creates project distributes via `run.js`, a custom build script requiring `Node v20`
 
 ### Tests
-Jest is set up with puppeteer to run some integration tests. We're using `@swc/jest`'s rust implementation of jest to speed things up.
+[Playwright](https://playwright.dev) runs the end-to-end tests against every bundle in `dist/`, in a real Chromium. Each test gets its own isolated browser context, so they all run in parallel. The test page and the `dist/` assets are served from memory and disk by Playwright's request interception, so no dev server or port is needed.
 
-`npm run test` - Launches pupeeter integration tests in a browser (in http mode only)
+Install the browser once after cloning:
 
-`npm run coverage` - run jest tests with coverage saved to `/coverage/`
+`npx playwright install chromium`
+
+Then:
+
+`npm run test` - runs the full suite against all 12 bundle variants (CI runs `biscuitman.js` only)
+
+`npm run test:ui` - opens Playwright's interactive UI mode for debugging
+
+`npm run test:report` - opens the HTML report from the last run
 
 
 ## Support development

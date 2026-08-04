@@ -8,14 +8,15 @@
         "uncategorized"
     ],
     "ignoreWords": [
-		"lightningcss",
         "BMCSS",
         "browserlist",
         "cssreport",
         "doiuse",
+        "lightningcss",
+        "makecerts",
         "myconsent",
-        "withcss",
-		"makecerts",
+        "playwright",
+        "withcss"
     ],
     "import": []
 }

@@ -2,6 +2,11 @@ import globals from 'globals'
 import pluginJs from '@eslint/js'
 export default [
 	{
+		// Global ignores: build output and generated reports. An `ignores` key
+		// only acts globally when it is the sole key on a config object.
+		ignores: ['dist/**', 'coverage/**', 'playwright-report/**', 'test-results/**']
+	},
+	{
 		files: ['*.js'],
 		languageOptions: {
 			globals: {
@@ -14,7 +19,7 @@ export default [
 		ignores: [
 			'dist/**/*.js',
 			'dist/**/*.mjs',
-			'./coverage/**/*.js',
+			'coverage/**/*.js',
 			'src/legacyPolyfills.js'],
 		rules: {
 			...pluginJs.configs.recommended.rules,
@@ -49,21 +54,13 @@ export default [
 		}
 	},
 	{
-		files: ['jest.setup.js', '__tests__/**/*.js'],
+		files: ['__tests__/**/*.js', 'playwright.config.js'],
 		rules: {
 		},
 		languageOptions: {
 			globals: {
-				...globals.jest,
 				...globals.browser,
-				...globals.node,
-				utils: false,
-				page: false,
-				browser: false,
-				__BROWSER__: false,
-				__SERVERURL__: false,
-				__SERVERPORT__: false,
-				__HTML__: false
+				...globals.node
 			}
 		}
 	}
