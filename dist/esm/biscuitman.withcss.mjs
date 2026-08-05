@@ -209,10 +209,8 @@ function clearStorages() {
             if (cookies[name]) {
                 let expiredCookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:01 UTC;path=/;`;
                 d.cookie = expiredCookie;
-                d.cookie = `${expiredCookie}domain=${location.hostname};` // Safari iOS
-                ;
-                d.cookie = `${expiredCookie}domain=.${location.hostname};` // Safari iOS
-                ;
+                d.cookie = `${expiredCookie}domain=${location.hostname};`; // Safari iOS
+                d.cookie = `${expiredCookie}domain=.${location.hostname};`; // Safari iOS
                 dispatch('delete', {
                     cookie: name
                 });
@@ -364,7 +362,7 @@ if (typeof BMCSS === 'undefined') {
 	css.id = 'BMCSS';
 	css.textContent=`/*! biscuitman.js 0.5.6 */
 .biscuitman {
-  --ui: 0, 0, 0;
+  --ui: 0,0,0;
   --tx: #444;
   --bg: #fff;
   --c: #105d89;
@@ -448,7 +446,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman button[data-id="close"] {
-  color: rgba(var(--ui), .5);
+  color: rgba(var(--ui),.5);
   opacity: .6;
   -webkit-user-select: none;
   user-select: none;
@@ -562,7 +560,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman .bm-sections {
-  scrollbar-color: rgba(var(--ui), .2) var(--bg);
+  scrollbar-color: rgba(var(--ui),.2) var(--bg);
   flex-shrink: 1;
   height: 100%;
   padding: 15px 0;
@@ -621,7 +619,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman details {
-  border: 1px solid rgba(var(--ui), .2);
+  border: 1px solid rgba(var(--ui),.2);
   border-radius: 5px;
   padding: 10px;
   list-style: none;
@@ -630,7 +628,7 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman details[open] summary b:after {
   margin: -3px 0 0 -2px;
-  transform: rotate(45deg)scale(.3);
+  transform: rotate(45deg) scale(.3);
 }
 
 .biscuitman summary {
@@ -649,7 +647,7 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman summary b:after {
   content: "";
-  border: 5px solid rgba(var(--ui), .4);
+  border: 5px solid rgba(var(--ui),.4);
   border-top-color: #0000;
   border-left-color: #0000;
   border-radius: 2px;
@@ -657,7 +655,7 @@ if (typeof BMCSS === 'undefined') {
   height: 1em;
   margin: -2px 0 0 -4px;
   display: block;
-  transform: rotate(-45deg)scale(.3);
+  transform: rotate(-45deg) scale(.3);
 }
 
 .biscuitman summary p {
@@ -678,7 +676,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman dl {
-  background: rgba(var(--ui), .08);
+  background: rgba(var(--ui),.08);
   margin: 10px;
   padding: 10px;
   display: flex;
@@ -701,7 +699,7 @@ if (typeof BMCSS === 'undefined') {
   --gap: 2px;
   height: var(--height);
   width: var(--width);
-  background-color: rgba(var(--ui), .3);
+  background-color: rgba(var(--ui),.3);
   border-radius: var(--height);
   margin-top: -2px;
   display: block;
@@ -715,18 +713,15 @@ if (typeof BMCSS === 'undefined') {
 .biscuitman label:before {
   content: "";
   background: var(--bg);
-  height: calc(var(--height)  - calc(var(--gap) * 2));
-  width: calc(var(--height)  - calc(var(--gap) * 2));
   height: var(--height);
   width: var(--height);
-  left: var(--gap);
   transform-origin: center;
   border-radius: 100%;
   display: block;
   position: absolute;
   top: 50%;
   left: 0;
-  transform: translateY(-50%)scale(.8);
+  transform: translateY(-50%) scale(.8);
 }
 
 .biscuitman label.checked {

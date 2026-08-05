@@ -340,12 +340,9 @@
 			display: block;
 			position: absolute;
 			background: var(--bg);
-			height: calc(var(--height) - calc(var(--gap) * 2));
-			width: calc(var(--height) - calc(var(--gap) * 2));
 			height: var(--height);
 			width: var(--height);
 			border-radius: 100%;
-			left: var(--gap);
 			left: 0;
 			top: 50%;
 			transform: translateY(-50%) scale(0.8);

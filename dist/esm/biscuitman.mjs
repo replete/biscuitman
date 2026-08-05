@@ -209,10 +209,8 @@ function clearStorages() {
             if (cookies[name]) {
                 let expiredCookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:01 UTC;path=/;`;
                 d.cookie = expiredCookie;
-                d.cookie = `${expiredCookie}domain=${location.hostname};` // Safari iOS
-                ;
-                d.cookie = `${expiredCookie}domain=.${location.hostname};` // Safari iOS
-                ;
+                d.cookie = `${expiredCookie}domain=${location.hostname};`; // Safari iOS
+                d.cookie = `${expiredCookie}domain=.${location.hostname};`; // Safari iOS
                 dispatch('delete', {
                     cookie: name
                 });

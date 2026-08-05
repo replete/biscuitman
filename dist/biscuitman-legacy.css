@@ -1,6 +1,6 @@
 /*! biscuitman-legacy.js 0.5.6 */
 .biscuitman {
-  --ui: 0, 0, 0;
+  --ui: 0,0,0;
   --tx: #444;
   --bg: #fff;
   --c: #105d89;
@@ -88,7 +88,7 @@
 }
 
 .biscuitman button[data-id="close"] {
-  color: rgba(0,0,0, .5);
+  color: rgba(0,0,0,.5);
   opacity: .6;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -212,7 +212,7 @@
 }
 
 .biscuitman .bm-sections {
-  scrollbar-color: rgba(0,0,0, .2) #fff;
+  scrollbar-color: rgba(0,0,0,.2) #fff;
   -webkit-flex-shrink: 1;
   flex-shrink: 1;
   height: 100%;
@@ -272,7 +272,7 @@
 }
 
 .biscuitman details {
-  border: 1px solid rgba(0,0,0, .2);
+  border: 1px solid rgba(0,0,0,.2);
   border-radius: 5px;
   padding: 10px;
   list-style: none;
@@ -281,8 +281,8 @@
 
 .biscuitman details[open] summary b:after {
   margin: -3px 0 0 -2px;
-  -webkit-transform: rotate(45deg)scale(.3);
-  transform: rotate(45deg)scale(.3);
+  -webkit-transform: rotate(45deg) scale(.3);
+  transform: rotate(45deg) scale(.3);
 }
 
 .biscuitman summary {
@@ -303,7 +303,7 @@
 
 .biscuitman summary b:after {
   content: "";
-  border: 5px solid rgba(0,0,0, .4);
+  border: 5px solid rgba(0,0,0,.4);
   border-top-color: rgba(0, 0, 0, 0);
   border-left-color: rgba(0, 0, 0, 0);
   border-radius: 2px;
@@ -311,8 +311,8 @@
   height: 1em;
   margin: -2px 0 0 -4px;
   display: block;
-  -webkit-transform: rotate(-45deg)scale(.3);
-  transform: rotate(-45deg)scale(.3);
+  -webkit-transform: rotate(-45deg) scale(.3);
+  transform: rotate(-45deg) scale(.3);
 }
 
 .biscuitman summary p {
@@ -334,7 +334,7 @@
 }
 
 .biscuitman dl {
-  background: rgba(0,0,0, .08);
+  background: rgba(0,0,0,.08);
   margin: 10px;
   padding: 10px;
   display: -webkit-flex;
@@ -363,7 +363,7 @@
   --gap: 2px;
   height: 1.2em;
   width: 2.3em;
-  background-color: rgba(0,0,0, .3);
+  background-color: rgba(0,0,0,.3);
   border-radius: 1.2em;
   margin-top: -2px;
   display: block;
@@ -378,11 +378,8 @@
 .biscuitman label:before {
   content: "";
   background: #fff;
-  height: calc(1.2em  - calc(2px * 2));
-  width: calc(1.2em  - calc(2px * 2));
   height: 1.2em;
   width: 1.2em;
-  left: 2px;
   -webkit-transform-origin: center;
   transform-origin: center;
   border-radius: 100%;
@@ -390,8 +387,8 @@
   position: absolute;
   top: 50%;
   left: 0;
-  -webkit-transform: translateY(-50%)scale(.8);
-  transform: translateY(-50%)scale(.8);
+  -webkit-transform: translateY(-50%) scale(.8);
+  transform: translateY(-50%) scale(.8);
 }
 
 .biscuitman label.checked {

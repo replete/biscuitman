@@ -1,13 +1,13 @@
-import fs from 'fs'
+import fs from 'node:fs'
+import { Readable } from 'node:stream'
+import zlib from 'node:zlib'
 import browserSync from 'browser-sync'
 import swc from '@swc/core'
 import { transform as transformCss, browserslistToTargets, Features } from 'lightningcss'
 import browserslist from 'browserslist'
-import { Readable } from 'stream'
 import doiuse from 'doiuse/stream'
-import zlib from 'node:zlib'
 // Legacy build tooling:
-import babel from '@babel/core'
+import * as babel from '@babel/core'
 import { rollup } from 'rollup'
 import resolve from '@rollup/plugin-node-resolve'
 
