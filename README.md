@@ -322,6 +322,14 @@ Visiting `https://localhost:3000` should now work without warnings.
 
 The build also writes the three demo pages (`index.html`, `index-esm.html`, `index-legacy.html`) from one template, `src/demo.html`. Edit the template, not the pages.
 
+### Releasing
+
+1. On the release branch, set `version` in `package.json`, add a section for it to `CHANGELOG.md`, run `npm run build` and commit.
+2. Merge the branch into `main`.
+3. On `main`, run `npm run release`. It checks the commit is releasable, then tags it and pushes the tag. `npm run release -- --dry-run` only runs the checks.
+
+The tag starts the Release workflow, which publishes to npm and creates the GitHub release from the changelog section.
+
 ### Tests
 
 [Playwright](https://playwright.dev) runs the end-to-end tests against every bundle in `dist/`, in a real Chromium. Each test gets its own isolated browser context, so they all run in parallel. The test page and the `dist/` assets are served from memory and disk by Playwright's request interception, so no dev server or port is needed.

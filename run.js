@@ -303,7 +303,7 @@ ${legacyJs}
 })(document);`
 	let legacyJsCssMin = `${await legacyJsMin};(function(d){var c=d.createElement('style');c.textContent='${legacyComment}${legacyMinCss}';d.head.appendChild(c)})(document);`
 
-	Promise.all([
+	await Promise.all([
 		writeFile(`dist/${filenames.legacyJsWithCss}`, legacyJsCss),
 		writeFile(`dist/${filenames.minLegacyJsWithCss}`, legacyJsCssMin),
 	])
@@ -465,6 +465,42 @@ export async function serve() {
 	server.printUrls()
 }
 
+// Checks that this commit can be released, then tags it. Pushing the tag starts
+// .github/workflows/release.yml, which publishes to npm and creates the GitHub release
+export async function release(dryRun) {
+	const { execFileSync } = await import('node:child_process')
+	const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim()
+	const tag = `v${version}`
+	const problems = []
+	const check = (ok, problem) => ok || problems.push(problem)
+
+	git('fetch', '--quiet', '--tags', 'origin')
+	check(git('branch', '--show-current') === 'main', 'not on main: merge the release branch first')
+	check(!git('status', '--porcelain'), 'the working tree has uncommitted changes')
+	check(git('rev-parse', 'HEAD') === git('rev-parse', 'origin/main'), 'this commit is not the tip of origin/main')
+	check(!git('tag', '--list', tag), `${tag} already exists: bump "version" in package.json`)
+	check((await readFile('CHANGELOG.md', 'utf8')).includes(`\n## ${version}\n`), `CHANGELOG.md has no "## ${version}" section`)
+
+	await build()
+	check(!git('status', '--porcelain', '--', 'dist', 'index.html', 'index-esm.html', 'index-legacy.html'), 'npm run build changed the build output: commit it first')
+	try {
+		execFileSync('npx', ['playwright', 'test', '--reporter=dot'], { stdio: 'inherit' })
+	} catch {
+		problems.push('the tests fail')
+	}
+
+	if (problems.length) {
+		log('release', `${tag} cannot be released:\n${problems.map(problem => `  - ${problem}`).join('\n')}`)
+		process.exitCode = 1
+	} else if (dryRun) {
+		log('release', `${tag} is ready. Run without --dry-run to tag it`)
+	} else {
+		git('tag', '--annotate', tag, '--message', tag)
+		git('push', 'origin', tag)
+		log('release', `Pushed ${tag}. Publishing: ${packageJson.repository.url.replace(/^git\+|\.git$/g, '')}/actions/workflows/release.yml`)
+	}
+}
+
 async function main() {
 	const args = process.argv.slice(2)
 
@@ -475,6 +511,7 @@ async function main() {
 			case 'scripts': scripts(); break
 			case 'build': build(); break
 			case 'report': report(); break
+			case 'release': await release(args.includes('--dry-run')); break
 			default: break
 		}
 	}

@@ -1,0 +1,62 @@
+name: Release
+
+# Pushing a v* tag publishes to npm and creates the GitHub release.
+# "Run workflow" rehearses everything without publishing.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write # create the GitHub release
+  id-token: write # npm trusted publishing, no token needed
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check build output is up to date
+        run: git diff --exit-code --stat -- dist index.html index-esm.html index-legacy.html || (echo "::error::Build output is stale. Run 'npm run build' and commit the result." && exit 1)
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check the tag matches package.json
+        if: github.event_name == 'push'
+        run: test "$GITHUB_REF_NAME" = "v$(node -p "require('./package.json').version")" || (echo "::error::Tag $GITHUB_REF_NAME does not match the version in package.json" && exit 1)
+
+      - name: Take the release notes from CHANGELOG.md
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          awk -v heading="## $VERSION" '$0 == heading { found = 1; next } /^## / { found = 0 } found' CHANGELOG.md > notes.md
+          test -s notes.md || (echo "::error::CHANGELOG.md has no section for $VERSION" && exit 1)
+          cat notes.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish to npm
+        run: npm publish --access public ${{ github.event_name == 'push' && ' ' || '--dry-run' }}
+
+      - name: Create the GitHub release
+        if: github.event_name == 'push'
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}

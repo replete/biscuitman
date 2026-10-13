@@ -43,6 +43,7 @@
 		"dev": "node ./run.js build serve",
 		"build": "node ./run.js build",
 		"report": "node ./run.js report",
+		"release": "node ./run.js release",
 		"test": "playwright test",
 		"test:ui": "playwright test --ui",
 		"test:report": "playwright show-report ./__tests__/reports/playwright",
