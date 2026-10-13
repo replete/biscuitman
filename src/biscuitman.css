@@ -6,15 +6,7 @@
 	Use a version in /dist/ for improved compatibility
 */
 
-/*
-	Shield against the host site's CSS. Nothing is inherited from the page, and anything
-	the site sets on bare elements (button, p, label...) is rolled back to the browser
-	default. The rules below then apply on top, as do more specific rules such as a
-	theme's '.biscuitman button'. This block has to stay above them.
-
-	Only current browsers get it: Safari 13 mishandles 'all', and the dialog polyfill
-	styles a bare 'dialog', which this would roll back. :has() support excludes both.
-*/
+/* Reset */
 @supports selector(:has(a)) {
 	.biscuitman {
 		all: initial;
@@ -28,7 +20,7 @@
 }
 
 .biscuitman {
-	--bm-ui: 0,0,0;
+	--bm-ui: 0, 0, 0;
 	--bm-tx: #444;
 	--bm-bg: #fff;
 	--bm-c: #105d89;
@@ -42,20 +34,20 @@
 	font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
 	box-sizing: border-box;
 	z-index: 3;
-	display:none;
+	display: none;
 
 	.bm-show & {
-		display:block
+		display: block;
 	}
 
 	* {
 		box-sizing: border-box;
-		font-family:inherit;
+		font-family: inherit;
 		font-size: 16px;
 		padding: 0;
 		margin: 0;
 		line-height: 1.4em;
-		color: var(--bm-tx)
+		color: var(--bm-tx);
 	}
 
 	/* Progressive enhancement */
@@ -100,17 +92,17 @@
 		border-radius: 3px;
 		cursor: pointer;
 
-		&[data-id=accept] {
+		&[data-id='accept'] {
 			background: var(--bm-c);
 			color: var(--bm-bg) !important;
 		}
 
-		&[data-id=close] {
+		&[data-id='close'] {
 			border: none;
 			outline: none;
 			position: absolute;
 			background: transparent;
-			color: rgba(var(--bm-ui),.5);
+			color: rgba(var(--bm-ui), 0.5);
 			top: 0;
 			right: 10px;
 			opacity: 0.6;
@@ -122,7 +114,6 @@
 
 		&[disabled] {
 			display: none;
-			/* This rule is for the 'force' option */
 		}
 
 		&:hover {
@@ -198,13 +189,13 @@
 		> b::after {
 			bottom: 0;
 			margin-bottom: -24px;
-			background: linear-gradient(180deg, var(--bm-bg) 20%, rgba(255,255,255,0)); /* rgba is safari < 15 fix */
+			background: linear-gradient(180deg, var(--bm-bg) 20%, rgba(255, 255, 255, 0)); /* rgba is safari < 15 fix */
 			z-index: 1;
 		}
 
 		.bm-buttons::after {
 			top: -24px;
-			background: linear-gradient(0deg, var(--bm-bg) 20%, rgba(255,255,255,0)); /* rgba is safari < 15 fix */
+			background: linear-gradient(0deg, var(--bm-bg) 20%, rgba(255, 255, 255, 0)); /* rgba is safari < 15 fix */
 		}
 	}
 
@@ -213,7 +204,7 @@
 		height: 100%;
 		padding: 15px 0;
 		position: relative;
-		scrollbar-color: rgba(var(--bm-ui),.2) var(--bm-bg);
+		scrollbar-color: rgba(var(--bm-ui), 0.2) var(--bm-bg);
 		@media (min-width: 576px) {
 			padding-right: 4px;
 			margin-right: -18px;
@@ -234,7 +225,7 @@
 				padding-bottom: 5px;
 			}
 
-			[data-id=more] ~ span {
+			[data-id='more'] ~ span {
 				display: none;
 			}
 		}
@@ -262,7 +253,7 @@
 	}
 
 	details {
-		border: 1px solid rgba(var(--bm-ui),.2);
+		border: 1px solid rgba(var(--bm-ui), 0.2);
 		padding: 10px;
 		border-radius: 5px;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -288,10 +279,10 @@
 			&::after {
 				content: '';
 				display: block;
-				box-sizing: content-box; /* sites often reset ::after to border-box, which shrinks this */
+				box-sizing: content-box; /* reset */
 				height: 1em;
 				width: 1em;
-				border: 5px solid rgba(var(--bm-ui),.4);
+				border: 5px solid rgba(var(--bm-ui), 0.4);
 				border-left-color: transparent;
 				border-top-color: transparent;
 				border-radius: 2px;
@@ -317,7 +308,7 @@
 		display: flex;
 		padding: 10px;
 		margin: 10px;
-		background: rgba(var(--bm-ui),.08);
+		background: rgba(var(--bm-ui), 0.08);
 
 		dt,
 		dd {
@@ -331,11 +322,9 @@
 		}
 	}
 
-	/* The toggle: label positions it, <i> is the track and i::before the knob, driven by the checkbox state */
 	label {
 		position: absolute;
 		top: 15px; /* fallback: aligns with the section title */
-		/* Centers on summary. No var() here: browsers without anchor() only discard this line if it fails to parse */
 		top: calc(anchor(--bm center) - 14px);
 		right: 31px;
 
@@ -347,7 +336,7 @@
 			font-size: 20px;
 			height: var(--bm-h);
 			width: var(--bm-w);
-			background-color: rgba(var(--bm-ui),.3);
+			background-color: rgba(var(--bm-ui), 0.3);
 			border-radius: var(--bm-h);
 
 			&::before {
@@ -389,7 +378,7 @@
 
 /* https://github.com/GoogleChrome/dialog-polyfill?tab=readme-ov-file#stacking-context */
 .bm-dialog-polyfill .biscuitman dialog {
-	position:fixed;
-	top:50%;
+	position: fixed;
+	top: 50%;
 	transform: translateY(-50%);
 }
