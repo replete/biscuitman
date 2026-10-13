@@ -138,6 +138,7 @@ async function check(driver, browser, origin) {
 	// The dialog polyfill loads on demand in browsers without <dialog>
 	await click('button[data-id=settings]')
 	await driver.wait(() => js('return document.querySelector(".biscuitman dialog").hasAttribute("open")'), TIMEOUT, 'settings modal did not open')
+	expect('toggle sits beside its section title', await js('var s = document.querySelector(".biscuitman section"), t = s.querySelector("label").getBoundingClientRect(), b = s.querySelector("summary").getBoundingClientRect(); return t.top >= b.top && t.bottom <= b.bottom'))
 	await screenshot('modal')
 
 	await driver.findElement(By.css('[data-s=analytics]')).findElement(By.xpath('..')).click()

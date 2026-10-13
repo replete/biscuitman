@@ -702,7 +702,7 @@ if (typeof BMCSS === 'undefined') {
   --bm-h: 1.2em;
   --bm-w: 2.3em;
   top: 15px;
-  top: calc(anchor(--bm center) - var(--bm-h) / 2 - 2px);
+  top: calc(anchor(--bm center) - .6em - 2px);
   height: var(--bm-h);
   width: var(--bm-w);
   background-color: rgba(var(--bm-ui),.3);

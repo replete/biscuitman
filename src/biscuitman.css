@@ -5,6 +5,7 @@
 	This stylesheet is the source stylesheet
 	Use a version in /dist/ for improved compatibility
 */
+
 .biscuitman {
 	--bm-ui: 0,0,0;
 	--bm-tx: #444;
@@ -327,7 +328,8 @@
 		font-size: 20px !important;
 		position: absolute;
 		top: 15px; /* fallback: aligns with the section title */
-		top: calc(anchor(--bm center) - var(--bm-h) / 2 - 2px); /* centers on summary */
+		/* Centers on summary. No var() here: browsers without anchor() only discard this line if it fails to parse */
+		top: calc(anchor(--bm center) - .6em - 2px);
 		right: 31px;
 		display: block;
 		height: var(--bm-h);
