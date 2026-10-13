@@ -66,8 +66,8 @@
 					</summary>
 					${cookies ? O.entries(cookies).map(([k, v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
 				</details>
-				<label for=bm_${section} class="${disabledProp} ${checkedProp}">
-					<input type=checkbox id=bm_${section} ${disabledProp} ${checkedProp} aria-labelledby=bm-t-${section} data-s="${section}"/>
+				<label class="${disabledProp} ${checkedProp}">
+					<input type=checkbox ${disabledProp} ${checkedProp} aria-labelledby=bm-t-${section} data-s="${section}"/>
 				</label>
 			</section>`;
         }).join('')}

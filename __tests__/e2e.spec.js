@@ -107,9 +107,9 @@ testedVersions.forEach((filename) => {
 
 		test('should hide UI and save consents correctly after selecting some sections', async ({ page, consent }) => {
 			await page.click('button[data-id=settings]')
-			await page.click('[for=bm_analytics]')
-			await page.click('[for=bm_functional]')
-			await page.click('[for=bm_performance]')
+			await page.click('label:has([data-s=analytics])')
+			await page.click('label:has([data-s=functional])')
+			await page.click('label:has([data-s=performance])')
 
 			await page.click('button[data-id=save]')
 
@@ -239,13 +239,13 @@ testedVersions.forEach((filename) => {
 
 		test('should maintain correct checkbox states', async ({ page }) => {
 			await page.click('button[data-id=settings]')
-			await page.click('[for=bm_analytics]')
+			await page.click('label:has([data-s=analytics])')
 
 			// Verify checkbox state persists after reopening
 			await page.click('button[data-id=close]')
 			await page.click('button[data-id=settings]')
 
-			const checked = await page.locator('#bm_analytics').evaluate((el) => el.checked)
+			const checked = await page.locator('[data-s=analytics]').evaluate((el) => el.checked)
 			expect(checked).toBe(true)
 		})
 
@@ -262,7 +262,7 @@ testedVersions.forEach((filename) => {
 
 		test('should set correct HTML classes for consents', async ({ page }) => {
 			await page.click('button[data-id=settings]')
-			await page.click('[for=bm_analytics]')
+			await page.click('label:has([data-s=analytics])')
 			await page.click('button[data-id=save]')
 
 			const classes = await page.locator('html').evaluate((el) => Array.from(el.classList))

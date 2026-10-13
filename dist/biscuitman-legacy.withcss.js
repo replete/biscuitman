@@ -677,7 +677,7 @@
 	          k = _ref2[0],
 	          v = _ref2[1];
 	        return "<dl><dt>".concat(k, "</dt><dd>").concat(v, "</dd></dl>");
-	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t\t<label for=bm_").concat(section, " class=\"").concat(disabledProp, " ").concat(checkedProp, "\">\n\t\t\t\t\t<input type=checkbox id=bm_").concat(section, " ").concat(disabledProp, " ").concat(checkedProp, " aria-labelledby=bm-t-").concat(section, " data-s=\"").concat(section, "\"/>\n\t\t\t\t</label>\n\t\t\t</section>");
+	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t\t<label class=\"").concat(disabledProp, " ").concat(checkedProp, "\">\n\t\t\t\t\t<input type=checkbox ").concat(disabledProp, " ").concat(checkedProp, " aria-labelledby=bm-t-").concat(section, " data-s=\"").concat(section, "\"/>\n\t\t\t\t</label>\n\t\t\t</section>");
 	    }).join(''), "\n\t\t</div>\n\t\t<div class=bm-buttons>\n\t\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t\t<button data-id=save>").concat(o.save, "</button>\n\t\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t\t</div>\n\t</div>\n</dialog>").replaceAll('{link}', "<a href=\"".concat(o.linkURL, "\">").concat(o.linkText, "</a>"));
 	    ui.onclick = function (e) {
 	      var id = e.target.dataset.id;
