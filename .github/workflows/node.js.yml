@@ -89,10 +89,11 @@ jobs:
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
-      - name: Upload screenshots
+      # A single unzipped file, so the screenshots page opens straight from the run summary
+      - name: Upload screenshots page
         uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
-          name: browserstack-${{ matrix.bundle }}
-          path: browserstack-results/
+          path: browserstack-results/browserstack-${{ matrix.bundle }}.html
+          archive: false
           retention-days: 7

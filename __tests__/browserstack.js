@@ -3,6 +3,7 @@
 
 	The Playwright suite covers behaviour in depth but only in Chromium. This
 	checks the basics, and takes screenshots, in browsers Playwright cannot drive.
+	Each run writes one page of screenshots to browserstack-results/browserstack-<run>.html
 
 	npm run test:browserstack                  modern bundle, in the browsers below
 	npm run test:browserstack:legacy           legacy bundle, in the legacy browsers below
@@ -27,6 +28,7 @@ const PARALLEL = 5 // sessions the BrowserStack plan allows at once
 const TIMEOUT = 20000
 const LEGACY = 'biscuitman-legacy.withcss.min.js'
 const MODERN = 'biscuitman.withcss.min.js'
+const SHOTS = ['banner', 'modal', 'saved']
 
 // Mirrors "Browser Support" in README.md: the oldest version of each browser it lists,
 // or the nearest one BrowserStack offers. Not offered: Opera 71+, Firefox for Android
@@ -196,7 +198,53 @@ async function run(browser, { origin, credentials, project, build, localIdentifi
 	}
 
 	console.log(`${failures.length ? '✗' : '✓'} ${browser.name}${version && ` (${version})`}${failures.map((failure) => `\n    ${failure}`).join('')}`)
-	return failures.length === 0
+	return { browser, version, failures }
+}
+
+// One self-contained page per run: screenshots are embedded so it can be opened or shared as a single file
+async function gallery(results, title) {
+	const escape = (text) => String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+	const rows = await Promise.all(results.map(async ({ browser, version, failures }) => {
+		const cells = await Promise.all(SHOTS.map(async (label) => {
+			const png = await readFile(path.join(OUTPUT, `${browser.name}-${label}.png`), 'base64').catch(() => '')
+			return `<td>${png ? `<img alt="${browser.name} ${label}" src="data:image/png;base64,${png}">` : '–'}</td>`
+		}))
+		return `<tr class="${failures.length ? 'failed' : 'passed'}">
+	<th>${failures.length ? '✗' : '✓'} ${browser.name}<small>${escape(version)}</small>${failures.map((failure) => `<small class="failure">${escape(failure)}</small>`).join('')}</th>
+	${cells.join('')}
+</tr>`
+	}))
+	const file = path.join(OUTPUT, `browserstack-${title}.html`)
+	await writeFile(file, `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>biscuitman ${title} screenshots</title>
+<style>
+	body { font: 14px/1.4 system-ui, sans-serif; margin: 16px; color: #222; background: #f4f4f4 }
+	table { border-collapse: collapse }
+	th, td { padding: 8px; vertical-align: top; text-align: left; border-top: 1px solid #ccc }
+	thead th { position: sticky; top: 0; background: #f4f4f4 }
+	small { display: block; font-weight: normal; color: #666 }
+	.failed th, .failure { color: #b00020 }
+	img { display: block; width: 300px; height: 220px; object-fit: contain; object-position: top; background: #fff; border: 1px solid #ccc; cursor: zoom-in }
+	img.zoom { width: auto; height: auto; max-width: 90vw; cursor: zoom-out }
+</style>
+</head>
+<body>
+<h1>biscuitman ${title}</h1>
+<p>${escape(new Date().toISOString().slice(0, 16).replace('T', ' '))} UTC. Click a screenshot to see it full size.</p>
+<table>
+<thead><tr><th>Browser</th>${SHOTS.map((label) => `<th>${label}</th>`).join('')}</tr></thead>
+<tbody>
+${rows.join('\n')}
+</tbody>
+</table>
+<script>document.onclick = function (e) { if (e.target.tagName === 'IMG') e.target.classList.toggle('zoom') }</script>
+</body>
+</html>`)
+	return file
 }
 
 async function main() {
@@ -253,8 +301,10 @@ async function main() {
 		server.close()
 	}
 
-	const failed = results.filter((passed) => !passed).length
-	console.log(`\n${results.length - failed} passed, ${failed} failed. Screenshots: ${path.relative(ROOT, OUTPUT)}/`)
+	results.sort((a, b) => selected.indexOf(a.browser) - selected.indexOf(b.browser))
+	const page = await gallery(results, isLocal ? 'local' : bundle === LEGACY ? 'legacy' : 'modern')
+	const failed = results.filter(({ failures }) => failures.length).length
+	console.log(`\n${results.length - failed} passed, ${failed} failed. Screenshots: ${path.relative(ROOT, page)}`)
 	return failed ? 1 : 0
 }
 
