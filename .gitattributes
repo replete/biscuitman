@@ -1,0 +1,7 @@
+# Release zips ("Source code" on GitHub) contain only what a site needs.
+# Top-level entries are excluded, then the ones to ship are switched back on.
+/* export-ignore
+/dist -export-ignore
+/src -export-ignore
+/README.md -export-ignore
+/LICENSE.md -export-ignore

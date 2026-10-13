@@ -2,7 +2,29 @@
 	"name": "biscuitman",
 	"version": "0.6.0",
 	"description": "Super lightweight open-source privacy consent manager for your website ",
-	"browser": "biscuitman.js",
+	"module": "dist/esm/biscuitman.mjs",
+	"browser": "dist/biscuitman.js",
+	"style": "dist/biscuitman.css",
+	"unpkg": "dist/biscuitman.withcss.min.js",
+	"jsdelivr": "dist/biscuitman.withcss.min.js",
+	"exports": {
+		".": "./dist/esm/biscuitman.mjs",
+		"./withcss": "./dist/esm/biscuitman.withcss.mjs",
+		"./css": "./dist/biscuitman.css",
+		"./dist/*": "./dist/*",
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist"
+	],
+	"sideEffects": [
+		"dist/biscuitman.js",
+		"dist/biscuitman.min.js",
+		"dist/biscuitman.withcss*.js",
+		"dist/biscuitman-legacy*.js",
+		"dist/dialog-polyfill*.js",
+		"*.css"
+	],
 	"keywords": [
 		"privacy",
 		"cookie",
