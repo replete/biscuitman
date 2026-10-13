@@ -38,12 +38,7 @@ Or download the files in `dist/` from a [release](https://github.com/replete/bis
 
 ```html
 <!-- 1. Mark the scripts that need consent -->
-<script
-	type="text/plain"
-	data-consent="analytics"
-	async
-	src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"
-></script>
+<script type="text/plain" data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
 
 <!-- 2. Configure, before biscuitman loads -->
 <script>
@@ -148,19 +143,13 @@ With a bundler, the package exposes:
 ```html
 <script type="module" id="biscuitman-init">
 	import biscuitman from './dist/esm/biscuitman.withcss.mjs'
-	let bm = biscuitman
-		.create({
-			// ...options
-		})
-		.on('save', (data) => {
-			// optional event callback
+	let bm = biscuitman.create({ /* ...options */ })
+		// optional event callbacks
+        .on('save', (data) => {
 			console.log('ESM version: consents were saved', data.data)
 		})
 		.on('revoke', (data) => {
-			// optional event callback
-			if (data.section === 'analytics') {
-				console.log('ESM version: analytics was revoked')
-			}
+			if (data.section === 'analytics') console.log('ESM version: analytics was revoked')
 		})
 </script>
 ```
@@ -191,7 +180,7 @@ It's easy enough to theme the included styles by overriding CSS variables. They 
 }
 ```
 
-The banner height is applied as a px value to the `var(--bm-height)` css variable on html so that you can add an offset style when it is visible to make sure no content is obscured by the banner. This is an offset fix that uses generated content, but you might implement something else based on margin/padding depending on your site layout design.
+The banner height is applied as a px value to the `var(--bm-height)` css variable on html so that you can add an offset style when it is visible to make sure no content is obscured by the banner. This is an `min-height` based example, but you might implement something else based on margin/padding depending on your site.
 
 ```css
 html.bm-show::after {
@@ -214,7 +203,7 @@ If you offset a fixed element by the banner height, prefer a transform over `bot
 
 ## Browser Support
 
-Biscuitman is written in modern Javascript and built with `swc`. The included distributables are tested to support the following browsers:
+Biscuitman is written in modern Javascript and compiled with `swc`. The included distributables are tested to support the following browsers:
 
 - Chrome/Edge/Opera: 85+ (released June 2020)
 - Firefox: 98+ (released March 2022)
@@ -237,7 +226,7 @@ If the dialog polyfill is already loaded (`window.dialogPolyfill` exists), the p
 
 ### Legacy Browser Support
 
-If you need to support really old browsers, use `biscuitman-legacy.js`, `biscuitman-legacy.min.js` or `biscuitman-legacy.withcss.js` ([legacy demo](https://replete.github.io/biscuitman/index-legacy.html)) to extend the browser support to:
+If you need to support really old browsers (you poor sod), use `biscuitman-legacy.js`, `biscuitman-legacy.min.js` or `biscuitman-legacy.withcss.js` ([legacy demo](https://replete.github.io/biscuitman/index-legacy.html)) to extend the browser support to:
 
 - Safari 7+ / 6.2+ (released Oct 2013)
 - Chrome 24+ (released Jan 2013)
