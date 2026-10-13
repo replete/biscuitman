@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)](https://github.com/replete/biscuitman/actions/workflows/node.js.yml) [![BrowserStack status](https://automate.browserstack.com/badge.svg?badge_key=QmsxRjJMaGZ2dk9zNS9Mcm40dzBlaHU3TG9Xa0thS0ZYKzhiM2t6YXBJVT0tLWgvSWZyRFNMbDVVYzFnZjdSUEhubWc9PQ==--aa5279df24a33d520da213e3b13e3d256d90478f)](https://automate.browserstack.com/public-build/QmsxRjJMaGZ2dk9zNS9Mcm40dzBlaHU3TG9Xa0thS0ZYKzhiM2t6YXBJVT0tLWgvSWZyRFNMbDVVYzFnZjdSUEhubWc9PQ==--aa5279df24a33d520da213e3b13e3d256d90478f) (Legacy [![BrowserStack status](https://automate.browserstack.com/badge.svg?badge_key=NXh6bEVSMFo0WEdKNytRbjM3UU1ISHFrZGVTNDJyZmpTVW1adkwzeVc1az0tLVBYaGdYa2JDblMzVW5EZGZqZC9zOEE9PQ==--a10fddff63f0f52e50c6c8cc92dbf40e467dcac7)](https://automate.browserstack.com/public-build/NXh6bEVSMFo0WEdKNytRbjM3UU1ISHFrZGVTNDJyZmpTVW1adkwzeVc1az0tLVBYaGdYa2JDblMzVW5EZGZqZC9zOEE9PQ==--a10fddff63f0f52e50c6c8cc92dbf40e467dcac7))
 
-Biscuitman is a super lightweight, customizable consent manager for your website. Weighing in around 3-4kB compressed, its designed to be fast-loading and easy to implement with a flat configuration object.
+Biscuitman is a super lightweight, customizable consent manager for your website. Weighing in around 3-4kB compressed, it's designed to be fast-loading and easy to implement with a flat configuration object.
 
 ![screenshot of main UI](media/ui.webp)
 
@@ -25,8 +25,23 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 - include optional link in any text
 - CSS classes on `<html>` element for consents
 - Progressively enhanced CSS
+- Accessible: labelled landmarks and controls, keyboard operable, checked with [axe](https://github.com/dequelabs/axe-core)
 - Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
-- Legacy version included for supporting 2013+ era browsers
+- Legacy version included for supporting 2013+ era browsers (see [legacy demo](https://replete.github.io/biscuitman/index-legacy.html))
+
+## Install
+
+```sh
+npm install biscuitman
+```
+
+Or load it from a CDN (pin a version in production):
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/biscuitman/dist/biscuitman.withcss.min.js"></script>
+```
+
+Or download the files in `dist/` from a [release](https://github.com/replete/biscuitman/releases). The `withcss` files include the styles; the others need `biscuitman.css` as well.
 
 ## How to use
 
@@ -45,7 +60,7 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 	type="text/plain"
 	id="js-analytics-gtm"
 >
-	// The contents of this script is injected after load, and ajacent to, parent script (convenience)
+	// The contents of this script are injected after load, adjacent to the parent script (convenience)
 	console.log('GTM loaded:', !!google_tag_manager)
 </script>
 <script data-consent="analytics" type="text/plain" id="js-analytics-misc">
@@ -55,7 +70,7 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 <!--
 	2. Configure biscuitman settings
 	   - window.biscuitman must be defined before biscuitman is loaded
-	   - labels must be defined here as the library does not contain defaults for these strings (because they'll)
+	   - section titles and messages must be defined here, the library has no defaults for them
 -->
 <script>
 	biscuitman = {
@@ -75,7 +90,7 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 		// close: 'Close',   // Modal close button accessible name (aria-label)
 		// settingsTitle: 'My Consent Settings',   // Modal title
 		// info: ``,   // Multi-line information at top of modal
-		// more: '(Show more)', // Show more button text
+		// more: 'Show more', // Show more button text
 		// noCookies: 'No cookies to display', // Displayed in expanded sections within modal
 		// acceptNonEU: false, // When enabled biscuitman checks browser locale timezone to see if it matches EU, if not it will auto consent (unless the visitor already made a choice, or the browser cannot report a timezone)
 		dialogPolyfill: '/dist/dialog-polyfill.withcss.min.js', // set to false to disable dialog polyfill loading
@@ -87,14 +102,14 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 		linkText: 'Privacy Policy',
 		linkURL: 'https://domain.com/privacy-policy',
 
-		// info uses a template literal in order to handle multiple lines, in case you have a long
+		// info uses a template literal so it can span multiple lines
 		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
 Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
 While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
 
 		// Define as many sections as desired, each section represents a granular consent and is fundamental to the software
 		// You can name sections anything you want, but they must not use spaces or special characters
-		// e.g. using data-consent="advertisment" would match 'advertisement'
+		// e.g. data-consent="advertisement" on a script tag matches the 'advertisement' section
 		sections: ['essential', 'functional', 'analytics', 'advertisement', 'uncategorized'],
 
 		// 'essential' is special because it doesn't need consent and its toggle is disabled in the UI
@@ -116,7 +131,7 @@ While you have the option to enable or disable some or all of these cookies, not
 			'Analytical cookies are used to understand how visitors interact with the website. These cookies help provide information on metrics such as the number of visitors, bounce rate, traffic source, etc.',
 
 		// (Optional) Include details of the cookies in use for a section, add them like a name/value dictionary
-		// NOTE: By default, if these exist, then when when consent is rejected/invalidated, these cookies/localStorage entries will be immediately removed. Wildcards only work at the end of a string.
+		// NOTE: By default, if these exist, then when consent is rejected/invalidated, these cookies/localStorage entries will be immediately removed. Wildcards only work at the end of a string.
 		analyticsCookies: {
 			_ga: 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
 			'_ga_*': 'Google Analytics uses this cookie for storing page view count'
@@ -140,6 +155,12 @@ While you have the option to enable or disable some or all of these cookies, not
 
 ESM version supplied as an alternative packaging format. Long-term it's better to not have two versions, so this may or not become the main version. Consider it an alternate packaging format at this point. ([ESM demo](https://replete.github.io/biscuitman/index-esm.html))
 
+With a bundler, the package exposes:
+
+- `biscuitman` – the ESM version, without styles
+- `biscuitman/withcss` – the ESM version, which injects its own styles
+- `biscuitman/css` – the stylesheet
+
 ```html
 <!-- Experimental ESM version: -->
 <script type="module" id="biscuitman-init">
@@ -160,6 +181,13 @@ ESM version supplied as an alternative packaging format. Long-term it's better t
 		})
 </script>
 ```
+
+`biscuitman.create(options)` returns a single instance (calling it again returns the same one) with:
+
+- `on(event, callback)` / `off(event, callback)` – listen for the [events](#events) below, without the `bm:` prefix
+- `consent(sectionName)` – `true` if that section is consented
+- `update()` – open the settings modal
+- `invalidate()` – delete stored consent and show the banner again
 
 ## Theme CSS
 
@@ -208,7 +236,7 @@ If you offset a fixed element by the banner height, prefer a transform over `bot
 
 ## Browser Support
 
-Biscuitman is written in modern Javascript and transpiled with `swc` to target browsers less than two years old. The included distributables are tested to support the following browsers:
+Biscuitman is written in modern Javascript and built with `swc`. The included distributables are tested to support the following browsers:
 
 - Chrome/Edge/Opera: 85+ (released June 2020)
 - Firefox: 98+ (released March 2022)
@@ -231,14 +259,14 @@ If the dialog polyfill is already loaded (`window.dialogPolyfill` exists), the p
 
 ### Legacy Browser Support
 
-If you need to support really old browsers, use `biscuitman-legacy.js`, `biscuitman-legacy.min.js` or `biscuitman-legacy.withcss.js` to extend the browser support to:
+If you need to support really old browsers, use `biscuitman-legacy.js`, `biscuitman-legacy.min.js` or `biscuitman-legacy.withcss.js` ([legacy demo](https://replete.github.io/biscuitman/index-legacy.html)) to extend the browser support to:
 
 - Safari 7+ / 6.2+ (released Oct 2013)
 - Chrome 24+ (released Jan 2013)
 - Firefox 24+ (released Sep 2013)
 - IE 11+ (released Oct 2013)
 
-This legacy version is transpiled to ES5 and includes required polyfills to make itself functional on these ancient browsers. This makes the distributables roughtly double the filesize of the modern versions.
+This legacy version is transpiled to ES5 and includes required polyfills to make itself functional on these ancient browsers. This makes the distributables roughly double the filesize of the modern versions.
 
 In these extremely old browsers, the functionality is intact and the UI is usable but it may look slightly janky as the browser is missing CSS features like `gap` resulting in missing gaps between buttons.
 
@@ -262,8 +290,8 @@ In these extremely old browsers, the functionality is intact and the UI is usabl
     - example usage: `if (Consent.analytics) { doAnalyticsThing() }`
 
 - `bmInvalidate()` – Delete stored consent data and reinstate UI (you might use this in your app code)
-- `bmOpen()` – Opens My Consent Settings modal (you might want to link this on your Privacy policy or footer nav)
-    - example usage: `<a href="javascript:bmOpen();"> Update my consent settings</a>`
+- `bmUpdate()` – Opens My Consent Settings modal (you might want to link this on your Privacy policy or footer nav)
+    - example usage: `<a href="javascript:bmUpdate();"> Update my consent settings</a>`
 
 ## CSS Classes
 
@@ -278,7 +306,7 @@ Custom events prefixed with `bm:` are fired on `document`. The easiest way to se
 - `bm:open` => `{time: 1718915128298}` modal opened
 - `bm:close` => `{time: 1718915128298}` modal closed
 - `bm:button` => `{id: "settings", time: 1718915128298}` button clicked
-- `bm:save` => `{data: {consentTime: 1718914784624, advertisement:true, advertisement: fal..}, time: 1718914784624}` consent choice saved
+- `bm:save` => `{data: {consentTime: 1718914784624, analytics: true, advertisement: fal..}, time: 1718914784624}` consent choice saved
 - `bm:inject` => `{el: $Element, parent?: $Element, id?: 'script-id', time: 1718914784624}` script injected to DOM. if parent exists, it's a new tag inserted after a `src` script loaded which also had text content (a 'dependent' script = tidier convenient markup)
 - `bm:invalidate` => `{data: {...consentObjectJustDeleted}, time: 1718915128298}` consent invalidated
 - `bm:revoke` => `{section: 'analytics', time: 1718914784624}` returns section that was revoked if updated consent changed from true to false
@@ -312,7 +340,7 @@ Visiting `https://localhost:3000` should now work without warnings.
 
 ### Building
 
-`npm run build` - creates project distributes via `run.js`, a custom build script requiring `Node v20`
+`npm run build` - creates project distributes via `run.js`, a custom build script requiring Node 22.18+ or 24.11+
 
 ### Tests
 
