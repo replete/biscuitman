@@ -288,7 +288,7 @@ async function main() {
 		context.localIdentifier = `biscuitman-${process.pid}`
 		tunnel = new browserstack.Local()
 		await new Promise((resolve, reject) => {
-			tunnel.start({ key, localIdentifier: context.localIdentifier }, (err) => (err ? reject(err) : resolve()))
+			tunnel.start({ key, localIdentifier: context.localIdentifier, logFile: path.join(OUTPUT, 'local.log') }, (err) => (err ? reject(err) : resolve()))
 		})
 	}
 

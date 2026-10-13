@@ -4,7 +4,7 @@ export default [
 	{
 		// Global ignores: build output and generated reports. An `ignores` key
 		// only acts globally when it is the sole key on a config object.
-		ignores: ['dist/**', 'coverage/**', '__tests__/reports/**']
+		ignores: ['dist/**', '__tests__/reports/**']
 	},
 	{
 		files: ['*.js'],
@@ -19,7 +19,6 @@ export default [
 		ignores: [
 			'dist/**/*.js',
 			'dist/**/*.mjs',
-			'coverage/**/*.js',
 			'src/legacyPolyfills.js'],
 		rules: {
 			...pluginJs.configs.recommended.rules,

@@ -20,7 +20,6 @@ node_modules
 *.pem
 
 # Tests
-coverage/*
 __tests__/reports/
 
 # BrowserStack credentials
