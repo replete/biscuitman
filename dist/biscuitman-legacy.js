@@ -284,24 +284,6 @@
 		};
 	}
 
-	// Intl
-	if (window.Intl === undefined) {
-		window.Intl = {
-			DateTimeFormat: function() {
-				return {
-					format: function(date) {
-						return date.toLocaleString();
-					},
-					resolvedOptions: function() {
-						return {
-							timeZone: (Date().toLocaleString().match(/\S+$/) || [''])[0]
-						}
-					}
-				};
-			}
-		};
-	}
-
 	// <details> polyfill
 	/*
 	Details Element Polyfill 2.4.0
@@ -689,7 +671,7 @@
 	          k = _ref2[0],
 	          v = _ref2[1];
 	        return "<dl><dt>".concat(k, "</dt><dd>").concat(v, "</dd></dl>");
-	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t\t<label class=\"").concat(disabledProp, " ").concat(checkedProp, "\">\n\t\t\t\t\t<input type=checkbox ").concat(disabledProp, " ").concat(checkedProp, " aria-labelledby=bm-t-").concat(section, " data-s=\"").concat(section, "\"/>\n\t\t\t\t</label>\n\t\t\t</section>");
+	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t\t<label>\n\t\t\t\t\t<input type=checkbox ").concat(disabledProp, " ").concat(checkedProp, " aria-labelledby=bm-t-").concat(section, " data-s=\"").concat(section, "\"/>\n\t\t\t\t\t<i></i>\n\t\t\t\t</label>\n\t\t\t</section>");
 	    }).join(''), "\n\t\t</div>\n\t\t<div class=bm-buttons>\n\t\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t\t<button data-id=save>").concat(o.save, "</button>\n\t\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t\t</div>\n\t</div>\n</dialog>").replaceAll('{link}', "<a href=\"".concat(o.linkURL, "\">").concat(o.linkText, "</a>"));
 	    ui.onclick = function (e) {
 	      var id = e.target.dataset.id;
@@ -717,10 +699,6 @@
 	          saveConsents(false);
 	      }
 	    };
-	    ui.onchange = function (e) {
-	      if (!e.target.dataset.s) return;
-	      e.target.parentElement.classList.toggle('checked', e.target.checked);
-	    };
 	    dialog = ui.querySelector('dialog');
 	    if (o.dialogPolyfill && !dialog.close) loadDialogPolyfill(dialog);
 	    dialog.onclose = function () {
@@ -736,11 +714,8 @@
 	    }
 	    d.body.appendChild(ui);
 	    updateBannerHeight();
-	    // The observer reports after layout, so measuring there never forces a reflow
 	    new ResizeObserver(updateBannerHeight).observe(ui);
 	  }
-
-	  // Without the observer's entries this resets the height instead of measuring it
 	  var updateBannerHeight = function updateBannerHeight(entries) {
 	    return h.style.setProperty('--bm-height', "".concat(entries ? ui.offsetHeight : 0, "px"));
 	  };
@@ -751,9 +726,7 @@
 	    var _getConsents = getConsents(),
 	      consentTime = _getConsents.consentTime,
 	      consents = _objectWithoutProperties(_getConsents, _excluded);
-	    if (!consentTime) consents = O.fromEntries(o.sections.slice(1).map(function (sectionName) {
-	      return [sectionName, false];
-	    }));
+	    if (!consentTime) consents = noConsents();
 	    for (var _i2 = 0, _O$entries2 = O.entries(consents); _i2 < _O$entries2.length; _i2++) {
 	      var _O$entries2$_i = _slicedToArray(_O$entries2[_i2], 2),
 	        name = _O$entries2$_i[0],
@@ -768,7 +741,7 @@
 	  }
 	  function dispatch(eventName, data) {
 	    var name = "bm:".concat(eventName);
-	    var payload = _objectSpread(_objectSpread({}, data !== undefined && data), {}, {
+	    var payload = _objectSpread(_objectSpread({}, data), {}, {
 	      time: +new Date()
 	    });
 	    d.dispatchEvent(new CustomEvent(name, {
@@ -778,7 +751,7 @@
 	  }
 	  function loadDialogPolyfill(dialog) {
 	    function mount() {
-	      d.documentElement.classList.add('bm-dialog-polyfill');
+	      h.classList.add('bm-dialog-polyfill');
 	      w.dialogPolyfill.registerDialog(dialog);
 	    }
 	    if (w.dialogPolyfill) mount();else {
@@ -793,6 +766,11 @@
 
 	  var getConsents = function getConsents() {
 	    return w[o.global] || {};
+	  };
+	  var noConsents = function noConsents() {
+	    return O.fromEntries(o.sections.slice(1).map(function (section) {
+	      return [section, false];
+	    }));
 	  };
 	  function setConsents(consents) {
 	    w[o.global] = consents;
@@ -817,12 +795,7 @@
 	    var cookies = O.fromEntries(d.cookie.split('; ').map(function (cookie) {
 	      return cookie.split('=');
 	    }));
-	    var _ref3 = loadConsents() || o.sections.slice(1).reduce(function (consents, section) {
-	        consents[section] = false;
-	        return _objectSpread({
-	          consentTime: undefined
-	        }, consents);
-	      }, {});
+	    var _ref3 = loadConsents() || noConsents();
 	      _ref3.consentTime;
 	      var consents = _objectWithoutProperties(_ref3, _excluded2);
 	    var _loop = function _loop() {
@@ -928,12 +901,10 @@
 	  // Render UI
 	  render();
 
-	  // Optional Non-EU auto-consent, never over a choice the visitor already made.
-	  // The timezone lookup is slow on first use, so it only runs when it is needed
-	  // EU/EEA territory outside the Europe/ zones is listed by city: Atlantic islands, Ceuta, Cyprus, French overseas regions
-	  if (o.acceptNonEU && !getConsents().consentTime && !/^(GMT|UTC)$|Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123]|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) {
-	    saveConsents(true);
-	    displayUI(false);
+	  // Optional Non-EU auto-consent
+	  if (o.acceptNonEU && !getConsents().consentTime) {
+	    var tz = w.Intl && Intl.DateTimeFormat().resolvedOptions().timeZone;
+	    if (tz && !/^(GMT|UTC)$|^\+0[0-3]:|GMT-[123]$|Europe|CET|EET|WET|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(tz)) saveConsents(true);
 	  }
 
 	  // Wipe matching cookies/localStorages without consent
@@ -949,6 +920,7 @@
 	  }
 
 	  // Helper  methods
+
 	  // <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
 	  w.bmInvalidate = function () {
 	    dispatch('invalidate', {

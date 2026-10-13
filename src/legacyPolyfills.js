@@ -282,24 +282,6 @@ if (!String.prototype.replaceAll) {
 	};
 }
 
-// Intl
-if (window.Intl === undefined) {
-	window.Intl = {
-		DateTimeFormat: function() {
-			return {
-				format: function(date) {
-					return date.toLocaleString();
-				},
-				resolvedOptions: function() {
-					return {
-						timeZone: (Date().toLocaleString().match(/\S+$/) || [''])[0]
-					}
-				}
-			};
-		}
-	};
-}
-
 // <details> polyfill
 /*
 Details Element Polyfill 2.4.0

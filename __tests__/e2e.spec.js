@@ -217,6 +217,17 @@ testedVersions.forEach((filename) => {
 			expect(changed(before, await snapshot())).toEqual([])
 		})
 
+		test('should show the toggles as on after Accept All', async ({ page }) => {
+			const trackColor = () => page.locator('[data-s=analytics] + i').evaluate((el) => getComputedStyle(el).backgroundColor)
+			await page.click('button[data-id=settings]')
+			const off = await trackColor()
+
+			await page.locator('dialog button[data-id=accept]').click()
+			await page.evaluate(() => window.bmUpdate())
+			expect(await trackColor()).toBe('rgb(16, 93, 137)') // #105d89
+			expect(off).not.toBe('rgb(16, 93, 137)')
+		})
+
 		test('should close settings modal after clicking close', async ({ page }) => {
 			await page.click('button[data-id=settings]')
 			await page.click('button[data-id=close]')
@@ -302,10 +313,26 @@ testedVersions.forEach((filename) => {
 			expect(await consent.loadConsents()).toEqual(containsEntries([...ALL_DENIED, ['consentTime', consentTime]]))
 		})
 
+		for (const [situation, script] of [
+			['Intl reports no timezone', () => { Intl.DateTimeFormat = () => ({ resolvedOptions: () => ({}) }) }],
+			['there is no Intl', () => { delete window.Intl }]
+		]) test(`should show the banner instead of auto-consenting when ${situation}`, async ({ page, load, consent }) => {
+			await page.addInitScript(script)
+			await load(filename, {}, { acceptNonEU: true })
+			await expect(banner(page)).toBeVisible()
+			expect(await consent.loadConsents()).toBeNull()
+		})
+
 		const testTimezones = [
 			['UTC', false],
-			['UTC+1', false],
 			['Etc/GMT-2', false],
+			['+00:00', false],
+			['+02:00', false],
+			['CET', false],
+			['Etc/GMT+5', true],
+			['Etc/GMT-10', true],
+			['+05:30', true],
+			['EST', true],
 			['Europe/London', false],
 			['Atlantic/Canary', false],
 			['Atlantic/Faeroe', false],

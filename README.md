@@ -77,7 +77,7 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 		// info: ``,   // Multi-line information at top of modal
 		// more: '(Show more)', // Show more button text
 		// noCookies: 'No cookies to display', // Displayed in expanded sections within modal
-		// acceptNonEU: false, // When enabled biscuitman checks browser locale timezone to see if it matches EU, if not it will auto consent (unless the visitor already made a choice)
+		// acceptNonEU: false, // When enabled biscuitman checks browser locale timezone to see if it matches EU, if not it will auto consent (unless the visitor already made a choice, or the browser cannot report a timezone)
 		dialogPolyfill: '/dist/dialog-polyfill.withcss.min.js', // set to false to disable dialog polyfill loading
 
 		message:

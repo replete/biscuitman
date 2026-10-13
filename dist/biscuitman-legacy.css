@@ -20,7 +20,7 @@
   z-index: 3;
   width: 100%;
   padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
   display: none;
   position: fixed;
   bottom: 0;
@@ -48,7 +48,6 @@
 }
 
 .biscuitman article {
-  padding: 0;
   position: relative;
 }
 
@@ -69,7 +68,6 @@
 }
 
 .biscuitman article p {
-  color: #444;
   margin: 10px 0;
   font-size: 13px;
 }
@@ -110,7 +108,6 @@
   outline: none;
   padding: 10px;
   font-size: 24px;
-  line-height: 1em;
   position: absolute;
   top: 0;
   right: 10px;
@@ -124,20 +121,22 @@
   opacity: .8;
 }
 
+.biscuitman .bm-buttons {
+  display: -webkit-flex;
+  display: flex;
+}
+
 @media (min-width: 576px) {
   .biscuitman .bm-buttons {
     -webkit-flex-direction: row-reverse;
     flex-direction: row-reverse;
     gap: 10px;
     width: 100%;
-    display: -webkit-flex;
-    display: flex;
   }
 
   .biscuitman .bm-buttons button {
     -webkit-flex-grow: 1;
     flex-grow: 1;
-    margin-bottom: 0;
   }
 }
 
@@ -147,8 +146,6 @@
     flex-direction: column;
     -webkit-flex-grow: 1;
     flex-grow: 1;
-    display: -webkit-flex;
-    display: flex;
   }
 }
 
@@ -179,7 +176,6 @@
 }
 
 .biscuitman dialog .bm-buttons {
-  justify-self: flex-end;
   position: relative;
 }
 
@@ -199,32 +195,36 @@
 
 .biscuitman .bm-dialog > b:after {
   content: "";
-  background: linear-gradient(180deg, #fff 20%, rgba(255, 255, 255, 0));
   pointer-events: none;
-  z-index: 1;
   width: 100%;
   height: 25px;
-  margin-bottom: -24px;
   position: absolute;
-  bottom: 0;
   left: 0;
 }
 
 .biscuitman .bm-dialog .bm-buttons:after {
   content: "";
-  background: linear-gradient(0deg, #fff 20%, rgba(255, 255, 255, 0));
   pointer-events: none;
   width: 100%;
   height: 25px;
   position: absolute;
-  top: -24px;
   left: 0;
+}
+
+.biscuitman .bm-dialog > b:after {
+  background: linear-gradient(180deg, #fff 20%, rgba(255, 255, 255, 0));
+  z-index: 1;
+  margin-bottom: -24px;
+  bottom: 0;
+}
+
+.biscuitman .bm-dialog .bm-buttons:after {
+  background: linear-gradient(0deg, #fff 20%, rgba(255, 255, 255, 0));
+  top: -24px;
 }
 
 .biscuitman .bm-sections {
   scrollbar-color: rgba(0,0,0,.2) #fff;
-  -webkit-flex-shrink: 1;
-  flex-shrink: 1;
   height: 100%;
   padding: 15px 0;
   position: relative;
@@ -285,7 +285,6 @@
   border: 1px solid rgba(0,0,0,.2);
   border-radius: 5px;
   padding: 10px;
-  list-style: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
 }
 
@@ -302,7 +301,6 @@
   flex-direction: column;
   width: 100%;
   padding: 5px 80px 10px 10px;
-  list-style: none;
   display: -webkit-flex;
   display: flex;
   position: relative;
@@ -329,17 +327,12 @@
 }
 
 .biscuitman summary p {
-  color: #444;
   font-size: 14px;
 }
 
 .biscuitman summary > * {
   display: -webkit-inline-flex;
   display: inline-flex;
-}
-
-.biscuitman summary::marker {
-  display: none;
 }
 
 .biscuitman summary::-webkit-details-marker {
@@ -355,12 +348,10 @@
 }
 
 .biscuitman dl dt {
-  color: #444;
   font-size: 12px;
 }
 
 .biscuitman dl dd {
-  color: #444;
   font-size: 12px;
 }
 
@@ -371,29 +362,30 @@
 }
 
 .biscuitman label {
+  top: 15px;
+  top: calc(anchor(--bm center) - 14px);
+  position: absolute;
+  right: 31px;
+}
+
+.biscuitman label i {
   --bm-h: 1.2em;
   --bm-w: 2.3em;
-  top: 15px;
-  top: calc(anchor(--bm center) - .6em - 2px);
   height: 1.2em;
   width: 2.3em;
   background-color: rgba(0,0,0,.3);
   border-radius: 1.2em;
+  font-size: 20px;
   display: block;
-  position: absolute;
-  right: 31px;
-  font-size: 20px !important;
+  position: relative;
 }
 
-.biscuitman label:before {
+.biscuitman label i:before {
   content: "";
   background: #fff;
   height: 1.2em;
   width: 1.2em;
-  -webkit-transform-origin: center;
-  transform-origin: center;
   border-radius: 100%;
-  display: block;
   position: absolute;
   top: 50%;
   left: 0;
@@ -401,25 +393,26 @@
   transform: translateY(-50%) scale(.8);
 }
 
-.biscuitman label.checked {
+.biscuitman label input {
+  opacity: 0;
+  position: absolute;
+}
+
+.biscuitman label :checked + i {
   background-color: #105d89;
 }
 
-.biscuitman label.checked:before {
+.biscuitman label :checked + i:before {
   left: auto;
   right: 0;
 }
 
-.biscuitman label:has(:focus-visible) {
-  outline: auto highlight;
-}
-
-.biscuitman label.disabled.checked {
+.biscuitman label :disabled + i {
   opacity: .5;
 }
 
-.biscuitman label input {
-  opacity: 0;
+.biscuitman label :focus-visible + i {
+  outline: auto highlight;
 }
 
 .bm-dialog-polyfill .biscuitman dialog {

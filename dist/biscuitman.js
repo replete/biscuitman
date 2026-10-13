@@ -66,8 +66,9 @@
 					</summary>
 					${cookies ? O.entries(cookies).map(([k, v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
 				</details>
-				<label class="${disabledProp} ${checkedProp}">
+				<label>
 					<input type=checkbox ${disabledProp} ${checkedProp} aria-labelledby=bm-t-${section} data-s="${section}"/>
+					<i></i>
 				</label>
 			</section>`;
         }).join('')}
@@ -105,10 +106,6 @@
                     saveConsents(false);
             }
         };
-        ui.onchange = (e)=>{
-            if (!e.target.dataset.s) return;
-            e.target.parentElement.classList.toggle('checked', e.target.checked);
-        };
         dialog = ui.querySelector('dialog');
         if (o.dialogPolyfill && !dialog.close) loadDialogPolyfill(dialog);
         dialog.onclose = ()=>dispatch('close');
@@ -118,18 +115,13 @@
         }
         d.body.appendChild(ui);
         updateBannerHeight();
-        // The observer reports after layout, so measuring there never forces a reflow
         new ResizeObserver(updateBannerHeight).observe(ui);
     }
-    // Without the observer's entries this resets the height instead of measuring it
     const updateBannerHeight = (entries)=>h.style.setProperty('--bm-height', `${entries ? ui.offsetHeight : 0}px`);
     const displayUI = (show)=>h.classList.toggle('bm-show', show);
     const applyCssClasses = ()=>{
         let { consentTime, ...consents } = getConsents();
-        if (!consentTime) consents = O.fromEntries(o.sections.slice(1).map((sectionName)=>[
-                sectionName,
-                false
-            ]));
+        if (!consentTime) consents = noConsents();
         for (let [name, granted] of O.entries(consents)){
             h.classList.toggle(`bm-${name}`, granted);
             h.classList.toggle(`bm-no-${name}`, !granted);
@@ -142,7 +134,7 @@
     function dispatch(eventName, data) {
         const name = `bm:${eventName}`;
         const payload = {
-            ...data !== undefined && data,
+            ...data,
             time: +new Date
         };
         d.dispatchEvent(new CustomEvent(name, {
@@ -152,7 +144,7 @@
     }
     function loadDialogPolyfill(dialog) {
         function mount() {
-            d.documentElement.classList.add('bm-dialog-polyfill');
+            h.classList.add('bm-dialog-polyfill');
             w.dialogPolyfill.registerDialog(dialog);
         }
         if (w.dialogPolyfill) mount();
@@ -165,6 +157,10 @@
     }
     // Data:
     const getConsents = ()=>w[o.global] || {};
+    const noConsents = ()=>O.fromEntries(o.sections.slice(1).map((section)=>[
+                section,
+                false
+            ]));
     function setConsents(consents) {
         w[o.global] = consents;
         applyCssClasses();
@@ -186,13 +182,7 @@
     function clearStorages() {
         const localStores = O.fromEntries(O.entries(localStorage));
         const cookies = O.fromEntries(d.cookie.split('; ').map((cookie)=>cookie.split('=')));
-        const { consentTime, ...consents } = loadConsents() || o.sections.slice(1).reduce((consents, section)=>{
-            consents[section] = false;
-            return {
-                consentTime: undefined,
-                ...consents
-            };
-        }, {});
+        const { consentTime, ...consents } = loadConsents() || noConsents();
         for (let [section, sectionConsent] of O.entries(consents)){
             if (sectionConsent) continue;
             let sectionCookieNames = O.keys(o[`${section}Cookies`] || {});
@@ -284,12 +274,10 @@
     setConsents(loadConsents() || {});
     // Render UI
     render();
-    // Optional Non-EU auto-consent, never over a choice the visitor already made.
-    // The timezone lookup is slow on first use, so it only runs when it is needed
-    // EU/EEA territory outside the Europe/ zones is listed by city: Atlantic islands, Ceuta, Cyprus, French overseas regions
-    if (o.acceptNonEU && !getConsents().consentTime && !/^(GMT|UTC)$|Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123]|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) {
-        saveConsents(true);
-        displayUI(false);
+    // Optional Non-EU auto-consent
+    if (o.acceptNonEU && !getConsents().consentTime) {
+        const tz = w.Intl && Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (tz && !/^(GMT|UTC)$|^\+0[0-3]:|GMT-[123]$|Europe|CET|EET|WET|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(tz)) saveConsents(true);
     }
     // Wipe matching cookies/localStorages without consent
     clearStorages();

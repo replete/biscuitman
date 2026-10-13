@@ -66,8 +66,9 @@
 					</summary>
 					${cookies ? O.entries(cookies).map(([k, v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : `<dl><dd>${o.noCookies}</dd></dl>`}
 				</details>
-				<label class="${disabledProp} ${checkedProp}">
+				<label>
 					<input type=checkbox ${disabledProp} ${checkedProp} aria-labelledby=bm-t-${section} data-s="${section}"/>
+					<i></i>
 				</label>
 			</section>`;
         }).join('')}
@@ -105,10 +106,6 @@
                     saveConsents(false);
             }
         };
-        ui.onchange = (e)=>{
-            if (!e.target.dataset.s) return;
-            e.target.parentElement.classList.toggle('checked', e.target.checked);
-        };
         dialog = ui.querySelector('dialog');
         if (o.dialogPolyfill && !dialog.close) loadDialogPolyfill(dialog);
         dialog.onclose = ()=>dispatch('close');
@@ -118,18 +115,13 @@
         }
         d.body.appendChild(ui);
         updateBannerHeight();
-        // The observer reports after layout, so measuring there never forces a reflow
         new ResizeObserver(updateBannerHeight).observe(ui);
     }
-    // Without the observer's entries this resets the height instead of measuring it
     const updateBannerHeight = (entries)=>h.style.setProperty('--bm-height', `${entries ? ui.offsetHeight : 0}px`);
     const displayUI = (show)=>h.classList.toggle('bm-show', show);
     const applyCssClasses = ()=>{
         let { consentTime, ...consents } = getConsents();
-        if (!consentTime) consents = O.fromEntries(o.sections.slice(1).map((sectionName)=>[
-                sectionName,
-                false
-            ]));
+        if (!consentTime) consents = noConsents();
         for (let [name, granted] of O.entries(consents)){
             h.classList.toggle(`bm-${name}`, granted);
             h.classList.toggle(`bm-no-${name}`, !granted);
@@ -142,7 +134,7 @@
     function dispatch(eventName, data) {
         const name = `bm:${eventName}`;
         const payload = {
-            ...data !== undefined && data,
+            ...data,
             time: +new Date
         };
         d.dispatchEvent(new CustomEvent(name, {
@@ -152,7 +144,7 @@
     }
     function loadDialogPolyfill(dialog) {
         function mount() {
-            d.documentElement.classList.add('bm-dialog-polyfill');
+            h.classList.add('bm-dialog-polyfill');
             w.dialogPolyfill.registerDialog(dialog);
         }
         if (w.dialogPolyfill) mount();
@@ -165,6 +157,10 @@
     }
     // Data:
     const getConsents = ()=>w[o.global] || {};
+    const noConsents = ()=>O.fromEntries(o.sections.slice(1).map((section)=>[
+                section,
+                false
+            ]));
     function setConsents(consents) {
         w[o.global] = consents;
         applyCssClasses();
@@ -186,13 +182,7 @@
     function clearStorages() {
         const localStores = O.fromEntries(O.entries(localStorage));
         const cookies = O.fromEntries(d.cookie.split('; ').map((cookie)=>cookie.split('=')));
-        const { consentTime, ...consents } = loadConsents() || o.sections.slice(1).reduce((consents, section)=>{
-            consents[section] = false;
-            return {
-                consentTime: undefined,
-                ...consents
-            };
-        }, {});
+        const { consentTime, ...consents } = loadConsents() || noConsents();
         for (let [section, sectionConsent] of O.entries(consents)){
             if (sectionConsent) continue;
             let sectionCookieNames = O.keys(o[`${section}Cookies`] || {});
@@ -284,12 +274,10 @@
     setConsents(loadConsents() || {});
     // Render UI
     render();
-    // Optional Non-EU auto-consent, never over a choice the visitor already made.
-    // The timezone lookup is slow on first use, so it only runs when it is needed
-    // EU/EEA territory outside the Europe/ zones is listed by city: Atlantic islands, Ceuta, Cyprus, French overseas regions
-    if (o.acceptNonEU && !getConsents().consentTime && !/^(GMT|UTC)$|Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123]|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) {
-        saveConsents(true);
-        displayUI(false);
+    // Optional Non-EU auto-consent
+    if (o.acceptNonEU && !getConsents().consentTime) {
+        const tz = w.Intl && Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (tz && !/^(GMT|UTC)$|^\+0[0-3]:|GMT-[123]$|Europe|CET|EET|WET|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(tz)) saveConsents(true);
     }
     // Wipe matching cookies/localStorages without consent
     clearStorages();
@@ -347,7 +335,7 @@
   z-index: 3;
   width: 100%;
   padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-family: system-ui, Segoe UI, Roboto, sans-serif;
   display: none;
   position: fixed;
   bottom: 0;
@@ -373,7 +361,6 @@
 }
 
 .biscuitman article {
-  padding: 0;
   position: relative;
 }
 
@@ -393,7 +380,6 @@
 }
 
 .biscuitman article p {
-  color: var(--bm-tx);
   margin: 10px 0;
   font-size: 13px;
 }
@@ -432,7 +418,6 @@
   outline: none;
   padding: 10px;
   font-size: 24px;
-  line-height: 1em;
   position: absolute;
   top: 0;
   right: 10px;
@@ -446,17 +431,19 @@
   opacity: .8;
 }
 
+.biscuitman .bm-buttons {
+  display: flex;
+}
+
 @media (min-width: 576px) {
   .biscuitman .bm-buttons {
     flex-direction: row-reverse;
     gap: 10px;
     width: 100%;
-    display: flex;
   }
 
   .biscuitman .bm-buttons button {
     flex-grow: 1;
-    margin-bottom: 0;
   }
 }
 
@@ -464,7 +451,6 @@
   .biscuitman .bm-buttons {
     flex-direction: column;
     flex-grow: 1;
-    display: flex;
   }
 }
 
@@ -495,7 +481,6 @@
 }
 
 .biscuitman dialog .bm-buttons {
-  justify-self: flex-end;
   position: relative;
 }
 
@@ -511,33 +496,29 @@
   position: relative;
 }
 
-.biscuitman .bm-dialog > b:after {
+.biscuitman .bm-dialog > b:after, .biscuitman .bm-dialog .bm-buttons:after {
   content: "";
-  background: linear-gradient(180deg, var(--bm-bg) 20%, #fff0);
   pointer-events: none;
-  z-index: 1;
   width: 100%;
   height: 25px;
-  margin-bottom: -24px;
   position: absolute;
-  bottom: 0;
   left: 0;
 }
 
+.biscuitman .bm-dialog > b:after {
+  background: linear-gradient(180deg, var(--bm-bg) 20%, #fff0);
+  z-index: 1;
+  margin-bottom: -24px;
+  bottom: 0;
+}
+
 .biscuitman .bm-dialog .bm-buttons:after {
-  content: "";
   background: linear-gradient(0deg, var(--bm-bg) 20%, #fff0);
-  pointer-events: none;
-  width: 100%;
-  height: 25px;
-  position: absolute;
   top: -24px;
-  left: 0;
 }
 
 .biscuitman .bm-sections {
   scrollbar-color: rgba(var(--bm-ui),.2) var(--bm-bg);
-  flex-shrink: 1;
   height: 100%;
   padding: 15px 0;
   position: relative;
@@ -598,7 +579,6 @@
   border: 1px solid rgba(var(--bm-ui),.2);
   border-radius: 5px;
   padding: 10px;
-  list-style: none;
   box-shadow: 0 2px 4px #0000001a;
 }
 
@@ -613,7 +593,6 @@
   flex-direction: column;
   width: 100%;
   padding: 5px 80px 10px 10px;
-  list-style: none;
   display: flex;
   position: relative;
 }
@@ -637,16 +616,11 @@
 }
 
 .biscuitman summary p {
-  color: var(--bm-tx);
   font-size: 14px;
 }
 
 .biscuitman summary > * {
   display: inline-flex;
-}
-
-.biscuitman summary::marker {
-  display: none;
 }
 
 .biscuitman summary::-webkit-details-marker {
@@ -661,7 +635,6 @@
 }
 
 .biscuitman dl dt, .biscuitman dl dd {
-  color: var(--bm-tx);
   font-size: 12px;
 }
 
@@ -672,53 +645,56 @@
 }
 
 .biscuitman label {
+  top: 15px;
+  top: calc(anchor(--bm center) - 14px);
+  position: absolute;
+  right: 31px;
+}
+
+.biscuitman label i {
   --bm-h: 1.2em;
   --bm-w: 2.3em;
-  top: 15px;
-  top: calc(anchor(--bm center) - .6em - 2px);
   height: var(--bm-h);
   width: var(--bm-w);
   background-color: rgba(var(--bm-ui),.3);
   border-radius: var(--bm-h);
+  font-size: 20px;
   display: block;
-  position: absolute;
-  right: 31px;
-  font-size: 20px !important;
+  position: relative;
 }
 
-.biscuitman label:before {
+.biscuitman label i:before {
   content: "";
   background: var(--bm-bg);
   height: var(--bm-h);
   width: var(--bm-h);
-  transform-origin: center;
   border-radius: 100%;
-  display: block;
   position: absolute;
   top: 50%;
   left: 0;
   transform: translateY(-50%) scale(.8);
 }
 
-.biscuitman label.checked {
+.biscuitman label input {
+  opacity: 0;
+  position: absolute;
+}
+
+.biscuitman label :checked + i {
   background-color: var(--bm-c);
 }
 
-.biscuitman label.checked:before {
+.biscuitman label :checked + i:before {
   left: auto;
   right: 0;
 }
 
-.biscuitman label:has(:focus-visible) {
-  outline: auto highlight;
-}
-
-.biscuitman label.disabled.checked {
+.biscuitman label :disabled + i {
   opacity: .5;
 }
 
-.biscuitman label input {
-  opacity: 0;
+.biscuitman label :focus-visible + i {
+  outline: auto highlight;
 }
 
 .bm-dialog-polyfill .biscuitman dialog {

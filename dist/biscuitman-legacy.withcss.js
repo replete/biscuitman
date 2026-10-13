@@ -284,24 +284,6 @@
 		};
 	}
 
-	// Intl
-	if (window.Intl === undefined) {
-		window.Intl = {
-			DateTimeFormat: function() {
-				return {
-					format: function(date) {
-						return date.toLocaleString();
-					},
-					resolvedOptions: function() {
-						return {
-							timeZone: (Date().toLocaleString().match(/\S+$/) || [''])[0]
-						}
-					}
-				};
-			}
-		};
-	}
-
 	// <details> polyfill
 	/*
 	Details Element Polyfill 2.4.0
@@ -689,7 +671,7 @@
 	          k = _ref2[0],
 	          v = _ref2[1];
 	        return "<dl><dt>".concat(k, "</dt><dd>").concat(v, "</dd></dl>");
-	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t\t<label class=\"").concat(disabledProp, " ").concat(checkedProp, "\">\n\t\t\t\t\t<input type=checkbox ").concat(disabledProp, " ").concat(checkedProp, " aria-labelledby=bm-t-").concat(section, " data-s=\"").concat(section, "\"/>\n\t\t\t\t</label>\n\t\t\t</section>");
+	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t\t<label>\n\t\t\t\t\t<input type=checkbox ").concat(disabledProp, " ").concat(checkedProp, " aria-labelledby=bm-t-").concat(section, " data-s=\"").concat(section, "\"/>\n\t\t\t\t\t<i></i>\n\t\t\t\t</label>\n\t\t\t</section>");
 	    }).join(''), "\n\t\t</div>\n\t\t<div class=bm-buttons>\n\t\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t\t<button data-id=save>").concat(o.save, "</button>\n\t\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t\t</div>\n\t</div>\n</dialog>").replaceAll('{link}', "<a href=\"".concat(o.linkURL, "\">").concat(o.linkText, "</a>"));
 	    ui.onclick = function (e) {
 	      var id = e.target.dataset.id;
@@ -717,10 +699,6 @@
 	          saveConsents(false);
 	      }
 	    };
-	    ui.onchange = function (e) {
-	      if (!e.target.dataset.s) return;
-	      e.target.parentElement.classList.toggle('checked', e.target.checked);
-	    };
 	    dialog = ui.querySelector('dialog');
 	    if (o.dialogPolyfill && !dialog.close) loadDialogPolyfill(dialog);
 	    dialog.onclose = function () {
@@ -736,11 +714,8 @@
 	    }
 	    d.body.appendChild(ui);
 	    updateBannerHeight();
-	    // The observer reports after layout, so measuring there never forces a reflow
 	    new ResizeObserver(updateBannerHeight).observe(ui);
 	  }
-
-	  // Without the observer's entries this resets the height instead of measuring it
 	  var updateBannerHeight = function updateBannerHeight(entries) {
 	    return h.style.setProperty('--bm-height', "".concat(entries ? ui.offsetHeight : 0, "px"));
 	  };
@@ -751,9 +726,7 @@
 	    var _getConsents = getConsents(),
 	      consentTime = _getConsents.consentTime,
 	      consents = _objectWithoutProperties(_getConsents, _excluded);
-	    if (!consentTime) consents = O.fromEntries(o.sections.slice(1).map(function (sectionName) {
-	      return [sectionName, false];
-	    }));
+	    if (!consentTime) consents = noConsents();
 	    for (var _i2 = 0, _O$entries2 = O.entries(consents); _i2 < _O$entries2.length; _i2++) {
 	      var _O$entries2$_i = _slicedToArray(_O$entries2[_i2], 2),
 	        name = _O$entries2$_i[0],
@@ -768,7 +741,7 @@
 	  }
 	  function dispatch(eventName, data) {
 	    var name = "bm:".concat(eventName);
-	    var payload = _objectSpread(_objectSpread({}, data !== undefined && data), {}, {
+	    var payload = _objectSpread(_objectSpread({}, data), {}, {
 	      time: +new Date()
 	    });
 	    d.dispatchEvent(new CustomEvent(name, {
@@ -778,7 +751,7 @@
 	  }
 	  function loadDialogPolyfill(dialog) {
 	    function mount() {
-	      d.documentElement.classList.add('bm-dialog-polyfill');
+	      h.classList.add('bm-dialog-polyfill');
 	      w.dialogPolyfill.registerDialog(dialog);
 	    }
 	    if (w.dialogPolyfill) mount();else {
@@ -793,6 +766,11 @@
 
 	  var getConsents = function getConsents() {
 	    return w[o.global] || {};
+	  };
+	  var noConsents = function noConsents() {
+	    return O.fromEntries(o.sections.slice(1).map(function (section) {
+	      return [section, false];
+	    }));
 	  };
 	  function setConsents(consents) {
 	    w[o.global] = consents;
@@ -817,12 +795,7 @@
 	    var cookies = O.fromEntries(d.cookie.split('; ').map(function (cookie) {
 	      return cookie.split('=');
 	    }));
-	    var _ref3 = loadConsents() || o.sections.slice(1).reduce(function (consents, section) {
-	        consents[section] = false;
-	        return _objectSpread({
-	          consentTime: undefined
-	        }, consents);
-	      }, {});
+	    var _ref3 = loadConsents() || noConsents();
 	      _ref3.consentTime;
 	      var consents = _objectWithoutProperties(_ref3, _excluded2);
 	    var _loop = function _loop() {
@@ -928,12 +901,10 @@
 	  // Render UI
 	  render();
 
-	  // Optional Non-EU auto-consent, never over a choice the visitor already made.
-	  // The timezone lookup is slow on first use, so it only runs when it is needed
-	  // EU/EEA territory outside the Europe/ zones is listed by city: Atlantic islands, Ceuta, Cyprus, French overseas regions
-	  if (o.acceptNonEU && !getConsents().consentTime && !/^(GMT|UTC)$|Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123]|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) {
-	    saveConsents(true);
-	    displayUI(false);
+	  // Optional Non-EU auto-consent
+	  if (o.acceptNonEU && !getConsents().consentTime) {
+	    var tz = w.Intl && Intl.DateTimeFormat().resolvedOptions().timeZone;
+	    if (tz && !/^(GMT|UTC)$|^\+0[0-3]:|GMT-[123]$|Europe|CET|EET|WET|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(tz)) saveConsents(true);
 	  }
 
 	  // Wipe matching cookies/localStorages without consent
@@ -949,6 +920,7 @@
 	  }
 
 	  // Helper  methods
+
 	  // <a onclick="bmInvalidate()" href="javascript:void(0)">Delete Consent Preferences</a>
 	  w.bmInvalidate = function () {
 	    dispatch('invalidate', {
@@ -975,6 +947,6 @@
 
 (function(d){
 	var css=d.createElement('style');
-	css.textContent='/*! biscuitman-legacy.js 0.6.0 *//*! biscuitman-legacy.js 0.6.0 */@supports selector(:has(a)){.biscuitman{all:initial}.biscuitman *,.biscuitman :before,.biscuitman :after{all:revert}}.biscuitman{--bm-ui:0,0,0;--bm-tx:#444;--bm-bg:#fff;--bm-c:#105d89;-moz-box-sizing:border-box;box-sizing:border-box;z-index:3;background:#fff;width:100%;padding:20px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:none;position:fixed;bottom:0;box-shadow:0 -2px 10px rgba(0,0,0,.16)}.bm-show .biscuitman{display:block}.biscuitman *{-moz-box-sizing:border-box;box-sizing:border-box;color:#444;margin:0;padding:0;font-family:inherit;font-size:16px;line-height:1.4em}.biscuitman:has([open]){-webkit-transform:translateY(100%);transform:translateY(100%)}.biscuitman article{padding:0;position:relative}@media (min-width:770px){.biscuitman article{padding-right:calc(max(300px,30vw) + 20px)}.biscuitman article .bm-buttons{width:30vw;min-width:300px;position:absolute;bottom:50%;right:0;-webkit-transform:translateY(50%);transform:translateY(50%)}}.biscuitman article p{color:#444;margin:10px 0;font-size:13px}@media (min-width:575px){.biscuitman article p{font-size:14px}}.biscuitman button{color:#105d89;cursor:pointer;background:#fff;border:2px solid #105d89;border-radius:3px;margin-top:10px;padding:.8em;font-size:13px;line-height:1em}.biscuitman button[data-id=accept]{background:#105d89;color:#fff!important}.biscuitman button[data-id=close]{color:rgba(0,0,0,.5);opacity:.6;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;z-index:2;background:0 0;border:none;outline:none;padding:10px;font-size:24px;line-height:1em;position:absolute;top:0;right:10px}.biscuitman button[disabled]{display:none}.biscuitman button:hover{opacity:.8}@media (min-width:576px){.biscuitman .bm-buttons{-webkit-flex-direction:row-reverse;flex-direction:row-reverse;gap:10px;width:100%;display:-webkit-flex;display:flex}.biscuitman .bm-buttons button{-webkit-flex-grow:1;flex-grow:1;margin-bottom:0}}@media (max-width:575px){.biscuitman .bm-buttons{-webkit-flex-direction:column;flex-direction:column;-webkit-flex-grow:1;flex-grow:1;display:-webkit-flex;display:flex}}.biscuitman dialog{background:#fff;border:0;width:100%;max-width:100%;height:100%;max-height:100%}@media (min-width:576px){.biscuitman dialog{border-radius:10px;width:90vw;max-width:860px;max-height:80vh;margin:auto;box-shadow:0 0 8px rgba(0,0,0,.3)}}@media (min-width:576px) and (min-height:1134px){.biscuitman dialog{max-height:950px}}.biscuitman dialog .bm-buttons{justify-self:flex-end;position:relative}.biscuitman .bm-dialog{-webkit-flex-direction:column;flex-direction:column;height:100%;padding:20px;display:-webkit-flex;display:flex}.biscuitman .bm-dialog b{padding-bottom:8px;position:relative}.biscuitman .bm-dialog>b:after{content:"";pointer-events:none;z-index:1;background:linear-gradient(#fff 20%,rgba(255,255,255,0));width:100%;height:25px;margin-bottom:-24px;position:absolute;bottom:0;left:0}.biscuitman .bm-dialog .bm-buttons:after{content:"";pointer-events:none;background:linear-gradient(rgba(255,255,255,0),#fff 80%);width:100%;height:25px;position:absolute;top:-24px;left:0}.biscuitman .bm-sections{scrollbar-color:rgba(0,0,0,.2) #fff;-webkit-flex-shrink:1;flex-shrink:1;height:100%;padding:15px 0;position:relative;overflow-y:scroll}@media (min-width:576px){.biscuitman .bm-sections{margin-right:-18px;padding-right:4px}}.biscuitman .bm-sections>p{padding-right:30px;font-size:13px;line-height:18px}@media (min-width:576px){.biscuitman .bm-sections>p{font-size:14px}}.biscuitman .bm-sections>p span{font-size:inherit;padding-bottom:5px;display:inline-block}.biscuitman .bm-sections>p [data-id=more]~span{display:none}.biscuitman a{font-size:inherit;color:#105d89;cursor:pointer;text-decoration:none;display:inline-block}.biscuitman a:hover{text-decoration:underline}.biscuitman section{margin-bottom:10px;position:relative}.biscuitman section:first-of-type{margin-top:10px}.biscuitman details{border:1px solid rgba(0,0,0,.2);border-radius:5px;padding:10px;list-style:none;box-shadow:0 2px 4px rgba(0,0,0,.1)}.biscuitman details[open] summary b:after{margin:-3px 0 0 -2px;-webkit-transform:rotate(45deg)scale(.3);transform:rotate(45deg)scale(.3)}.biscuitman summary{cursor:pointer;anchor-name:--bm;-webkit-flex-direction:column;flex-direction:column;width:100%;padding:5px 80px 10px 10px;list-style:none;display:-webkit-flex;display:flex;position:relative}.biscuitman summary b{margin-bottom:3px}.biscuitman summary b:after{content:"";-moz-box-sizing:content-box;box-sizing:content-box;border:5px solid rgba(0,0,0,.4);border-color:transparent rgba(0,0,0,.4) rgba(0,0,0,.4) transparent;border-radius:2px;width:1em;height:1em;margin:-2px 0 0 -4px;display:block;-webkit-transform:rotate(-45deg)scale(.3);transform:rotate(-45deg)scale(.3)}.biscuitman summary p{color:#444;font-size:14px}.biscuitman summary>*{display:-webkit-inline-flex;display:inline-flex}.biscuitman summary::marker{display:none}.biscuitman summary::-webkit-details-marker{display:none}.biscuitman dl{background:rgba(0,0,0,.08);margin:10px;padding:10px;display:-webkit-flex;display:flex}.biscuitman dl dt,.biscuitman dl dd{color:#444;font-size:12px}.biscuitman dl dt{min-width:120px;padding-right:30px;font-weight:700}.biscuitman label{--bm-h:1.2em;--bm-w:2.3em;top:15px;top:calc(anchor(--bm center) - .6em - 2px);background-color:rgba(0,0,0,.3);border-radius:1.2em;width:2.3em;height:1.2em;display:block;position:absolute;right:31px;font-size:20px!important}.biscuitman label:before{content:"";-webkit-transform-origin:50%;transform-origin:50%;background:#fff;border-radius:100%;width:1.2em;height:1.2em;display:block;position:absolute;top:50%;left:0;-webkit-transform:translateY(-50%)scale(.8);transform:translateY(-50%)scale(.8)}.biscuitman label.checked{background-color:#105d89}.biscuitman label.checked:before{left:auto;right:0}.biscuitman label:has(:focus-visible){outline:auto highlight}.biscuitman label.disabled.checked{opacity:.5}.biscuitman label input{opacity:0}.bm-dialog-polyfill .biscuitman dialog{position:fixed;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%)}';
+	css.textContent='/*! biscuitman-legacy.js 0.6.0 *//*! biscuitman-legacy.js 0.6.0 */@supports selector(:has(a)){.biscuitman{all:initial}.biscuitman *,.biscuitman :before,.biscuitman :after{all:revert}}.biscuitman{--bm-ui:0,0,0;--bm-tx:#444;--bm-bg:#fff;--bm-c:#105d89;-moz-box-sizing:border-box;box-sizing:border-box;z-index:3;background:#fff;width:100%;padding:20px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif;display:none;position:fixed;bottom:0;box-shadow:0 -2px 10px rgba(0,0,0,.16)}.bm-show .biscuitman{display:block}.biscuitman *{-moz-box-sizing:border-box;box-sizing:border-box;color:#444;margin:0;padding:0;font-family:inherit;font-size:16px;line-height:1.4em}.biscuitman:has([open]){-webkit-transform:translateY(100%);transform:translateY(100%)}.biscuitman article{position:relative}@media (min-width:770px){.biscuitman article{padding-right:calc(max(300px,30vw) + 20px)}.biscuitman article .bm-buttons{width:30vw;min-width:300px;position:absolute;bottom:50%;right:0;-webkit-transform:translateY(50%);transform:translateY(50%)}}.biscuitman article p{margin:10px 0;font-size:13px}@media (min-width:575px){.biscuitman article p{font-size:14px}}.biscuitman button{color:#105d89;cursor:pointer;background:#fff;border:2px solid #105d89;border-radius:3px;margin-top:10px;padding:.8em;font-size:13px;line-height:1em}.biscuitman button[data-id=accept]{background:#105d89;color:#fff!important}.biscuitman button[data-id=close]{color:rgba(0,0,0,.5);opacity:.6;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;z-index:2;background:0 0;border:none;outline:none;padding:10px;font-size:24px;position:absolute;top:0;right:10px}.biscuitman button[disabled]{display:none}.biscuitman button:hover{opacity:.8}.biscuitman .bm-buttons{display:-webkit-flex;display:flex}@media (min-width:576px){.biscuitman .bm-buttons{-webkit-flex-direction:row-reverse;flex-direction:row-reverse;gap:10px;width:100%}.biscuitman .bm-buttons button{-webkit-flex-grow:1;flex-grow:1}}@media (max-width:575px){.biscuitman .bm-buttons{-webkit-flex-direction:column;flex-direction:column;-webkit-flex-grow:1;flex-grow:1}}.biscuitman dialog{background:#fff;border:0;width:100%;max-width:100%;height:100%;max-height:100%}@media (min-width:576px){.biscuitman dialog{border-radius:10px;width:90vw;max-width:860px;max-height:80vh;margin:auto;box-shadow:0 0 8px rgba(0,0,0,.3)}}@media (min-width:576px) and (min-height:1134px){.biscuitman dialog{max-height:950px}}.biscuitman dialog .bm-buttons{position:relative}.biscuitman .bm-dialog{-webkit-flex-direction:column;flex-direction:column;height:100%;padding:20px;display:-webkit-flex;display:flex}.biscuitman .bm-dialog b{padding-bottom:8px;position:relative}.biscuitman .bm-dialog>b:after,.biscuitman .bm-dialog .bm-buttons:after{content:"";pointer-events:none;width:100%;height:25px;position:absolute;left:0}.biscuitman .bm-dialog>b:after{z-index:1;background:linear-gradient(#fff 20%,rgba(255,255,255,0));margin-bottom:-24px;bottom:0}.biscuitman .bm-dialog .bm-buttons:after{background:linear-gradient(rgba(255,255,255,0),#fff 80%);top:-24px}.biscuitman .bm-sections{scrollbar-color:rgba(0,0,0,.2) #fff;height:100%;padding:15px 0;position:relative;overflow-y:scroll}@media (min-width:576px){.biscuitman .bm-sections{margin-right:-18px;padding-right:4px}}.biscuitman .bm-sections>p{padding-right:30px;font-size:13px;line-height:18px}@media (min-width:576px){.biscuitman .bm-sections>p{font-size:14px}}.biscuitman .bm-sections>p span{font-size:inherit;padding-bottom:5px;display:inline-block}.biscuitman .bm-sections>p [data-id=more]~span{display:none}.biscuitman a{font-size:inherit;color:#105d89;cursor:pointer;text-decoration:none;display:inline-block}.biscuitman a:hover{text-decoration:underline}.biscuitman section{margin-bottom:10px;position:relative}.biscuitman section:first-of-type{margin-top:10px}.biscuitman details{border:1px solid rgba(0,0,0,.2);border-radius:5px;padding:10px;box-shadow:0 2px 4px rgba(0,0,0,.1)}.biscuitman details[open] summary b:after{margin:-3px 0 0 -2px;-webkit-transform:rotate(45deg)scale(.3);transform:rotate(45deg)scale(.3)}.biscuitman summary{cursor:pointer;anchor-name:--bm;-webkit-flex-direction:column;flex-direction:column;width:100%;padding:5px 80px 10px 10px;display:-webkit-flex;display:flex;position:relative}.biscuitman summary b{margin-bottom:3px}.biscuitman summary b:after{content:"";-moz-box-sizing:content-box;box-sizing:content-box;border:5px solid rgba(0,0,0,.4);border-color:transparent rgba(0,0,0,.4) rgba(0,0,0,.4) transparent;border-radius:2px;width:1em;height:1em;margin:-2px 0 0 -4px;display:block;-webkit-transform:rotate(-45deg)scale(.3);transform:rotate(-45deg)scale(.3)}.biscuitman summary p{font-size:14px}.biscuitman summary>*{display:-webkit-inline-flex;display:inline-flex}.biscuitman summary::-webkit-details-marker{display:none}.biscuitman dl{background:rgba(0,0,0,.08);margin:10px;padding:10px;display:-webkit-flex;display:flex}.biscuitman dl dt,.biscuitman dl dd{font-size:12px}.biscuitman dl dt{min-width:120px;padding-right:30px;font-weight:700}.biscuitman label{top:15px;top:calc(anchor(--bm center) - 14px);position:absolute;right:31px}.biscuitman label i{--bm-h:1.2em;--bm-w:2.3em;background-color:rgba(0,0,0,.3);border-radius:1.2em;width:2.3em;height:1.2em;font-size:20px;display:block;position:relative}.biscuitman label i:before{content:"";background:#fff;border-radius:100%;width:1.2em;height:1.2em;position:absolute;top:50%;left:0;-webkit-transform:translateY(-50%)scale(.8);transform:translateY(-50%)scale(.8)}.biscuitman label input{opacity:0;position:absolute}.biscuitman label :checked+i{background-color:#105d89}.biscuitman label :checked+i:before{left:auto;right:0}.biscuitman label :disabled+i{opacity:.5}.biscuitman label :focus-visible+i{outline:auto highlight}.bm-dialog-polyfill .biscuitman dialog{position:fixed;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%)}';
 	d.head.appendChild(css);
 })(document);
