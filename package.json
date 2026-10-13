@@ -30,21 +30,21 @@
 	},
 	"test": "npm run test",
 	"devDependencies": {
-		"@babel/core": "^8.0.1",
-		"@babel/plugin-transform-for-of": "^8.0.1",
-		"@babel/preset-env": "^8.0.2",
+		"@babel/core": "^8.0.7",
+		"@babel/plugin-transform-for-of": "^8.0.7",
+		"@babel/preset-env": "^8.0.7",
 		"@eslint/js": "^10.0.1",
-		"@playwright/test": "^1.62.1",
+		"@playwright/test": "^1.64.0",
 		"@rollup/plugin-node-resolve": "^16.0.3",
-		"@swc/core": "^1.15.47",
+		"@swc/core": "^1.16.18",
 		"browser-sync": "^3.0.4",
-		"browserslist": "^4.28.7",
+		"browserslist": "^4.29.3",
 		"dialog-polyfill": "^0.5.6",
 		"doiuse": "^6.0.6",
-		"eslint": "^10.8.0",
-		"globals": "^17.9.0",
+		"eslint": "^10.12.0",
+		"globals": "^17.13.0",
 		"lightningcss": "^1.33.0",
-		"rollup": "^4.62.4"
+		"rollup": "^4.64.6"
 	},
 	"browserslist": "since 2023, not dead",
 	"author": "replete",
@@ -57,5 +57,10 @@
 		"url": "https://github.com/replete/biscuitman/issues"
 	},
 	"funding": "https://buymeacoffee.com/replete",
-	"homepage": "https://replete.github.io/biscuitman"
+	"homepage": "https://replete.github.io/biscuitman",
+	"allowScripts": {
+		"fsevents@2.3.3": true,
+		"fsevents@2.3.2": true,
+		"@swc/core@1.16.18": true
+	}
 }
