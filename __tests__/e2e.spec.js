@@ -184,6 +184,39 @@ testedVersions.forEach((filename) => {
 			expect(await chevron()).toEqual(before)
 		})
 
+		test('should render the same on a site whose CSS styles bare elements', async ({ page }) => {
+			// Every computed property of every element and pseudo-element biscuitman renders
+			const snapshot = () => page.evaluate(() => {
+				const styles = {}
+				document.querySelectorAll('.biscuitman *').forEach((el, i) => {
+					for (const pseudo of ['', '::before', '::after']) {
+						const computed = getComputedStyle(el, pseudo || null)
+						for (const property of computed) styles[`${i} ${el.localName}${pseudo} ${property}`] = computed.getPropertyValue(property)
+					}
+				})
+				return styles
+			})
+			const changed = (before, after) => Object.keys(before).filter((key) => before[key] !== after[key]).map((key) => `${key}: ${before[key]} => ${after[key]}`)
+
+			await page.click('button[data-id=settings]')
+			await page.mouse.move(0, 0) // so no button is in its :hover state
+			const before = await snapshot()
+			await page.addStyleTag({ content: `
+				*, :before, :after { box-sizing: border-box; border-collapse: collapse }
+				button { letter-spacing: 3px; text-transform: uppercase; box-shadow: 0 0 0 4px red; min-height: 60px }
+				p { margin-bottom: 40px; text-indent: 30px; max-width: 20em }
+				a { font-weight: bold; text-transform: uppercase; transition: color 1s }
+				b { font-style: italic; letter-spacing: 2px }
+				label { display: inline-flex; border: 3px solid red; text-transform: uppercase }
+				section, article, details, summary { outline: 2px solid red; text-align: center }
+				dl, dt, dd { font-style: italic; border-bottom: 1px solid red }
+				input { width: 100%; accent-color: red }
+				div { text-align: right }
+				b::before, summary::before, button::after { content: 'x'; color: red }
+			` })
+			expect(changed(before, await snapshot())).toEqual([])
+		})
+
 		test('should close settings modal after clicking close', async ({ page }) => {
 			await page.click('button[data-id=settings]')
 			await page.click('button[data-id=close]')

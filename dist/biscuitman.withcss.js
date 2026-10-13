@@ -327,6 +327,16 @@
 ((d)=>{
 	let css=d.createElement('style');
 	css.textContent=`/*! biscuitman.js 0.6.0 */
+@supports selector(:has(a)) {
+  .biscuitman {
+    all: initial;
+  }
+
+  .biscuitman *, .biscuitman :before, .biscuitman :after {
+    all: revert;
+  }
+}
+
 .biscuitman {
   --bm-ui: 0,0,0;
   --bm-tx: #444;

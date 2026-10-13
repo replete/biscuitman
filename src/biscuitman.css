@@ -6,6 +6,27 @@
 	Use a version in /dist/ for improved compatibility
 */
 
+/*
+	Shield against the host site's CSS. Nothing is inherited from the page, and anything
+	the site sets on bare elements (button, p, label...) is rolled back to the browser
+	default. The rules below then apply on top, as do more specific rules such as a
+	theme's '.biscuitman button'. This block has to stay above them.
+
+	Only current browsers get it: Safari 13 mishandles 'all', and the dialog polyfill
+	styles a bare 'dialog', which this would roll back. :has() support excludes both.
+*/
+@supports selector(:has(a)) {
+	.biscuitman {
+		all: initial;
+	}
+
+	.biscuitman *,
+	.biscuitman ::before,
+	.biscuitman ::after {
+		all: revert;
+	}
+}
+
 .biscuitman {
 	--bm-ui: 0,0,0;
 	--bm-tx: #444;

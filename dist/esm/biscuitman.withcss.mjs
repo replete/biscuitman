@@ -364,6 +364,16 @@ if (typeof BMCSS === 'undefined') {
 	let css=document.createElement('style');
 	css.id = 'BMCSS';
 	css.textContent=`/*! biscuitman.js 0.6.0 */
+@supports selector(:has(a)) {
+  .biscuitman {
+    all: initial;
+  }
+
+  .biscuitman *, .biscuitman :before, .biscuitman :after {
+    all: revert;
+  }
+}
+
 .biscuitman {
   --bm-ui: 0,0,0;
   --bm-tx: #444;
