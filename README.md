@@ -324,7 +324,7 @@ document.addEventListener('bm:save', ({ detail }) => {
 
 ## Development
 
-`npm run dev` fires up a browserSync development server on `https://localhost:3000`.
+`npm run dev` builds the project and starts a [Vite](https://vite.dev) development server on `https://localhost:3000`, rebuilding and reloading when anything in `src/` changes.
 
 We need `https://` to be able to delete Secure cookies.
 
@@ -333,7 +333,7 @@ We need `https://` to be able to delete Secure cookies.
 To prevent invalid certificate warnings, you can generate a local SSL key with `mkcert`:
 
 - Install `mkcert` ([Installation instructions](https://github.com/FiloSottile/mkcert#installation)) and then run:
-- run `npm run makecerts`, to generate `server.crt` and `server.key` for browserSync dev server
+- run `npm run makecerts`, to generate `server.crt` and `server.key` for the dev server (without them it falls back to `http://`)
 - if you're using another solution for local SSL certs, generate `server.crt` and `server.key` manually and place them in the root
 
 Visiting `https://localhost:3000` should now work without warnings.

@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 import { Readable } from 'node:stream'
 import zlib from 'node:zlib'
-import browserSync from 'browser-sync'
 import swc from '@swc/core'
 import { transform as transformCss, browserslistToTargets, Features } from 'lightningcss'
 import browserslist from 'browserslist'
@@ -435,46 +434,35 @@ export async function cssReport() {
 }
 
 export async function serve() {
-	const bs = browserSync.create()
-
-	bs.watch('package.json', async (event, file) => {
-		if (event === 'change') {
-			console.log(`${file} has changed`)
-			await build()
-			bs.reload()
+	const { createServer } = await import('vite')
+	const certs = ['./server.key', './server.crt']
+	const server = await createServer({
+		configFile: false,
+		appType: 'mpa',
+		optimizeDeps: { noDiscovery: true },
+		server: {
+			port: 3000,
+			strictPort: true,
+			// https lets the demo delete Secure cookies: npm run makecerts
+			https: certs.every(file => fs.existsSync(file)) ? { key: fs.readFileSync(certs[0]), cert: fs.readFileSync(certs[1]) } : undefined,
+			watch: { ignored: ['**/test-results/**', '**/playwright-report/**', '**/browserstack-results/**'] },
+			fs: { deny: ['.env', '.env.*', '*.{crt,pem,key}', '**/.git/**'] }
 		}
 	})
 
-	bs.watch([
-		'./src/biscuitman.js',
-		'./src/biscuitman.mjs',
-		'./src/demo.html'
-	], async (event, file) => {
-		if (event === 'change') {
-			console.log(`${file} has changed`)
-			await build()
-			bs.reload()
-		}
+	let building = false
+	server.watcher.on('change', async (file) => {
+		file = file.replace(`${process.cwd()}/`, '')
+		if (building || !(file.startsWith('src/') || file === 'package.json')) return
+		building = true
+		log('dev', `${file} changed`)
+		await build().catch(err => console.error('Error:', err))
+		building = false
+		server.ws.send({ type: 'full-reload' })
 	})
 
-	bs.watch('./src/biscuitman.css', async (event, file) => {
-		if (event === 'change') {
-			await styles()
-			console.log(`File ${file} has changed`)
-		}
-	})
-
-	bs.init({
-		server: './',
-		files: ['./dist/*','index.html','./src/*.css','./src/*.js', './src/*.mjs'], // watch
-		port: 3000,
-		https: { // required for https cookies
-			key: './server.key',
-			cert: './server.crt'
-		},
-		open: false,
-		notify: false
-	})
+	await server.listen()
+	server.printUrls()
 }
 
 async function main() {
