@@ -355,6 +355,7 @@
 
 		<!-- Notices-->
 		<h2>This page uses real analytics scripts with dummy IDs</h2>
+		<p>This page is a working demo. The documentation is in the <a href="https://github.com/replete/biscuitman#readme">README</a>.</p>
 		<p>Things to try:</p>
 		<ul>
 			<li>Open <strong>Settings</strong>, switch sections on and off, and save. The stored consent and any cookies appear in the panels below.</li>
@@ -390,10 +391,11 @@
 		</script>
 
 <!-- if standard esm -->
-		<!-- CSS Feature Compatibility -->
-		<h2 id="browser-support">CSS Feature Compatibility</h2>
-		<p>This table is generated from our CSS and shows the minimum browser version for each feature in use. Biscuitman still works without them: <code>:has()</code>, for instance, is only a progressive enhancement.</p>
-		<p>The Android data from caniuse (via mdn) is incorrect at time of writing, so assume it mirrors the Desktop version.</p>
+		<!-- Browser support -->
+		<h2 id="browser-support">Browser support</h2>
+		<p>The standard and ESM versions are tested back to 2020: Chrome 85, Firefox 77 and Safari 13.1. For older browsers there is a <a href="index-legacy.html">legacy version</a>, tested back to 2013: IE 11, Chrome 24, Firefox 24 and Safari 6.2. The <a href="https://github.com/replete/biscuitman#browser-support">README</a> has the details.</p>
+		<p>This table is generated from the standard stylesheet and shows the first version of each browser to support the newer CSS features it uses. They are all enhancements, so a browser without one still gets a working banner.</p>
+		<p>caniuse only lists the current Chrome and Firefox for Android, so read those two columns as matching desktop.</p>
 		<div id="cssreport"></div>
 		<script>
 			(async ()=>{
@@ -408,8 +410,9 @@
 						name: feature,
 						title: featureData.title,
 						browsers: Object.entries(featureData.caniuseData.stats).reduce((acc, [browser, versions]) => {
-							const supportedVersion = Object.keys(versions).find(version => versions[version] === 'y');
-							acc[browser] = supportedVersion || false;
+							// lowest supporting version: the keys are not in version order
+							const supported = Object.keys(versions).filter(version => versions[version] === 'y' && parseFloat(version))
+							acc[browser] = supported.sort((a, b) => parseFloat(a) - parseFloat(b))[0] || false;
 							return acc;
 						}, {})
 					})
@@ -428,6 +431,11 @@
 		</script>
 <!-- endif -->
 
+<!-- if legacy -->
+		<h2 id="browser-support">Browser support</h2>
+		<p>This is the legacy version, tested back to 2013: IE 11, Chrome 24, Firefox 24 and Safari 6.2. It carries its own polyfills, which makes it about twice the size of the <a href="index.html">standard version</a>, so only use it if you need those browsers. The <a href="https://github.com/replete/biscuitman#browser-support">README</a> has the details.</p>
+
+<!-- endif -->
 		<!-- Exciting page content -->
 		<h2>History of Biscuits</h2>
 		<p>The origins of biscuits trace back centuries, with evidence of early biscuit-like snacks dating back to ancient civilizations. However, the modern biscuit, as we know it today, evolved during the Middle Ages in Europe. Initially, biscuits were hard, dry baked goods made primarily from flour, water, and sometimes sugar.</p>
