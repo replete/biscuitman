@@ -131,6 +131,8 @@ async function check(driver, browser, origin) {
 	await driver.get(`${origin}/?bundle=${browser.bundle}`)
 	await driver.wait(() => js('return !!document.querySelector(".biscuitman article")'), TIMEOUT, 'banner was not rendered')
 	expect('banner is visible', await isVisible('.biscuitman article'))
+	// Only meaningful where CSS variables exist; the observer reports after layout, hence the wait
+	await driver.wait(() => js('return !(window.CSS && CSS.supports && CSS.supports("--a", "0")) || document.documentElement.style.getPropertyValue("--bm-height") === document.querySelector(".biscuitman").offsetHeight + "px"'), TIMEOUT, '--bm-height does not match the banner height')
 	await screenshot('banner')
 
 	// The dialog polyfill loads on demand in browsers without <dialog>

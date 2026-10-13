@@ -196,6 +196,16 @@ html.bm-show::after {
 }
 ```
 
+The value is kept current as the banner changes height (for example when its text re-wraps), and is `0px` while the banner is hidden.
+
+If you offset a fixed element by the banner height, prefer a transform over `bottom`, because moving an element with a transform does not count as a layout shift:
+
+```css
+.my-fixed-bar {
+	transform: translateY(calc(-1 * var(--bm-height)));
+}
+```
+
 ## Browser Support
 
 Biscuitman is written in modern Javascript and transpiled with `swc` to target browsers less than two years old. The included distributables are tested to support the following browsers:

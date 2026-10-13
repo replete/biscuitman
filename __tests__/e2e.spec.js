@@ -126,6 +126,51 @@ testedVersions.forEach((filename) => {
 			})
 		})
 
+		const bannerHeightVariable = (page) => page.evaluate(() => document.documentElement.style.getPropertyValue('--bm-height'))
+		const bannerHeight = (page) => page.evaluate(() => `${document.querySelector('.biscuitman').offsetHeight}px`)
+
+		test('should set --bm-height to the banner height, and to 0px once hidden', async ({ page }) => {
+			await expect(banner(page)).toBeVisible()
+			await expect.poll(() => bannerHeightVariable(page)).toBe(await bannerHeight(page))
+			expect(await bannerHeight(page)).not.toBe('0px')
+
+			await acceptButton(page).click()
+			await expect.poll(() => bannerHeightVariable(page)).toBe('0px')
+		})
+
+		test('should keep --bm-height current when the banner changes height without a window resize', async ({ page }) => {
+			await expect(banner(page)).toBeVisible()
+			const before = await bannerHeight(page)
+			await expect.poll(() => bannerHeightVariable(page)).toBe(before)
+
+			// e.g. text that wraps differently once a web font loads
+			await page.evaluate(() => {
+				document.querySelector('.biscuitman article p').textContent = 'A much longer message. '.repeat(60)
+			})
+			expect(await bannerHeight(page)).not.toBe(before)
+			await expect.poll(() => bannerHeightVariable(page)).toBe(await bannerHeight(page))
+		})
+
+		test('should not force a layout while the script starts up', async ({ page, load }) => {
+			// Counts layout reads made while a script is executing; an observer callback has no currentScript
+			await page.addInitScript(() => {
+				window.syncLayoutReads = 0
+				for (const property of ['offsetHeight', 'offsetWidth', 'clientHeight', 'clientWidth']) {
+					const { get } = Object.getOwnPropertyDescriptor(HTMLElement.prototype, property) || Object.getOwnPropertyDescriptor(Element.prototype, property)
+					Object.defineProperty(HTMLElement.prototype, property, {
+						get() {
+							if (document.currentScript) window.syncLayoutReads++
+							return get.call(this)
+						}
+					})
+				}
+			})
+			await load(filename)
+			await expect(banner(page)).toBeVisible()
+			await expect.poll(() => bannerHeightVariable(page)).toBe(await bannerHeight(page))
+			expect(await page.evaluate(() => window.syncLayoutReads)).toBe(0)
+		})
+
 		test('should close settings modal after clicking close', async ({ page }) => {
 			await page.click('button[data-id=settings]')
 			await page.click('button[data-id=close]')

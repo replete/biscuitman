@@ -565,6 +565,18 @@
 		});
 	}
 
+	// ResizeObserver stand-in: reports when <html> classes change (the banner is shown or hidden) or the window resizes
+	if (!window.ResizeObserver) {
+		window.ResizeObserver = function(callback) {
+			this.observe = function() {
+				var report = function() { callback([]); };
+				var Observer = window.MutationObserver || window.WebKitMutationObserver;
+				window.addEventListener('resize', report);
+				if (Observer) new Observer(report).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+			};
+		};
+	}
+
 	// Fix IE11's missing second classList.toggle parameter:
 
 	(function() {
@@ -723,14 +735,17 @@
 	      };
 	    }
 	    d.body.appendChild(ui);
-	    w.addEventListener('resize', updateBannerHeight);
+	    updateBannerHeight();
+	    // The observer reports after layout, so measuring there never forces a reflow
+	    new ResizeObserver(updateBannerHeight).observe(ui);
 	  }
-	  var updateBannerHeight = function updateBannerHeight() {
-	    h.style.setProperty('--bm-height', "".concat(ui.offsetHeight, "px"));
+
+	  // Without the observer's entries this resets the height instead of measuring it
+	  var updateBannerHeight = function updateBannerHeight(entries) {
+	    return h.style.setProperty('--bm-height', "".concat(entries ? ui.offsetHeight : 0, "px"));
 	  };
 	  var displayUI = function displayUI(show) {
-	    h.classList.toggle('bm-show', show);
-	    updateBannerHeight();
+	    return h.classList.toggle('bm-show', show);
 	  };
 	  var applyCssClasses = function applyCssClasses() {
 	    var _getConsents = getConsents(),

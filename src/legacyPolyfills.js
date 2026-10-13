@@ -564,6 +564,18 @@ if (!Array.prototype.includes) {
 	})
 }
 
+// ResizeObserver stand-in: reports when <html> classes change (the banner is shown or hidden) or the window resizes
+if (!window.ResizeObserver) {
+	window.ResizeObserver = function(callback) {
+		this.observe = function() {
+			var report = function() { callback([]) };
+			var Observer = window.MutationObserver || window.WebKitMutationObserver;
+			window.addEventListener('resize', report);
+			if (Observer) new Observer(report).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+		};
+	};
+}
+
 // Fix IE11's missing second classList.toggle parameter:
 
 (function() {

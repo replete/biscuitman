@@ -129,14 +129,14 @@
 			dialog.onkeydown = e => e.key === 'Escape' ? e.preventDefault() : null
 		}
 		d.body.appendChild(ui)
-		w.addEventListener('resize', updateBannerHeight)
+		updateBannerHeight()
+		// The observer reports after layout, so measuring there never forces a reflow
+		new ResizeObserver(updateBannerHeight).observe(ui)
 	}
 
-	const updateBannerHeight = () => { h.style.setProperty('--bm-height', `${ui.offsetHeight}px`) }
-	const displayUI = show => {
-		h.classList.toggle('bm-show', show)
-		updateBannerHeight()
-	}
+	// Without the observer's entries this resets the height instead of measuring it
+	const updateBannerHeight = entries => h.style.setProperty('--bm-height', `${entries ? ui.offsetHeight : 0}px`)
+	const displayUI = show => h.classList.toggle('bm-show', show)
 
 	const applyCssClasses = () => {
 		let { consentTime, ...consents } = getConsents()
