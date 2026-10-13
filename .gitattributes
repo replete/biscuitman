@@ -3,5 +3,6 @@
 /* export-ignore
 /dist -export-ignore
 /src -export-ignore
+/src/demo.html export-ignore
 /README.md -export-ignore
 /LICENSE.md -export-ignore

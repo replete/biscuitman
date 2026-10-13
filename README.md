@@ -342,6 +342,8 @@ Visiting `https://localhost:3000` should now work without warnings.
 
 `npm run build` - creates project distributes via `run.js`, a custom build script requiring Node 22.18+ or 24.11+
 
+The build also writes the three demo pages (`index.html`, `index-esm.html`, `index-legacy.html`) from one template, `src/demo.html`. Edit the template, not the pages.
+
 ### Tests
 
 [Playwright](https://playwright.dev) runs the end-to-end tests against every bundle in `dist/`, in a real Chromium. Each test gets its own isolated browser context, so they all run in parallel. The test page and the `dist/` assets are served from memory and disk by Playwright's request interception, so no dev server or port is needed.

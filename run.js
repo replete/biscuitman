@@ -157,6 +157,41 @@ export async function scripts(skipFileSave) {
 	return Promise.all([js, minJs, mjs, minMjs])
 }
 
+// The three demo pages are one template, src/demo.html:
+//   <!-- if standard esm --> ... <!-- endif -->   keeps a block on the named pages only
+//   <!-- define name ... -->                      sets {{name}} for reuse
+//   {{name}}                                      a value from the page or the template
+export async function pages() {
+	const variants = {
+		'index.html': { page: 'standard', title: 'Standard', label: '', bundle: 'biscuitman.js' },
+		'index-esm.html': { page: 'esm', title: 'ESM', label: ' (ESM)' },
+		'index-legacy.html': { page: 'legacy', title: 'Legacy', label: ' (legacy)', bundle: 'biscuitman-legacy.js' }
+	}
+	const defined = {}
+	const template = (await readFile('src/demo.html', 'utf8')).replace(/<!-- define (\w+)\n([\s\S]*?)\n-->\n/g, (match, key, value) => {
+		defined[key] = value
+		return ''
+	})
+
+	await Promise.all(Object.entries(variants).map(([file, variant]) => {
+		const values = {
+			...defined,
+			...variant,
+			version,
+			generated: '<!-- Generated from src/demo.html by "npm run build": edit that file, not this one -->',
+			demos: Object.entries(variants).map(([href, { title }]) => href === file ? `<strong>${title}</strong>` : `<a href="${href}">${title}</a>`).join(' · ')
+		}
+		const html = template
+			.replace(/<!-- if ([\w ]+) -->\n([\s\S]*?)<!-- endif -->\n/g, (match, names, block) => names.split(' ').includes(variant.page) ? block : '')
+			.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+				if (!(key in values)) throw new Error(`src/demo.html: unknown {{${key}}}`)
+				return values[key]
+			})
+		log('pages', `Saved ${file}`)
+		return writeFile(file, html)
+	}))
+}
+
 async function buildLegacy() {
 	const legacyBrowserlistString = 'ie 11, chrome 30, firefox 25, safari 7' // 2013 browsers
 	const legacyComment = comment.replace('biscuitman.js','biscuitman-legacy.js')
@@ -357,6 +392,8 @@ ${dialogPolyfillJs}
 	// Legacy version (WIP: Chrome 37, IE11 etc)
 	await buildLegacy()
 
+	await pages()
+
 	console.timeEnd('Build Time')
 }
 
@@ -410,7 +447,8 @@ export async function serve() {
 
 	bs.watch([
 		'./src/biscuitman.js',
-		'./src/biscuitman.mjs'
+		'./src/biscuitman.mjs',
+		'./src/demo.html'
 	], async (event, file) => {
 		if (event === 'change') {
 			console.log(`${file} has changed`)

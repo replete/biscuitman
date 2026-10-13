@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Generated from src/demo.html by "npm run build": edit that file, not this one -->
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -305,14 +306,12 @@
 
 	<header>
 		<h1>🍪 biscuitman.js</h1>
-		<h2>Lightweight Consent Manager <br><small id="version" style="opacity:0.7"></small></h2>
+		<h2>Lightweight Consent Manager <br><small style="opacity:0.7">v0.6.0</small></h2>
 		<div>
 			<button onclick="bmInvalidate()">Invalidate consent</button>
 			<button onclick="bmUpdate()">Update consent</button>
 		</div>
 		<pre id="consents"></pre>
-
-		<script>fetch('./package.json').then(res => res.json()).then(data => version.textContent = `v${data.version}`)</script>
 	</header>
 	<main class="container">
 		<p style="text-align:center"><a class="img" href="https://github.com/replete/biscuitman"><img src="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" style="width:50px;" alt=""/>README @ Github repo</a></p>
@@ -328,18 +327,23 @@
 		<h3>document cookies (refreshed once/s):</h3>
 		<div id="cookies"></div>
 		<script>
-			window.setInterval(()=>{
-				consents.textContent = (localStorage.getItem('myconsent') ||'').replaceAll(',',',\n')
-				localstorage.textContent = JSON.stringify(
-					Object.fromEntries(
-						Object.keys(localStorage).map(key =>
-							[key, localStorage.getItem(key)]
-						)
-					), null, 2)
-				cookies.textContent = document.cookie.replaceAll(' ','\n');
-			},1000)
+			window.setInterval(function() {
+				var consentData = localStorage.getItem('myconsent') || '';
+				consents.textContent = consentData.split(',').join(',\n');
 
-			if(location.hostname === 'localhost') localhost.textContent = 'Warning: Rejecting or Invalidating on localhost will wipe matching wildcard cookies set by another local app running at localhost'
+				var localStorageData = {};
+				for (var i = 0; i < localStorage.length; i++) {
+					var key = localStorage.key(i);
+					localStorageData[key] = localStorage.getItem(key);
+				}
+				localstorage.textContent = JSON.stringify(localStorageData, null, 2);
+
+				cookies.textContent = document.cookie.split(' ').join('\n');
+			}, 1000);
+
+			if (location.hostname === 'localhost') {
+				localhost.textContent = 'Warning: Rejecting or Invalidating on localhost will wipe matching wildcard cookies set by another local app running at localhost';
+			}
 		</script>
 
 		<!-- CSS Feature Compatibility -->
@@ -393,18 +397,28 @@
 			<button id="bourbons">Bourbons</button>
 		</div>
 		<script>
-			let selectedBiscuit = localStorage.getItem('biscuitselector')
+			var selectedBiscuit = localStorage.getItem('biscuitselector');
 			if (selectedBiscuit) {
-				let el = document.getElementById(selectedBiscuit)
-				if (el) el.classList.add('selected')
-				else localStorage.removeItem('biscuitselector')
+				var el = document.getElementById(selectedBiscuit);
+				if (el) {
+					el.classList.add('selected');
+				} else {
+					localStorage.removeItem('biscuitselector');
+				}
 			}
-			let biscuitButtons = document.querySelectorAll('.biscuit-selector button')
-			biscuitButtons.forEach(button => button.addEventListener('click', (e) => {
-				biscuitButtons.forEach(button => button.classList.remove('selected'))
-				e.target.classList.add('selected');
-				if (Consent.functional) localStorage.setItem('biscuitselector',e.target.id)
-			}))
+
+			var biscuitButtons = document.querySelectorAll('.biscuit-selector button');
+			for (var i = 0; i < biscuitButtons.length; i++) {
+				biscuitButtons[i].addEventListener('click', function(e) {
+					for (var j = 0; j < biscuitButtons.length; j++) {
+						biscuitButtons[j].classList.remove('selected');
+					}
+					e.target.classList.add('selected');
+					if (Consent.functional) {
+						localStorage.setItem('biscuitselector', e.target.id);
+					}
+				});
+			}
 		</script>
 
 		<h2>Popular Biscuit Varieties</h2>

@@ -34,9 +34,9 @@ jobs:
       - name: Build project
         run: npm run build --if-present
 
-      # dist/ is what ships, so the committed copy has to match what the source builds
-      - name: Check dist is up to date
-        run: git diff --exit-code --stat -- dist || (echo "::error::dist/ is stale. Run 'npm run build' and commit the result." && exit 1)
+      # dist/ is what ships and the demo pages are what GitHub Pages serves, so the committed copies have to match what the source builds
+      - name: Check build output is up to date
+        run: git diff --exit-code --stat -- dist index.html index-esm.html index-legacy.html || (echo "::error::Build output is stale. Run 'npm run build' and commit the result." && exit 1)
 
       - name: Run tests
         run: npm test
