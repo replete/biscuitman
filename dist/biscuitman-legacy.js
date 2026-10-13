@@ -624,6 +624,7 @@
 	    reject: 'Reject All',
 	    accept: 'Accept All',
 	    save: 'Save My Settings',
+	    close: 'Close',
 	    settingsTitle: 'My Consent Settings',
 	    info: '',
 	    more: 'Show more',
@@ -662,7 +663,7 @@
 	  var dialog;
 	  function render() {
 	    ui.className = 'biscuitman';
-	    ui.innerHTML = "\n<article>\n\t<b>".concat(o.title, "</b>\n\t<p>").concat(o.message, "</p>\n\t<nav>\n\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t<button data-id=settings>").concat(o.settings, "</button>\n\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t</nav>\n</article>\n<dialog>\n\t<div class=bm-dialog>\n\t\t<b>").concat(o.settingsTitle, "</b>\n\t\t<button data-id=close").concat(o.force ? ' disabled' : '', ">\xD7</button>\n\t\t<div class=bm-sections>\n\t\t\t<p><span>").concat(o.message, "</span></p>\n\t\t\t<p>").concat(o.info.split('\n').map(function (line, i, arr) {
+	    ui.innerHTML = "\n<article role=region aria-labelledby=bm-t>\n\t<b id=bm-t>".concat(o.title, "</b>\n\t<p>").concat(o.message, "</p>\n\t<nav role=none>\n\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t<button data-id=settings>").concat(o.settings, "</button>\n\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t</nav>\n</article>\n<dialog aria-labelledby=bm-st>\n\t<div class=bm-dialog>\n\t\t<b id=bm-st>").concat(o.settingsTitle, "</b>\n\t\t<button data-id=close aria-label=\"").concat(o.close, "\"").concat(o.force ? ' disabled' : '', ">\xD7</button>\n\t\t<div class=bm-sections>\n\t\t\t<p><span>").concat(o.message, "</span></p>\n\t\t\t<p>").concat(o.info.split('\n').map(function (line, i, arr) {
 	      return "<span>".concat(line, "</span>\n\t\t\t\t").concat(arr.length > 1 && o.enableMore && i == 0 ? "<a data-id=more href=# rel=nofollow>".concat(o.more, "</a>") : '');
 	    }).join(''), "\n\t\t\t</p>\n\t\t\t").concat(o.sections.map(function (section) {
 	      var hasConsent = getConsents()[section];
@@ -671,13 +672,13 @@
 	      var checkedProp = isEssential ? 'checked' : '';
 	      if (hasConsent !== undefined) checkedProp = hasConsent ? 'checked' : '';
 	      var cookies = o["".concat(section, "Cookies")];
-	      return "\n\t\t\t<section>\n\t\t\t\t<details>\n\t\t\t\t\t<summary>\n\t\t\t\t\t\t<b>".concat(o["".concat(section, "Title")], "</b>\n\t\t\t\t\t\t<label for=bm_").concat(section, " class=\"").concat(disabledProp, " ").concat(checkedProp, "\">\n\t\t\t\t\t\t\t<input type=checkbox id=bm_").concat(section, " ").concat(disabledProp, " ").concat(checkedProp, " data-s=\"").concat(section, "\"/>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p>").concat(o["".concat(section, "Message")], "</p>\n\t\t\t\t\t</summary>\n\t\t\t\t\t").concat(cookies ? O.entries(cookies).map(function (_ref) {
+	      return "\n\t\t\t<section>\n\t\t\t\t<details>\n\t\t\t\t\t<summary>\n\t\t\t\t\t\t<b id=bm-t-".concat(section, ">").concat(o["".concat(section, "Title")], "</b>\n\t\t\t\t\t\t<p>").concat(o["".concat(section, "Message")], "</p>\n\t\t\t\t\t</summary>\n\t\t\t\t\t").concat(cookies ? O.entries(cookies).map(function (_ref) {
 	        var _ref2 = _slicedToArray(_ref, 2),
 	          k = _ref2[0],
 	          v = _ref2[1];
 	        return "<dl><dt>".concat(k, "</dt><dd>").concat(v, "</dd></dl>");
-	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t</section>");
-	    }).join(''), "\n\t\t</div>\n\t\t<nav>\n\t\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t\t<button data-id=save>").concat(o.save, "</button>\n\t\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t\t</nav>\n\t</div>\n</dialog>").replaceAll('{link}', "<a href=\"".concat(o.linkURL, "\">").concat(o.linkText, "</a>"));
+	      }).join('') : "<dl><dd>".concat(o.noCookies, "</dd></dl>"), "\n\t\t\t\t</details>\n\t\t\t\t<label for=bm_").concat(section, " class=\"").concat(disabledProp, " ").concat(checkedProp, "\">\n\t\t\t\t\t<input type=checkbox id=bm_").concat(section, " ").concat(disabledProp, " ").concat(checkedProp, " aria-labelledby=bm-t-").concat(section, " data-s=\"").concat(section, "\"/>\n\t\t\t\t</label>\n\t\t\t</section>");
+	    }).join(''), "\n\t\t</div>\n\t\t<nav role=none>\n\t\t\t<button data-id=accept>").concat(o.accept, "</button>\n\t\t\t<button data-id=save>").concat(o.save, "</button>\n\t\t\t<button data-id=reject>").concat(o.reject, "</button>\n\t\t</nav>\n\t</div>\n</dialog>").replaceAll('{link}', "<a href=\"".concat(o.linkURL, "\">").concat(o.linkText, "</a>"));
 	    ui.onclick = function (e) {
 	      var id = e.target.dataset.id;
 	      if (!id) return;

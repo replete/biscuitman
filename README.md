@@ -62,6 +62,7 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 		// reject: 'Reject All',   // Reject button text
 		// accept: 'Accept All',   // Accept button text
 		// save: 'Save My Settings',   // Modal settings button text
+		// close: 'Close',   // Modal close button accessible name (aria-label)
 		// settingsTitle: 'My Consent Settings',   // Modal title
 		// info: ``,   // Multi-line information at top of modal
 		// more: '(Show more)', // Show more button text

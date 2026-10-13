@@ -30,6 +30,7 @@
 	},
 	"test": "npm run test",
 	"devDependencies": {
+		"@axe-core/playwright": "^4.13.0",
 		"@babel/core": "^8.0.7",
 		"@babel/plugin-transform-for-of": "^8.0.7",
 		"@babel/preset-env": "^8.0.7",

@@ -15,6 +15,7 @@ const defaults = {
     reject: 'Reject All',
     accept: 'Accept All',
     save: 'Save My Settings',
+    close: 'Close',
     settingsTitle: 'My Consent Settings',
     info: '',
     more: 'Show more',
@@ -30,19 +31,19 @@ let listeners = {};
 function render() {
     ui.className = 'biscuitman';
     ui.innerHTML = `
-<article>
-    <b>${options.title}</b>
+<article role=region aria-labelledby=bm-t>
+    <b id=bm-t>${options.title}</b>
 	<p>${options.message}</p>
-	<nav>
+	<nav role=none>
 		<button data-id=accept>${options.accept}</button>
 		<button data-id=settings>${options.settings}</button>
 		<button data-id=reject>${options.reject}</button>
 	</nav>
 </article>
-<dialog>
+<dialog aria-labelledby=bm-st>
 	<div class=bm-dialog>
-		<b>${options.settingsTitle}</b>
-		<button data-id=close${options.force ? ' disabled' : ''}>×</button>
+		<b id=bm-st>${options.settingsTitle}</b>
+		<button data-id=close aria-label="${options.close}"${options.force ? ' disabled' : ''}>×</button>
 		<div class=bm-sections>
 			<p><span>${options.message}</span></p>
 			<p>${options.info.split('\n').map((line, i, arr)=>`<span>${line}</span>
@@ -59,18 +60,18 @@ function render() {
 			<section>
 				<details>
 					<summary>
-						<b>${options[`${section}Title`]}</b>
-						<label for=bm_${section} class="${disabledProp} ${checkedProp}">
-							<input type=checkbox id=bm_${section} ${disabledProp} ${checkedProp} data-s="${section}"/>
-						</label>
+						<b id=bm-t-${section}>${options[`${section}Title`]}</b>
 						<p>${options[`${section}Message`]}</p>
 					</summary>
 					${cookies ? O.entries(cookies).map(([k, v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') : `<dl><dd>${options.noCookies}</dd></dl>`}
 				</details>
+				<label for=bm_${section} class="${disabledProp} ${checkedProp}">
+					<input type=checkbox id=bm_${section} ${disabledProp} ${checkedProp} aria-labelledby=bm-t-${section} data-s="${section}"/>
+				</label>
 			</section>`;
     }).join('')}
 		</div>
-		<nav>
+		<nav role=none>
 			<button data-id=accept>${options.accept}</button>
 			<button data-id=save>${options.save}</button>
 			<button data-id=reject>${options.reject}</button>

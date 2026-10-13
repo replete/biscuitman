@@ -271,6 +271,7 @@
 
 .biscuitman summary {
   cursor: pointer;
+  anchor-name: --bm;
   flex-direction: column;
   width: 100%;
   padding: 5px 80px 10px 10px;
@@ -335,16 +336,15 @@
   --height: 1.2em;
   --width: 2.3em;
   --gap: 2px;
+  top: 15px;
+  top: calc(anchor(--bm center) - var(--height) / 2 - 2px);
   height: var(--height);
   width: var(--width);
   background-color: rgba(var(--ui),.3);
   border-radius: var(--height);
-  margin-top: -2px;
   display: block;
   position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
+  right: 31px;
   font-size: 20px !important;
 }
 

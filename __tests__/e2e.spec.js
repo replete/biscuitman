@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright'
 import { test, expect, testedVersions } from './fixtures.js'
 
 // jest-extended's toContainEntries, expressed with Playwright's expect
@@ -9,6 +10,12 @@ const containsEntries = (entries) => expect.objectContaining(Object.fromEntries(
 const banner = (page) => page.locator('.biscuitman article')
 const acceptButton = (page) => page.locator('button[data-id=accept]').first()
 const rejectButton = (page) => page.locator('button[data-id=reject]').first()
+
+// Runs against the whole page: axe's region rule only applies at page level
+const axeViolations = async (page) =>
+	(await new AxeBuilder({ page }).analyze()).violations.map(
+		({ id, nodes }) => `${id}: ${nodes.map((node) => node.html).join(' ')}`
+	)
 
 const ALL_GRANTED = [
 	['analytics', true],
@@ -53,6 +60,25 @@ testedVersions.forEach((filename) => {
 		test('should open settings modal after clicking settings', async ({ page }) => {
 			await page.click('button[data-id=settings]')
 			await expect(page.locator('dialog')).toBeVisible()
+		})
+
+		test('should have no axe violations in the banner', async ({ page }) => {
+			await expect(banner(page)).toBeVisible()
+			expect(await axeViolations(page)).toEqual([])
+		})
+
+		test('should have no axe violations in the settings modal', async ({ page }) => {
+			await page.click('button[data-id=settings]')
+			await expect(page.locator('dialog')).toBeVisible()
+			expect(await axeViolations(page)).toEqual([])
+		})
+
+		test('should give the banner, modal and close button accessible names', async ({ page }) => {
+			await expect(page.getByRole('region', { name: 'Your privacy matters' })).toBeVisible()
+			await page.click('button[data-id=settings]')
+			await expect(page.getByRole('dialog', { name: 'My Consent Settings' })).toBeVisible()
+			await expect(page.getByRole('button', { name: 'Close' })).toBeVisible()
+			await expect(page.getByRole('navigation')).toHaveCount(0)
 		})
 
 		test('should close settings modal after clicking close', async ({ page }) => {

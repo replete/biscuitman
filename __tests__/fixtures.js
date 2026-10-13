@@ -146,6 +146,7 @@ While you have the option to enable or disable some or all of these cookies, not
 	${options?.mockTimeZone ? `<script>Intl.DateTimeFormat = () => ({resolvedOptions: () => ({timeZone: '${options.mockTimeZone}'})})</script>` : ''}
 </head>
 <body style="height:1500px">
+<main><h1>${filename}</h1></main>
 <!-- Google Analytics -->
 	<script type="text/javascript" id="js-analytics-gtm-setup">
 		window.dataLayer = window.dataLayer || [];

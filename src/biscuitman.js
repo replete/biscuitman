@@ -11,6 +11,7 @@
 		reject: 'Reject All',
 		accept: 'Accept All',
 		save: 'Save My Settings',
+		close: 'Close',
 		settingsTitle: 'My Consent Settings',
 		info: '',
 		more: 'Show more',
@@ -52,19 +53,19 @@
 	function render() {
 		ui.className = 'biscuitman'
 		ui.innerHTML = `
-<article>
-	<b>${o.title}</b>
+<article role=region aria-labelledby=bm-t>
+	<b id=bm-t>${o.title}</b>
 	<p>${o.message}</p>
-	<nav>
+	<nav role=none>
 		<button data-id=accept>${o.accept}</button>
 		<button data-id=settings>${o.settings}</button>
 		<button data-id=reject>${o.reject}</button>
 	</nav>
 </article>
-<dialog>
+<dialog aria-labelledby=bm-st>
 	<div class=bm-dialog>
-		<b>${o.settingsTitle}</b>
-		<button data-id=close${o.force ? ' disabled' : ''}>×</button>
+		<b id=bm-st>${o.settingsTitle}</b>
+		<button data-id=close aria-label="${o.close}"${o.force ? ' disabled' : ''}>×</button>
 		<div class=bm-sections>
 			<p><span>${o.message}</span></p>
 			<p>${o.info.split('\n').map((line, i, arr) =>
@@ -84,19 +85,19 @@
 			<section>
 				<details>
 					<summary>
-						<b>${o[`${section}Title`]}</b>
-						<label for=bm_${section} class="${disabledProp} ${checkedProp}">
-							<input type=checkbox id=bm_${section} ${disabledProp} ${checkedProp} data-s="${section}"/>
-						</label>
+						<b id=bm-t-${section}>${o[`${section}Title`]}</b>
 						<p>${o[`${section}Message`]}</p>
 					</summary>
 					${cookies ? O.entries(cookies).map(([k, v]) =>
 					`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('') :
 					`<dl><dd>${o.noCookies}</dd></dl>`}
 				</details>
+				<label for=bm_${section} class="${disabledProp} ${checkedProp}">
+					<input type=checkbox id=bm_${section} ${disabledProp} ${checkedProp} aria-labelledby=bm-t-${section} data-s="${section}"/>
+				</label>
 			</section>`}).join('')}
 		</div>
-		<nav>
+		<nav role=none>
 			<button data-id=accept>${o.accept}</button>
 			<button data-id=save>${o.save}</button>
 			<button data-id=reject>${o.reject}</button>

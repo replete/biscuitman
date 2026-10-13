@@ -267,6 +267,7 @@
 		position: relative;
 		list-style: none;
 		padding: 5px 80px 10px 10px;
+		anchor-name: --bm;
 
 		b {
 			margin-bottom: 3px;
@@ -325,15 +326,14 @@
 		--gap: 2px;
 		font-size: 20px !important;
 		position: absolute;
-		top: 50%;
-		right: 20px;
+		top: 15px; /* fallback: aligns with the section title */
+		top: calc(anchor(--bm center) - var(--height) / 2 - 2px); /* centers on summary */
+		right: 31px;
 		display: block;
 		height: var(--height);
 		width: var(--width);
 		background-color: rgba(var(--ui),.3);
 		border-radius: var(--height);
-		transform: translateY(-50%);
-		margin-top: -2px;
 
 		&::before {
 			content: '';
