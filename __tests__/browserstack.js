@@ -16,7 +16,7 @@
 	Needs BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY, from the environment or a .env file
 */
 import http from 'node:http'
-import { readFile, mkdir, writeFile } from 'node:fs/promises'
+import { readFile, mkdir, writeFile, appendFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Builder, By } from 'selenium-webdriver'
@@ -304,6 +304,17 @@ async function main() {
 	results.sort((a, b) => selected.indexOf(a.browser) - selected.indexOf(b.browser))
 	const page = await gallery(results, isLocal ? 'local' : bundle === LEGACY ? 'legacy' : 'modern')
 	const failed = results.filter(({ failures }) => failures.length).length
+
+	// In GitHub Actions, list the results on the run's summary page
+	if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, [
+		`### BrowserStack ${bundle === LEGACY ? 'legacy' : 'modern'}: ${results.length - failed} passed, ${failed} failed`,
+		'',
+		'| | Browser | Reported version | Failures |',
+		'|---|---|---|---|',
+		...results.map(({ browser, version, failures }) => `| ${failures.length ? '❌' : '✅'} | ${browser.name} | ${version} | ${failures.join('; ').replace(/\|/g, '/')} |`),
+		'',
+		''
+	].join('\n'))
 	console.log(`\n${results.length - failed} passed, ${failed} failed. Screenshots: ${path.relative(ROOT, page)}`)
 	return failed ? 1 : 0
 }

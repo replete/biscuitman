@@ -91,9 +91,15 @@ jobs:
 
       # A single unzipped file, so the screenshots page opens straight from the run summary
       - name: Upload screenshots page
+        id: screenshots
         uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           path: browserstack-results/browserstack-${{ matrix.bundle }}.html
           archive: false
           retention-days: 7
+
+      # Shown at the top of the run page, under the results table the test wrote
+      - name: Link screenshots in the run summary
+        if: ${{ !cancelled() && steps.screenshots.outputs.artifact-url }}
+        run: echo "**[View ${{ matrix.bundle }} screenshots](${{ steps.screenshots.outputs.artifact-url }})**" >> "$GITHUB_STEP_SUMMARY"
