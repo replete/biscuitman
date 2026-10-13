@@ -928,9 +928,10 @@
 	  // Render UI
 	  render();
 
-	  // Optional Non-EU auto-consent. The timezone lookup is slow on first use, so it only runs when the option is on
+	  // Optional Non-EU auto-consent, never over a choice the visitor already made.
+	  // The timezone lookup is slow on first use, so it only runs when it is needed
 	  // EU/EEA territory outside the Europe/ zones is listed by city: Atlantic islands, Ceuta, Cyprus, French overseas regions
-	  if (o.acceptNonEU && !/^(GMT|UTC)$|Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123]|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) {
+	  if (o.acceptNonEU && !getConsents().consentTime && !/^(GMT|UTC)$|Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123]|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) {
 	    saveConsents(true);
 	    displayUI(false);
 	  }

@@ -244,6 +244,18 @@ testedVersions.forEach((filename) => {
 			await expect(banner(page)).toBeVisible()
 		})
 
+		test('should not auto-consent over a choice the visitor already made', async ({ page, load, consent }) => {
+			await load(filename, { mockTimeZone: 'Europe/Amsterdam' }, { acceptNonEU: true })
+			await rejectButton(page).click()
+			const { consentTime } = await consent.loadConsents()
+
+			// Same visitor, now somewhere outside Europe
+			await load(filename, { mockTimeZone: 'America/New_York' }, { acceptNonEU: true })
+			await expect(page.locator('.biscuitman')).toBeAttached()
+			expect(await consent.getConsent()).toEqual(containsEntries(ALL_DENIED))
+			expect(await consent.loadConsents()).toEqual(containsEntries([...ALL_DENIED, ['consentTime', consentTime]]))
+		})
+
 		const testTimezones = [
 			['UTC', false],
 			['UTC+1', false],
