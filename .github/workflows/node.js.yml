@@ -44,3 +44,55 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  browserstack:
+    name: BrowserStack (${{ matrix.bundle }})
+    needs: build
+    runs-on: ubuntu-latest
+
+    # Secrets are not available to pull requests from forks, so those are skipped.
+    # Pull requests from v* branches are skipped too: the push to the branch already ran this.
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository && !startsWith(github.head_ref, 'v'))
+
+    # The BrowserStack plan allows 5 sessions at once and each run uses 5, so runs queue
+    concurrency:
+      group: browserstack
+      cancel-in-progress: false
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        bundle: [modern, legacy]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Run BrowserStack smoke test
+        run: npm run test:browserstack ${{ matrix.bundle == 'legacy' && '-- --legacy' || '' }}
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: browserstack-${{ matrix.bundle }}
+          path: browserstack-results/
+          retention-days: 7

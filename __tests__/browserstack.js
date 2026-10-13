@@ -9,7 +9,8 @@
 	npm run test:browserstack -- safari ios    only browsers whose name matches
 	npm run test:browserstack -- --local       local Chrome, no BrowserStack (to debug the checks)
 
-	The two runs report to separate BrowserStack projects, which is what the README badges show
+	The two runs report to separate BrowserStack projects. The README badges show the ones CI
+	reports to from main; local and branch runs go to -dev projects so they cannot change a badge
 
 	Needs BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY, from the environment or a .env file
 */
@@ -152,7 +153,7 @@ async function check(driver, browser, origin) {
 	return failures
 }
 
-async function run(browser, { origin, credentials, build, localIdentifier }) {
+async function run(browser, { origin, credentials, project, build, localIdentifier }) {
 	let driver
 	let failures
 	let version = ''
@@ -165,7 +166,7 @@ async function run(browser, { origin, credentials, build, localIdentifier }) {
 				'bstack:options': {
 					...(browser.deviceName ? { deviceName: browser.deviceName, realMobile: true } : { os: browser.os }),
 					osVersion: browser.osVersion,
-					projectName: browser.bundle === LEGACY ? 'biscuitman-legacy' : 'biscuitman',
+					projectName: project,
 					buildName: build,
 					sessionName: `${browser.name} ${browser.bundle}`,
 					local: true,
@@ -228,7 +229,11 @@ async function main() {
 		// bs-local.com resolves to this machine through the tunnel; Safari cannot reach localhost
 		context.origin = `http://bs-local.com:${port}`
 		context.credentials = { username, key }
-		context.build = `${version} ${new Date().toISOString().slice(0, 16)}`
+		// The README badges show the latest build in the 'biscuitman' and 'biscuitman-legacy' projects,
+		// so only CI runs on main report there; everything else goes to a -dev project
+		const { GITHUB_REF_NAME: branch, GITHUB_SHA: sha } = process.env
+		context.project = `biscuitman${bundle === LEGACY ? '-legacy' : ''}${branch === 'main' ? '' : '-dev'}`
+		context.build = `${version} ${sha ? `${branch} ${sha.slice(0, 7)}` : new Date().toISOString().slice(0, 16)}`
 		context.localIdentifier = `biscuitman-${process.pid}`
 		tunnel = new browserstack.Local()
 		await new Promise((resolve, reject) => {
