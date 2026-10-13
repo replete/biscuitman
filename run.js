@@ -496,7 +496,7 @@ export async function release(dryRun) {
 		log('release', `${tag} is ready. Run without --dry-run to tag it`)
 	} else {
 		git('tag', '--annotate', tag, '--message', tag)
-		git('push', 'origin', tag)
+		git('push', 'origin', `refs/tags/${tag}`) // the full ref: a release branch may share the tag's name
 		log('release', `Pushed ${tag}. Publishing: ${packageJson.repository.url.replace(/^git\+|\.git$/g, '')}/actions/workflows/release.yml`)
 	}
 }
