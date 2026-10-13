@@ -102,28 +102,28 @@ Names listed in `{section}Cookies` are shown to the visitor, and deleted when th
 
 ### Options
 
-| Option           | Default                                  | Description                                                                 |
-| ---------------- | ---------------------------------------- | --------------------------------------------------------------------------- |
-| `sections`       | `['essential']`                          | Section names, see [Sections](#sections)                                     |
-| `title`          | `'Your privacy matters'`                 | Banner title                                                                |
-| `message`        | `'We use cookies'`                       | Banner message                                                              |
-| `linkText`       |                                          | Text of the link that replaces `{link}` in any string                        |
-| `linkURL`        |                                          | Where that link goes                                                        |
-| `info`           | `''`                                     | Longer text at the top of the settings modal, one paragraph per line         |
-| `enableMore`     | `true`                                   | Hide all but the first line of `info` behind a "show more" link              |
-| `accept`         | `'Accept All'`                           | Accept button text                                                          |
-| `reject`         | `'Reject All'`                           | Reject button text                                                          |
-| `settings`       | `'Settings'`                             | Settings button text                                                        |
-| `settingsTitle`  | `'My Consent Settings'`                  | Settings modal title                                                        |
-| `save`           | `'Save My Settings'`                     | Save button text, in the modal                                              |
-| `close`          | `'Close'`                                | Accessible name of the modal's close button                                 |
-| `more`           | `'Show more'`                            | "Show more" link text                                                       |
-| `noCookies`      | `'No cookies to display'`                | Shown in an expanded section that lists no cookies                          |
+| Option           | Default                                  | Description                                                                   |
+| ---------------- | ---------------------------------------- | ----------------------------------------------------------------------------- |
+| `sections`       | `['essential']`                          | Section names, see [Sections](#sections)                                      |
+| `title`          | `'Your privacy matters'`                 | Banner title                                                                  |
+| `message`        | `'We use cookies'`                       | Banner message                                                                |
+| `linkText`       |                                          | Text of the link that replaces `{link}` in any string                         |
+| `linkURL`        |                                          | Where that link goes                                                          |
+| `info`           | `''`                                     | Longer text at the top of the settings modal, one paragraph per line          |
+| `enableMore`     | `true`                                   | Hide all but the first line of `info` behind a "show more" link               |
+| `accept`         | `'Accept All'`                           | Accept button text                                                            |
+| `reject`         | `'Reject All'`                           | Reject button text                                                            |
+| `settings`       | `'Settings'`                             | Settings button text                                                          |
+| `settingsTitle`  | `'My Consent Settings'`                  | Settings modal title                                                          |
+| `save`           | `'Save My Settings'`                     | Save button text, in the modal                                                |
+| `close`          | `'Close'`                                | Accessible name of the modal's close button                                   |
+| `more`           | `'Show more'`                            | "Show more" link text                                                         |
+| `noCookies`      | `'No cookies to display'`                | Shown in an expanded section that lists no cookies                            |
 | `force`          | `false`                                  | Open the settings modal straight away and keep it open until a choice is made |
-| `key`            | `'myconsent'`                            | `localStorage` key the choices are stored under                             |
-| `global`         | `'Consent'`                              | Name of the global object the choices are exposed on                        |
-| `dialogPolyfill` | `'/dist/dialog-polyfill.withcss.min.js'` | URL of the [dialog polyfill](#dialog-polyfill), or `false` to never load it |
-| `acceptNonEU`    | `false`                                  | Experimental, see below                                                     |
+| `key`            | `'myconsent'`                            | `localStorage` key the choices are stored under                               |
+| `global`         | `'Consent'`                              | Name of the global object the choices are exposed on                          |
+| `dialogPolyfill` | `'/dist/dialog-polyfill.withcss.min.js'` | URL of the [dialog polyfill](#dialog-polyfill), or `false` to never load it   |
+| `acceptNonEU`    | `false`                                  | Experimental, see below                                                       |
 
 ### `acceptNonEU` (experimental)
 
