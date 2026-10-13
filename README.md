@@ -26,7 +26,7 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 - CSS classes on `<html>` element for consents
 - Progressively enhanced CSS
 - Accessible: labelled landmarks and controls, keyboard operable, checked with [axe](https://github.com/dequelabs/axe-core)
-- Experimental ESM version included `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
+- Also packaged as an ES module, `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
 - Legacy version included for supporting 2013+ era browsers (see [legacy demo](https://replete.github.io/biscuitman/index-legacy.html))
 
 ## Install
@@ -45,7 +45,7 @@ Or download the files in `dist/` from a [release](https://github.com/replete/bis
 
 ## How to use
 
-[View demo](https://replete.github.io/biscuitman) for a more detailed example
+The [demo](https://replete.github.io/biscuitman) runs this setup with real analytics scripts (using dummy IDs). View its source for a complete configuration.
 
 ```html
 <!--
@@ -151,9 +151,9 @@ While you have the option to enable or disable some or all of these cookies, not
 </head>
 ```
 
-## Experimental ESM version
+## ESM version
 
-ESM version supplied as an alternative packaging format. Long-term it's better to not have two versions, so this may or not become the main version. Consider it an alternate packaging format at this point. ([ESM demo](https://replete.github.io/biscuitman/index-esm.html))
+The same code packaged as an ES module, for bundlers and `<script type="module">`. ([ESM demo](https://replete.github.io/biscuitman/index-esm.html))
 
 With a bundler, the package exposes:
 
@@ -162,7 +162,6 @@ With a bundler, the package exposes:
 - `biscuitman/css` – the stylesheet
 
 ```html
-<!-- Experimental ESM version: -->
 <script type="module" id="biscuitman-init">
 	import biscuitman from './dist/esm/biscuitman.withcss.mjs'
 	let bm = biscuitman

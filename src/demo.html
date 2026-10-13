@@ -355,6 +355,13 @@
 
 		<!-- Notices-->
 		<h2>This page uses real analytics scripts with dummy IDs</h2>
+		<p>Things to try:</p>
+		<ul>
+			<li>Open <strong>Settings</strong>, switch sections on and off, and save. The stored consent and any cookies appear in the panels below.</li>
+			<li>Open the browser console with the Verbose level on to see each <code>bm:</code> event as it fires, and the analytics scripts being injected once you consent.</li>
+			<li>The <a href="#selector">biscuit selector</a> only works with <strong>Functional</strong> consent.</li>
+			<li>View the page source for the full configuration. The rest of the page is about biscuits.</li>
+		</ul>
 		<h3 id="localhost"></h3>
 
 		<!-- Storages-->
@@ -427,7 +434,7 @@
 		<p>Over time, biscuit recipes diversified, incorporating various ingredients such as butter, eggs, and flavorings. The Industrial Revolution further transformed biscuit production, enabling mass manufacturing and distribution.</p>
 
 		<!-- Functional component example -->
-		<h2>Favourite Biscuit Selector</h2>
+		<h2 id="selector">Favourite Biscuit Selector</h2>
 		<div class="biscuit-selector">
 			<button id="richtea">Rich Tea</button>
 			<button id="hobnobs">Hobnobs</button>
