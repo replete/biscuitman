@@ -23,5 +23,9 @@ node_modules
 coverage/*
 test-results/
 playwright-report/
+browserstack-results/
 blob-report/
 .playwright/
+
+# BrowserStack credentials
+.env

@@ -1,4 +1,8 @@
-# biscuitman.js 🍪 Lightweight Consent Manager ![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)
+# biscuitman.js 🍪 Lightweight Consent Manager
+
+[![tests](https://github.com/replete/biscuitman/actions/workflows/node.js.yml/badge.svg)](https://github.com/replete/biscuitman/actions/workflows/node.js.yml)
+&nbsp; Modern browsers [![BrowserStack status](https://automate.browserstack.com/badge.svg?badge_key=QmsxRjJMaGZ2dk9zNS9Mcm40dzBlaHU3TG9Xa0thS0ZYKzhiM2t6YXBJVT0tLWgvSWZyRFNMbDVVYzFnZjdSUEhubWc9PQ==--aa5279df24a33d520da213e3b13e3d256d90478f)](https://automate.browserstack.com/public-build/QmsxRjJMaGZ2dk9zNS9Mcm40dzBlaHU3TG9Xa0thS0ZYKzhiM2t6YXBJVT0tLWgvSWZyRFNMbDVVYzFnZjdSUEhubWc9PQ==--aa5279df24a33d520da213e3b13e3d256d90478f)
+&nbsp; Legacy browsers [![BrowserStack status](https://automate.browserstack.com/badge.svg?badge_key=NXh6bEVSMFo0WEdKNytRbjM3UU1ISHFrZGVTNDJyZmpTVW1adkwzeVc1az0tLVBYaGdYa2JDblMzVW5EZGZqZC9zOEE9PQ==--a10fddff63f0f52e50c6c8cc92dbf40e467dcac7)](https://automate.browserstack.com/public-build/NXh6bEVSMFo0WEdKNytRbjM3UU1ISHFrZGVTNDJyZmpTVW1adkwzeVc1az0tLVBYaGdYa2JDblMzVW5EZGZqZC9zOEE9PQ==--a10fddff63f0f52e50c6c8cc92dbf40e467dcac7)
 
 Biscuitman is a super lightweight, customizable consent manager for your website. Weighing in around 3-4kB compressed, its designed to be fast-loading and easy to implement with a flat configuration object.
 
@@ -204,9 +208,8 @@ If the dialog polyfill is already loaded (`window.dialogPolyfill` exists), the p
 
 If you need to support really old browsers, use `biscuitman-legacy.js`, `biscuitman-legacy.min.js` or `biscuitman-legacy.withcss.js` to extend the browser support to:
 - Safari 7+ / 6.2+ (released Oct 2013)
-- Chrome 30+ (released Oct 2013)
-- Firefox 24+ (released Sep 2013)
 - Chrome 24+ (released Jan 2013)
+- Firefox 24+ (released Sep 2013)
 - IE 11+ (released Oct 2013)
 
 This legacy version is transpiled to ES5 and includes required polyfills to make itself functional on these ancient browsers. This makes the distributables roughtly double the filesize of the modern versions.
@@ -294,6 +297,16 @@ Then:
 `npm run test:ui` - opens Playwright's interactive UI mode for debugging
 
 `npm run test:report` - opens the HTML report from the last run
+
+#### Real browsers
+
+A smaller smoke test runs on [BrowserStack](https://www.browserstack.com) in the oldest browsers listed under [Browser Support](#browser-support), and saves screenshots to `browserstack-results/`. It needs a BrowserStack account, with `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` set in the environment or a `.env` file.
+
+`npm run test:browserstack` - modern bundle
+
+`npm run test:browserstack:legacy` - legacy bundle
+
+`npm run test:browserstack -- --local` - same checks in local Chrome, no account needed
 
 
 ## Support development
