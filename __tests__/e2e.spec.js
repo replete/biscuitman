@@ -103,6 +103,29 @@ testedVersions.forEach((filename) => {
 			expect(await page.evaluate(() => window.bm.consent('analytics'))).toBe(false)
 		})
 
+		if (filename.endsWith('.mjs')) test('should return the same ESM instance from a second create()', async ({ page }) => {
+			await expect(banner(page)).toBeVisible()
+			const result = await page.evaluate(async (file) => {
+				const biscuitman = (await import(`/dist/esm/${file}`)).default
+				const first = biscuitman.create()
+				const second = biscuitman.create({ title: 'ignored' })
+				return {
+					same: first === second,
+					api: Object.keys(first).sort(),
+					chained: first.on('save', () => {}) === first,
+					banners: document.querySelectorAll('.biscuitman').length,
+					title: document.querySelector('.biscuitman article b').textContent
+				}
+			}, filename)
+			expect(result).toEqual({
+				same: true,
+				api: ['consent', 'invalidate', 'off', 'on', 'update'],
+				chained: true,
+				banners: 1,
+				title: 'Your privacy matters'
+			})
+		})
+
 		test('should close settings modal after clicking close', async ({ page }) => {
 			await page.click('button[data-id=settings]')
 			await page.click('button[data-id=close]')
