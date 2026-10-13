@@ -284,7 +284,8 @@ function insertScripts() {
 }
 function handleNonEUConsent() {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const isEuropeTimezone = /^(GMT|UTC)$/.test(tz) || /(Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123])/.test(tz);
+    // EU/EEA territory outside the Europe/ zones is listed by city: Atlantic islands, Ceuta, Cyprus, French overseas regions
+    const isEuropeTimezone = /^(GMT|UTC)$|Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123]|Arctic|Azores|Canary|Madeira|Reykjavik|Fae?roe|Jan_Mayen|Ceuta|Nicosia|Famagusta|Cayenne|Guadeloupe|Martinique|Marigot|Reunion|Mayotte/.test(tz);
     if (options.acceptNonEU && !isEuropeTimezone) {
         saveConsents(true);
         displayUI(false);

@@ -159,6 +159,12 @@ testedVersions.forEach((filename) => {
 			['UTC+1', false],
 			['Etc/GMT-2', false],
 			['Europe/London', false],
+			['Atlantic/Canary', false],
+			['Atlantic/Faeroe', false],
+			['Asia/Nicosia', false],
+			['Indian/Reunion', false],
+			['America/Martinique', false],
+			['Atlantic/Bermuda', true],
 			['Asia/Tokyo', true],
 			['America/New_York', true],
 			['Australia/Sydney', true]
