@@ -35,11 +35,11 @@
 <article role=region aria-labelledby=bm-t>
 	<b id=bm-t>${o.title}</b>
 	<p>${o.message}</p>
-	<nav role=none>
+	<div class=bm-buttons>
 		<button data-id=accept>${o.accept}</button>
 		<button data-id=settings>${o.settings}</button>
 		<button data-id=reject>${o.reject}</button>
-	</nav>
+	</div>
 </article>
 <dialog aria-labelledby=bm-st>
 	<div class=bm-dialog>
@@ -72,11 +72,11 @@
 			</section>`;
         }).join('')}
 		</div>
-		<nav role=none>
+		<div class=bm-buttons>
 			<button data-id=accept>${o.accept}</button>
 			<button data-id=save>${o.save}</button>
 			<button data-id=reject>${o.reject}</button>
-		</nav>
+		</div>
 	</div>
 </dialog>`.replaceAll('{link}', `<a href="${o.linkURL}">${o.linkText}</a>`);
         ui.onclick = (e)=>{
@@ -374,7 +374,7 @@
     padding-right: calc(max(300px, 30vw) + 20px);
   }
 
-  .biscuitman article nav {
+  .biscuitman article .bm-buttons {
     width: 30vw;
     min-width: 300px;
     position: absolute;
@@ -439,21 +439,21 @@
 }
 
 @media (min-width: 576px) {
-  .biscuitman nav {
+  .biscuitman .bm-buttons {
     flex-direction: row-reverse;
     gap: 10px;
     width: 100%;
     display: flex;
   }
 
-  .biscuitman nav button {
+  .biscuitman .bm-buttons button {
     flex-grow: 1;
     margin-bottom: 0;
   }
 }
 
 @media (max-width: 575px) {
-  .biscuitman nav {
+  .biscuitman .bm-buttons {
     flex-direction: column;
     flex-grow: 1;
     display: flex;
@@ -486,7 +486,7 @@
   }
 }
 
-.biscuitman dialog nav {
+.biscuitman dialog .bm-buttons {
   justify-self: flex-end;
   position: relative;
 }
@@ -516,7 +516,7 @@
   left: 0;
 }
 
-.biscuitman .bm-dialog nav:after {
+.biscuitman .bm-dialog .bm-buttons:after {
   content: "";
   background: linear-gradient(0deg, var(--bm-bg) 20%, #fff0);
   pointer-events: none;

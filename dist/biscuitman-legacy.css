@@ -47,7 +47,7 @@
     padding-right: calc(max(300px, 30vw) + 20px);
   }
 
-  .biscuitman article nav {
+  .biscuitman article .bm-buttons {
     width: 30vw;
     min-width: 300px;
     position: absolute;
@@ -115,7 +115,7 @@
 }
 
 @media (min-width: 576px) {
-  .biscuitman nav {
+  .biscuitman .bm-buttons {
     -webkit-flex-direction: row-reverse;
     flex-direction: row-reverse;
     gap: 10px;
@@ -124,7 +124,7 @@
     display: flex;
   }
 
-  .biscuitman nav button {
+  .biscuitman .bm-buttons button {
     -webkit-flex-grow: 1;
     flex-grow: 1;
     margin-bottom: 0;
@@ -132,7 +132,7 @@
 }
 
 @media (max-width: 575px) {
-  .biscuitman nav {
+  .biscuitman .bm-buttons {
     -webkit-flex-direction: column;
     flex-direction: column;
     -webkit-flex-grow: 1;
@@ -168,7 +168,7 @@
   }
 }
 
-.biscuitman dialog nav {
+.biscuitman dialog .bm-buttons {
   justify-self: flex-end;
   position: relative;
 }
@@ -200,7 +200,7 @@
   left: 0;
 }
 
-.biscuitman .bm-dialog nav:after {
+.biscuitman .bm-dialog .bm-buttons:after {
   content: "";
   background: linear-gradient(0deg, #fff 20%, rgba(255, 255, 255, 0));
   pointer-events: none;

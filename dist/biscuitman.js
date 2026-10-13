@@ -35,11 +35,11 @@
 <article role=region aria-labelledby=bm-t>
 	<b id=bm-t>${o.title}</b>
 	<p>${o.message}</p>
-	<nav role=none>
+	<div class=bm-buttons>
 		<button data-id=accept>${o.accept}</button>
 		<button data-id=settings>${o.settings}</button>
 		<button data-id=reject>${o.reject}</button>
-	</nav>
+	</div>
 </article>
 <dialog aria-labelledby=bm-st>
 	<div class=bm-dialog>
@@ -72,11 +72,11 @@
 			</section>`;
         }).join('')}
 		</div>
-		<nav role=none>
+		<div class=bm-buttons>
 			<button data-id=accept>${o.accept}</button>
 			<button data-id=save>${o.save}</button>
 			<button data-id=reject>${o.reject}</button>
-		</nav>
+		</div>
 	</div>
 </dialog>`.replaceAll('{link}', `<a href="${o.linkURL}">${o.linkText}</a>`);
         ui.onclick = (e)=>{

@@ -58,11 +58,11 @@ function render() {
 <article role=region aria-labelledby=bm-t>
     <b id=bm-t>${options.title}</b>
 	<p>${options.message}</p>
-	<nav role=none>
+	<div class=bm-buttons>
 		<button data-id=accept>${options.accept}</button>
 		<button data-id=settings>${options.settings}</button>
 		<button data-id=reject>${options.reject}</button>
-	</nav>
+	</div>
 </article>
 <dialog aria-labelledby=bm-st>
 	<div class=bm-dialog>
@@ -99,11 +99,11 @@ function render() {
 				</label>
 			</section>`}).join('')}
 		</div>
-		<nav role=none>
+		<div class=bm-buttons>
 			<button data-id=accept>${options.accept}</button>
 			<button data-id=save>${options.save}</button>
 			<button data-id=reject>${options.reject}</button>
-		</nav>
+		</div>
 	</div>
 </dialog>`.replaceAll('{link}',`<a href="${options.linkURL}">${options.linkText}</a>`)
 	ui.onclick = e => {

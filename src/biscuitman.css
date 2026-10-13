@@ -48,7 +48,7 @@
 		@media (min-width: 770px) {
 			padding-right: calc(max(300px, 30vw) + 20px);
 
-			nav {
+			.bm-buttons {
 				min-width: 300px;
 				width: 30vw;
 				position: absolute;
@@ -111,7 +111,7 @@
 		}
 	}
 
-	nav {
+	.bm-buttons {
 		@media (min-width: 576px) {
 			display: flex;
 			width: 100%;
@@ -150,7 +150,7 @@
 			max-height: 950px; /* KLUDGE: magic number based on 6 sections */
 		}
 
-		nav {
+		.bm-buttons {
 			position: relative;
 			justify-self: flex-end;
 		}
@@ -180,7 +180,7 @@
 			z-index: 1;
 		}
 
-		nav::after {
+		.bm-buttons::after {
 			content: '';
 			position: absolute;
 			left: 0;
