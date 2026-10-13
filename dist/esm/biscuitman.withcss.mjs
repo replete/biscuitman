@@ -363,7 +363,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman {
-  --bm-ui: 0,0,0;
+  --bm-ui: 0, 0, 0;
   --bm-tx: #444;
   --bm-bg: #fff;
   --bm-c: #105d89;
@@ -445,14 +445,13 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman button[data-id="close"] {
-  color: rgba(var(--bm-ui),.5);
+  color: rgba(var(--bm-ui), .5);
   opacity: .6;
   -webkit-user-select: none;
   user-select: none;
   z-index: 2;
   background: none;
   border: none;
-  outline: none;
   padding: 10px;
   font-size: 24px;
   position: absolute;
@@ -555,7 +554,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman .bm-sections {
-  scrollbar-color: rgba(var(--bm-ui),.2) var(--bm-bg);
+  scrollbar-color: rgba(var(--bm-ui), .2) var(--bm-bg);
   height: 100%;
   padding: 15px 0;
   position: relative;
@@ -613,7 +612,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman details {
-  border: 1px solid rgba(var(--bm-ui),.2);
+  border: 1px solid rgba(var(--bm-ui), .2);
   border-radius: 5px;
   padding: 10px;
   box-shadow: 0 2px 4px #0000001a;
@@ -641,7 +640,7 @@ if (typeof BMCSS === 'undefined') {
 .biscuitman summary b:after {
   content: "";
   box-sizing: content-box;
-  border: 5px solid rgba(var(--bm-ui),.4);
+  border: 5px solid rgba(var(--bm-ui), .4);
   border-top-color: #0000;
   border-left-color: #0000;
   border-radius: 2px;
@@ -665,7 +664,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman dl {
-  background: rgba(var(--bm-ui),.08);
+  background: rgba(var(--bm-ui), .08);
   margin: 10px;
   padding: 10px;
   display: flex;
@@ -693,7 +692,7 @@ if (typeof BMCSS === 'undefined') {
   --bm-w: 2.3em;
   height: var(--bm-h);
   width: var(--bm-w);
-  background-color: rgba(var(--bm-ui),.3);
+  background-color: rgba(var(--bm-ui), .3);
   border-radius: var(--bm-h);
   font-size: 20px;
   display: block;

@@ -10,7 +10,7 @@
 }
 
 .biscuitman {
-  --bm-ui: 0,0,0;
+  --bm-ui: 0, 0, 0;
   --bm-tx: #444;
   --bm-bg: #fff;
   --bm-c: #105d89;
@@ -96,7 +96,7 @@
 }
 
 .biscuitman button[data-id="close"] {
-  color: rgba(0,0,0,.5);
+  color: rgba(0,0,0, .5);
   opacity: .6;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -105,7 +105,6 @@
   z-index: 2;
   background: none;
   border: none;
-  outline: none;
   padding: 10px;
   font-size: 24px;
   position: absolute;
@@ -224,7 +223,7 @@
 }
 
 .biscuitman .bm-sections {
-  scrollbar-color: rgba(0,0,0,.2) #fff;
+  scrollbar-color: rgba(0,0,0, .2) #fff;
   height: 100%;
   padding: 15px 0;
   position: relative;
@@ -282,7 +281,7 @@
 }
 
 .biscuitman details {
-  border: 1px solid rgba(0,0,0,.2);
+  border: 1px solid rgba(0,0,0, .2);
   border-radius: 5px;
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
@@ -314,7 +313,7 @@
   content: "";
   -moz-box-sizing: content-box;
   box-sizing: content-box;
-  border: 5px solid rgba(0,0,0,.4);
+  border: 5px solid rgba(0,0,0, .4);
   border-top-color: rgba(0, 0, 0, 0);
   border-left-color: rgba(0, 0, 0, 0);
   border-radius: 2px;
@@ -340,7 +339,7 @@
 }
 
 .biscuitman dl {
-  background: rgba(0,0,0,.08);
+  background: rgba(0,0,0, .08);
   margin: 10px;
   padding: 10px;
   display: -webkit-flex;
@@ -373,7 +372,7 @@
   --bm-w: 2.3em;
   height: 1.2em;
   width: 2.3em;
-  background-color: rgba(0,0,0,.3);
+  background-color: rgba(0,0,0, .3);
   border-radius: 1.2em;
   font-size: 20px;
   display: block;

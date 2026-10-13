@@ -16,6 +16,8 @@ const log = (level,msg) => console.log(`\x1b[33m[${level}]\x1b[0m ${msg}`)
 const packageJson = JSON.parse(await readFile('./package.json'))
 const { name, version, browserslist: browserlistString } = packageJson
 const comment = `/*! ${name}.js ${version} */`
+// lightningcss keeps the space after a comma inside custom property values and around var()
+const squeeze = ({ code }) => String(code).replaceAll(', ', ',')
 
 const filenames = {
 	css: 'biscuitman.css',
@@ -59,11 +61,11 @@ export async function styles(skipFileSave) {
 		targets: browserslistToTargets(browserslist(browserlistString)),
 		include: Features.Nesting
 	})
-	let minCss = comment + minifiedStyles.code
+	let minCss = comment + squeeze(minifiedStyles)
 	if (!skipFileSave) await writeFile(`dist/${filenames.minCss}`, minCss)
 	log('css',`Saved dist/${filenames.minCss}`)
 
-	return [processedStyles.code, minifiedStyles.code]
+	return [processedStyles.code, squeeze(minifiedStyles)]
 }
 
 export async function scripts(skipFileSave) {
@@ -187,7 +189,7 @@ async function buildLegacy() {
 		targets: browserslistToTargets(browserslist(legacyBrowserlistString)),
 		include: Features.Nesting
 	})
-	let legacyMinCss = legacyComment + legacyMinifiedCss.code
+	let legacyMinCss = legacyComment + squeeze(legacyMinifiedCss)
 	await writeFile(`dist/${filenames.legacyMinCss}`, legacyMinCss)
 	log('legacy',`Saved dist/${filenames.legacyMinCss}`)
 

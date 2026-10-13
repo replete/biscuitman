@@ -228,6 +228,14 @@ testedVersions.forEach((filename) => {
 			expect(off).not.toBe('rgb(16, 93, 137)')
 		})
 
+		test('should show a focus outline on the close button for keyboard users', async ({ page }) => {
+			await page.locator('button[data-id=settings]').first().focus()
+			await page.keyboard.press('Enter')
+			const close = page.locator('button[data-id=close]')
+			await expect(close).toBeFocused()
+			expect(await close.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none')
+		})
+
 		test('should close settings modal after clicking close', async ({ page }) => {
 			await page.click('button[data-id=settings]')
 			await page.click('button[data-id=close]')

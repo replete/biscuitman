@@ -99,7 +99,6 @@
 
 		&[data-id='close'] {
 			border: none;
-			outline: none;
 			position: absolute;
 			background: transparent;
 			color: rgba(var(--bm-ui), 0.5);
