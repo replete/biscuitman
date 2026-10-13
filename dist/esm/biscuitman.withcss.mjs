@@ -363,11 +363,11 @@ if (typeof BMCSS === 'undefined') {
 	css.id = 'BMCSS';
 	css.textContent=`/*! biscuitman.js 0.5.6 */
 .biscuitman {
-  --ui: 0,0,0;
-  --tx: #444;
-  --bg: #fff;
-  --c: #105d89;
-  background: var(--bg);
+  --bm-ui: 0,0,0;
+  --bm-tx: #444;
+  --bm-bg: #fff;
+  --bm-c: #105d89;
+  background: var(--bm-bg);
   box-sizing: border-box;
   z-index: 3;
   width: 100%;
@@ -385,7 +385,7 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman * {
   box-sizing: border-box;
-  color: var(--tx);
+  color: var(--bm-tx);
   margin: 0;
   padding: 0;
   font-family: inherit;
@@ -418,7 +418,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman article p {
-  color: var(--tx);
+  color: var(--bm-tx);
   margin: 10px 0;
   font-size: 13px;
 }
@@ -430,9 +430,9 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman button {
-  background: var(--bg);
-  border: 2px solid var(--c);
-  color: var(--c);
+  background: var(--bm-bg);
+  border: 2px solid var(--bm-c);
+  color: var(--bm-c);
   cursor: pointer;
   border-radius: 3px;
   margin-top: 10px;
@@ -442,12 +442,12 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman button[data-id="accept"] {
-  background: var(--c);
-  color: var(--bg) !important;
+  background: var(--bm-c);
+  color: var(--bm-bg) !important;
 }
 
 .biscuitman button[data-id="close"] {
-  color: rgba(var(--ui),.5);
+  color: rgba(var(--bm-ui),.5);
   opacity: .6;
   -webkit-user-select: none;
   user-select: none;
@@ -494,7 +494,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman dialog {
-  background: var(--bg);
+  background: var(--bm-bg);
   border: 0;
   width: 100%;
   max-width: 100%;
@@ -538,7 +538,7 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman .bm-dialog > b:after {
   content: "";
-  background: linear-gradient(180deg, var(--bg) 20%, #fff0);
+  background: linear-gradient(180deg, var(--bm-bg) 20%, #fff0);
   pointer-events: none;
   z-index: 1;
   width: 100%;
@@ -551,7 +551,7 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman .bm-dialog nav:after {
   content: "";
-  background: linear-gradient(0deg, var(--bg) 20%, #fff0);
+  background: linear-gradient(0deg, var(--bm-bg) 20%, #fff0);
   pointer-events: none;
   width: 100%;
   height: 25px;
@@ -561,7 +561,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman .bm-sections {
-  scrollbar-color: rgba(var(--ui),.2) var(--bg);
+  scrollbar-color: rgba(var(--bm-ui),.2) var(--bm-bg);
   flex-shrink: 1;
   height: 100%;
   padding: 15px 0;
@@ -600,7 +600,7 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman a {
   font-size: inherit;
-  color: var(--c);
+  color: var(--bm-c);
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
@@ -620,7 +620,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman details {
-  border: 1px solid rgba(var(--ui),.2);
+  border: 1px solid rgba(var(--bm-ui),.2);
   border-radius: 5px;
   padding: 10px;
   list-style: none;
@@ -649,7 +649,7 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman summary b:after {
   content: "";
-  border: 5px solid rgba(var(--ui),.4);
+  border: 5px solid rgba(var(--bm-ui),.4);
   border-top-color: #0000;
   border-left-color: #0000;
   border-radius: 2px;
@@ -661,7 +661,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman summary p {
-  color: var(--tx);
+  color: var(--bm-tx);
   font-size: 14px;
 }
 
@@ -678,14 +678,14 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman dl {
-  background: rgba(var(--ui),.08);
+  background: rgba(var(--bm-ui),.08);
   margin: 10px;
   padding: 10px;
   display: flex;
 }
 
 .biscuitman dl dt, .biscuitman dl dd {
-  color: var(--tx);
+  color: var(--bm-tx);
   font-size: 12px;
 }
 
@@ -696,15 +696,14 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman label {
-  --height: 1.2em;
-  --width: 2.3em;
-  --gap: 2px;
+  --bm-h: 1.2em;
+  --bm-w: 2.3em;
   top: 15px;
-  top: calc(anchor(--bm center) - var(--height) / 2 - 2px);
-  height: var(--height);
-  width: var(--width);
-  background-color: rgba(var(--ui),.3);
-  border-radius: var(--height);
+  top: calc(anchor(--bm center) - var(--bm-h) / 2 - 2px);
+  height: var(--bm-h);
+  width: var(--bm-w);
+  background-color: rgba(var(--bm-ui),.3);
+  border-radius: var(--bm-h);
   display: block;
   position: absolute;
   right: 31px;
@@ -713,9 +712,9 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman label:before {
   content: "";
-  background: var(--bg);
-  height: var(--height);
-  width: var(--height);
+  background: var(--bm-bg);
+  height: var(--bm-h);
+  width: var(--bm-h);
   transform-origin: center;
   border-radius: 100%;
   display: block;
@@ -726,7 +725,7 @@ if (typeof BMCSS === 'undefined') {
 }
 
 .biscuitman label.checked {
-  background-color: var(--c);
+  background-color: var(--bm-c);
 }
 
 .biscuitman label.checked:before {

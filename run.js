@@ -164,13 +164,12 @@ async function buildLegacy() {
 	})
 	// Flatten CSS custom properties
 	let flatCss = `${processedStyles.code}`
-		.replaceAll('var(--ui)','0,0,0')
-		.replaceAll('var(--tx)','#444')
-		.replaceAll('var(--bg)','#fff')
-		.replaceAll('var(--c)','#105d89')
-		.replaceAll('var(--height)','1.2em')
-		.replaceAll('var(--width)','2.3em')
-		.replaceAll('var(--gap)','2px')
+		.replaceAll('var(--bm-ui)','0,0,0')
+		.replaceAll('var(--bm-tx)','#444')
+		.replaceAll('var(--bm-bg)','#fff')
+		.replaceAll('var(--bm-c)','#105d89')
+		.replaceAll('var(--bm-h)','1.2em')
+		.replaceAll('var(--bm-w)','2.3em')
 	let legacyCss = flatCss
 	await writeFile(`dist/${filenames.legacyCss}`, `${legacyComment}\n` + legacyCss)
 	log('legacy',`Saved dist/${filenames.legacyCss}`)

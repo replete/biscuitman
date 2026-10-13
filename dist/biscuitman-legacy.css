@@ -1,9 +1,9 @@
 /*! biscuitman-legacy.js 0.5.6 */
 .biscuitman {
-  --ui: 0,0,0;
-  --tx: #444;
-  --bg: #fff;
-  --c: #105d89;
+  --bm-ui: 0,0,0;
+  --bm-tx: #444;
+  --bm-bg: #fff;
+  --bm-c: #105d89;
   background: #fff;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -359,9 +359,8 @@
 }
 
 .biscuitman label {
-  --height: 1.2em;
-  --width: 2.3em;
-  --gap: 2px;
+  --bm-h: 1.2em;
+  --bm-w: 2.3em;
   top: 15px;
   top: calc(anchor(--bm center) - 1.2em / 2 - 2px);
   height: 1.2em;

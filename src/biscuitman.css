@@ -6,16 +6,16 @@
 	Use a version in /dist/ for improved compatibility
 */
 .biscuitman {
-	--ui: 0,0,0;
-	--tx: #444;
-	--bg: #fff;
-	--c: #105d89;
+	--bm-ui: 0,0,0;
+	--bm-tx: #444;
+	--bm-bg: #fff;
+	--bm-c: #105d89;
 
 	position: fixed;
 	bottom: 0;
 	width: 100%;
 	padding: 20px;
-	background: var(--bg);
+	background: var(--bm-bg);
 	box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.16);
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 	box-sizing: border-box;
@@ -33,7 +33,7 @@
 		padding: 0;
 		margin: 0;
 		line-height: 1.4em;
-		color: var(--tx)
+		color: var(--bm-tx)
 	}
 
 	/* Progressive enhancement */
@@ -61,7 +61,7 @@
 		p {
 			margin: 10px 0;
 			font-size: 13px;
-			color: var(--tx);
+			color: var(--bm-tx);
 
 			@media (min-width: 575px) {
 				font-size: 14px;
@@ -70,19 +70,19 @@
 	}
 
 	button {
-		background: var(--bg);
-		border: 2px solid var(--c);
+		background: var(--bm-bg);
+		border: 2px solid var(--bm-c);
 		line-height: 1em;
 		padding: 0.8em;
 		margin-top: 10px;
-		color: var(--c);
+		color: var(--bm-c);
 		font-size: 13px;
 		border-radius: 3px;
 		cursor: pointer;
 
 		&[data-id=accept] {
-			background: var(--c);
-			color: var(--bg) !important;
+			background: var(--bm-c);
+			color: var(--bm-bg) !important;
 		}
 
 		&[data-id=close] {
@@ -90,7 +90,7 @@
 			outline: none;
 			position: absolute;
 			background: transparent;
-			color: rgba(var(--ui),.5);
+			color: rgba(var(--bm-ui),.5);
 			top: 0;
 			right: 10px;
 			line-height: 1em;
@@ -136,7 +136,7 @@
 		height: 100%;
 		max-height: 100%;
 		max-width: 100%;
-		background: var(--bg);
+		background: var(--bm-bg);
 
 		@media (min-width: 576px) {
 			box-shadow: 0px 0 8px rgba(0, 0, 0, 0.3);
@@ -175,7 +175,7 @@
 			margin-bottom: -24px;
 			width: 100%;
 			height: 25px;
-			background: linear-gradient(180deg, var(--bg) 20%, rgba(255,255,255,0)); /* rgba is safari < 15 fix */
+			background: linear-gradient(180deg, var(--bm-bg) 20%, rgba(255,255,255,0)); /* rgba is safari < 15 fix */
 			pointer-events: none;
 			z-index: 1;
 		}
@@ -187,7 +187,7 @@
 			top: -24px;
 			width: 100%;
 			height: 25px;
-			background: linear-gradient(0deg, var(--bg) 20%, rgba(255,255,255,0)); /* rgba is safari < 15 fix */
+			background: linear-gradient(0deg, var(--bm-bg) 20%, rgba(255,255,255,0)); /* rgba is safari < 15 fix */
 			pointer-events: none;
 		}
 	}
@@ -198,7 +198,7 @@
 		height: 100%;
 		padding: 15px 0;
 		position: relative;
-		scrollbar-color: rgba(var(--ui),.2) var(--bg);
+		scrollbar-color: rgba(var(--bm-ui),.2) var(--bm-bg);
 		@media (min-width: 576px) {
 			padding-right: 4px;
 			margin-right: -18px;
@@ -227,7 +227,7 @@
 
 	a {
 		font-size: inherit;
-		color: var(--c);
+		color: var(--bm-c);
 		display: inline-block;
 		cursor: pointer;
 		text-decoration: none;
@@ -247,7 +247,7 @@
 	}
 
 	details {
-		border: 1px solid rgba(var(--ui),.2);
+		border: 1px solid rgba(var(--bm-ui),.2);
 		padding: 10px;
 		border-radius: 5px;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -277,7 +277,7 @@
 				display: block;
 				height: 1em;
 				width: 1em;
-				border: 5px solid rgba(var(--ui),.4);
+				border: 5px solid rgba(var(--bm-ui),.4);
 				border-left-color: transparent;
 				border-top-color: transparent;
 				border-radius: 2px;
@@ -288,7 +288,7 @@
 
 		p {
 			font-size: 14px;
-			color: var(--tx);
+			color: var(--bm-tx);
 		}
 
 		> * {
@@ -305,11 +305,11 @@
 		display: flex;
 		padding: 10px;
 		margin: 10px;
-		background: rgba(var(--ui),.08);
+		background: rgba(var(--bm-ui),.08);
 
 		dt,
 		dd {
-			color: var(--tx);
+			color: var(--bm-tx);
 			font-size: 12px;
 		}
 
@@ -321,27 +321,26 @@
 	}
 
 	label {
-		--height: 1.2em;
-		--width: 2.3em;
-		--gap: 2px;
+		--bm-h: 1.2em;
+		--bm-w: 2.3em;
 		font-size: 20px !important;
 		position: absolute;
 		top: 15px; /* fallback: aligns with the section title */
-		top: calc(anchor(--bm center) - var(--height) / 2 - 2px); /* centers on summary */
+		top: calc(anchor(--bm center) - var(--bm-h) / 2 - 2px); /* centers on summary */
 		right: 31px;
 		display: block;
-		height: var(--height);
-		width: var(--width);
-		background-color: rgba(var(--ui),.3);
-		border-radius: var(--height);
+		height: var(--bm-h);
+		width: var(--bm-w);
+		background-color: rgba(var(--bm-ui),.3);
+		border-radius: var(--bm-h);
 
 		&::before {
 			content: '';
 			display: block;
 			position: absolute;
-			background: var(--bg);
-			height: var(--height);
-			width: var(--height);
+			background: var(--bm-bg);
+			height: var(--bm-h);
+			width: var(--bm-h);
 			border-radius: 100%;
 			left: 0;
 			top: 50%;
@@ -350,7 +349,7 @@
 		}
 
 		&.checked {
-			background-color: var(--c);
+			background-color: var(--bm-c);
 
 			&::before {
 				left: auto;

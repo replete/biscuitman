@@ -151,19 +151,19 @@ It's easy enough to theme the included styles by overriding CSS variables. They 
 ```css
 /* hacker mode */
 .biscuitman {
-	--c: limegreen;
-	--bg: #000;
-	--tx: #fff;
-	--ui: 255,255,255;
+	--bm-c: limegreen;
+	--bm-bg: #000;
+	--bm-tx: #fff;
+	--bm-ui: 255,255,255;
 	font-family: monospace;
 }
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
 	.biscuitman {
-		--c: #1586c6;
-		--bg: #000;
-		--tx: #fff;
-		--ui: 255,255,255;
+		--bm-c: #1586c6;
+		--bm-bg: #000;
+		--bm-tx: #fff;
+		--bm-ui: 255,255,255;
 	}
 }
 ```
