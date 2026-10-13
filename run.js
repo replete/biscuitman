@@ -108,7 +108,13 @@ export async function scripts(skipFileSave) {
 
 	// Module version:
 
-	const sourceMjs = await readFile(`src/${filenames.mjs}`, 'utf8')
+	// src/biscuitman.mjs is a wrapper around the browser source, see its header
+	const marker = '/* biscuitman.js */'
+	const globalConfig = 'w.biscuitman'
+	const wrapperMjs = await readFile(`src/${filenames.mjs}`, 'utf8')
+	if (!wrapperMjs.includes(marker) || !sourceJs.includes(globalConfig)) throw new Error('ESM build: marker or config reference not found')
+	// The leading semicolon stops the inlined IIFE being parsed as a call on the previous line
+	const sourceMjs = wrapperMjs.replace(marker, () => ';' + sourceJs.replace(globalConfig, 'config'))
 	const mjs = swc.transform(sourceMjs, {
 		sourceMaps: false,
 		isModule: true,

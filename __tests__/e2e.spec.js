@@ -81,6 +81,28 @@ testedVersions.forEach((filename) => {
 			await expect(page.getByRole('navigation')).toHaveCount(0)
 		})
 
+		if (filename.endsWith('.mjs')) test('should expose consent(), on() and off() on the ESM instance', async ({ page }) => {
+			// create() returns the instance the page already made
+			await page.evaluate(async (file) => {
+				const bm = (await import(`/dist/esm/${file}`)).default.create()
+				window.saves = 0
+				window.onSave = () => window.saves++
+				window.bm = bm.on('save', window.onSave)
+			}, filename)
+			expect(await page.evaluate(() => window.bm.consent('analytics'))).toBe(false)
+
+			await acceptButton(page).click()
+			expect(await page.evaluate(() => window.saves)).toBe(1)
+			expect(await page.evaluate(() => window.bm.consent('analytics'))).toBe(true)
+
+			await page.evaluate(() => {
+				window.bm.off('save', window.onSave)
+				window.bm.invalidate()
+			})
+			expect(await page.evaluate(() => window.saves)).toBe(1)
+			expect(await page.evaluate(() => window.bm.consent('analytics'))).toBe(false)
+		})
+
 		test('should close settings modal after clicking close', async ({ page }) => {
 			await page.click('button[data-id=settings]')
 			await page.click('button[data-id=close]')
