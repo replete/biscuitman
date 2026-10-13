@@ -8,26 +8,17 @@ Biscuitman is a super lightweight, customizable consent manager for your website
 
 #### [View demo](https://replete.github.io/biscuitman)
 
-## Features overview
+## Features
 
-- Stores consent in `localStorage`, exposes in `window.Consent` and through custom events fired on `document`
-- Handles consent granulated by custom sections (e.g. essential, performance, analytics...)
-- Optionally shows user specific cookie (or localStorage item) details
-    - Cookies/localstorage items removed on rejection/invalidation, if cookie details added
-- Fully customizable strings so you can serve localized strings if you want
-- Overridable localStorage key, consent global
-- Basic color theming via CSS variables
-- Simple flat configuration object
-- Injects scripts when granular consent is granted (`<script data-consent="analytics" type="text/plain" src="..."></script>`)
-- Injects embedded 'after' `<script>` from script tags with `src` properties on onload (= less markup)
-- Mobile-first responsive design
-- 'Show more' functionality for long disclaimer text
-- include optional link in any text
-- CSS classes on `<html>` element for consents
-- Progressively enhanced CSS
+- Tiny: about 4kB gzipped including styles, with no dependencies
+- Holds back `<script>` tags until the visitor consents to their section, then injects them
+- Consent is granular, by sections you define (e.g. essential, analytics, advertisement)
+- Optionally lists each section's cookies, and removes them when consent is rejected or withdrawn
+- Consent is stored in `localStorage` and exposed on `window.Consent`, as classes on `<html>`, and through events
+- Every string is configurable, so you can localize it
+- Themable with CSS variables, mobile-first, and shielded from your site's own CSS in current browsers
 - Accessible: labelled landmarks and controls, keyboard operable, checked with [axe](https://github.com/dequelabs/axe-core)
-- Also packaged as an ES module, `biscuitman.mjs` (see [ESM demo](https://replete.github.io/biscuitman/index-esm.html))
-- Legacy version included for supporting 2013+ era browsers (see [legacy demo](https://replete.github.io/biscuitman/index-legacy.html))
+- Also packaged as an [ES module](#esm-version), and as a [legacy build](#legacy-browser-support) for 2013-era browsers
 
 ## Install
 
@@ -43,113 +34,106 @@ Or load it from a CDN (pin a version in production):
 
 Or download the files in `dist/` from a [release](https://github.com/replete/biscuitman/releases). The `withcss` files include the styles; the others need `biscuitman.css` as well.
 
-## How to use
-
-The [demo](https://replete.github.io/biscuitman) runs this setup with real analytics scripts (using dummy IDs). View its source for a complete configuration.
+## Quick start
 
 ```html
-<!--
-	1. Prepare script tags
-	   - set 'type' property to "text/plain" to prevent execution
-	   - add 'data-consent' property with consent section name (e.g. analytics, functional, performance)
--->
+<!-- 1. Mark the scripts that need consent -->
 <script
+	type="text/plain"
 	data-consent="analytics"
 	async
-	src="https://www.googletagmanager.com/gtag/js?id=G-TEST"
-	type="text/plain"
-	id="js-analytics-gtm"
->
-	// The contents of this script are injected after load, adjacent to the parent script (convenience)
-	console.log('GTM loaded:', !!google_tag_manager)
-</script>
-<script data-consent="analytics" type="text/plain" id="js-analytics-misc">
-	console.log('This script runs as soon as analytics section consent is granted')
-</script>
+	src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"
+></script>
 
-<!--
-	2. Configure biscuitman settings
-	   - window.biscuitman must be defined before biscuitman is loaded
-	   - section titles and messages must be defined here, the library has no defaults for them
--->
+<!-- 2. Configure, before biscuitman loads -->
 <script>
 	biscuitman = {
-		/* Default properties */
-
-		// key: 'myconsent',  // the key to store consent choices in localStorage
-		// global: 'Consent',  // global window object to access consents at runtime
-		// force: false,  // this forces the modal open at start and prevents website access without choosing consent
-		// enableMore: true,   // Hide multiple lines of info text behind a 'show more' link to keep UI short
-		// sections: ['essential'],   // a section is a group of consent choices, you must define your section names in configuration
-		// title: 'Your privacy matters',   // Banner title
-		// message: 'We use cookies',   // Banner message
-		// settings: 'Settings',   // Settings button text
-		// reject: 'Reject All',   // Reject button text
-		// accept: 'Accept All',   // Accept button text
-		// save: 'Save My Settings',   // Modal settings button text
-		// close: 'Close',   // Modal close button accessible name (aria-label)
-		// settingsTitle: 'My Consent Settings',   // Modal title
-		// info: ``,   // Multi-line information at top of modal
-		// more: 'Show more', // Show more button text
-		// noCookies: 'No cookies to display', // Displayed in expanded sections within modal
-		// acceptNonEU: false, // When enabled biscuitman checks browser locale timezone to see if it matches EU, if not it will auto consent (unless the visitor already made a choice, or the browser cannot report a timezone)
-		dialogPolyfill: '/dist/dialog-polyfill.withcss.min.js', // set to false to disable dialog polyfill loading
-
-		message:
-			'By clicking "Accept All", you agree to the use of cookies for improving browsing, providing personalized ads or content, and analyzing traffic. {link}',
-		// {link} inside any configuration string will be replaced with an <a> link
-
+		message: 'We use cookies to understand how this site is used. {link}',
 		linkText: 'Privacy Policy',
-		linkURL: 'https://domain.com/privacy-policy',
-
-		// info uses a template literal so it can span multiple lines
-		info: `Cookies categorized as "Essential" are stored in your browser to enable basic site functionalities.
-Additionally, third-party cookies are utilized to analyze website usage, store preferences, and deliver relevant content and advertisements with your consent.
-While you have the option to enable or disable some or all of these cookies, note that disabling certain ones may impact your browsing experience.`,
-
-		// Define as many sections as desired, each section represents a granular consent and is fundamental to the software
-		// You can name sections anything you want, but they must not use spaces or special characters
-		// e.g. data-consent="advertisement" on a script tag matches the 'advertisement' section
-		sections: ['essential', 'functional', 'analytics', 'advertisement', 'uncategorized'],
-
-		// 'essential' is special because it doesn't need consent and its toggle is disabled in the UI
+		linkURL: '/privacy-policy',
+		sections: ['essential', 'analytics'],
 		essentialTitle: 'Essential',
-		essentialMessage: 'Essential cookies are required to enable the basic features of this site',
-
-		// The naming convention is {sectionName}Title, {sectionName}Message, and {sectionName}Cookies
-		functionalTitle: 'Functional',
-		functionalMessage:
-			'Functional cookies help perform functions like sharing the content of the website on social media platforms, collecting feedback, and other third-party features',
-		advertisementTitle: 'Advertisement',
-		advertisementMessage:
-			'Advertisement cookies serve to deliver tailored advertisements to visitors based on their previous page visits and to evaluate the efficacy of advertising campaigns',
-		uncategorizedTitle: 'Uncategorized',
-		uncategorizedMessage:
-			'Uncategorized cookies are those currently under analysis and have not yet been assigned to a specific category',
+		essentialMessage: 'Required for the site to work',
 		analyticsTitle: 'Analytics',
-		analyticsMessage:
-			'Analytical cookies are used to understand how visitors interact with the website. These cookies help provide information on metrics such as the number of visitors, bounce rate, traffic source, etc.',
-
-		// (Optional) Include details of the cookies in use for a section, add them like a name/value dictionary
-		// NOTE: By default, if these exist, then when consent is rejected/invalidated, these cookies/localStorage entries will be immediately removed. Wildcards only work at the end of a string.
+		analyticsMessage: 'Help us understand how visitors use the site',
 		analyticsCookies: {
-			_ga: 'This cookie, set by Google Analytics, computes visitor, session, and campaign data, tracking site usage for analytical reports. It stores information anonymously, assigning a randomly generated number to identify unique visitors',
-			'_ga_*': 'Google Analytics uses this cookie for storing page view count'
+			_ga: 'Google Analytics visitor ID',
+			'_ga_*': 'Google Analytics session state'
 		}
 	}
 </script>
 
-<!--
-	3. Include Biscuitman files:
--->
+<!-- 3. Load biscuitman -->
 <script src="biscuitman.withcss.min.js"></script>
-
-<!-- or, if you want to load CSS separately: -->
-<head>
-	<link rel="stylesheet" href="biscuitman.min.css" />
-	<script src="biscuitman.min.js"></script>
-</head>
 ```
+
+The [demo](https://replete.github.io/biscuitman) runs a fuller setup with real analytics scripts (using dummy IDs). View its source for a complete configuration.
+
+## Configuration
+
+### Scripts
+
+Give a script `type="text/plain"` so the browser ignores it, and `data-consent` with a section name. Biscuitman injects a working copy once that section is consented.
+
+```html
+<script type="text/plain" data-consent="analytics" id="js-analytics-misc">
+	console.log('Runs as soon as analytics consent is granted')
+</script>
+
+<script type="text/plain" data-consent="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX">
+	// A script with both src and content: the content runs after the file has loaded
+	console.log('GTM loaded:', !!google_tag_manager)
+</script>
+```
+
+Scripts are injected as `text/javascript`. Add `data-type="module"` to inject one as a module.
+
+### Sections
+
+A section is one group of consent choices. List the names in `sections`, without spaces or special characters, and describe each with three options named after it:
+
+- `{section}Title` – its heading
+- `{section}Message` – its description
+- `{section}Cookies` – optional: an object of cookie or `localStorage` names and what each is for
+
+`essential` is special: it needs no consent, and its toggle is switched on and disabled. List it first.
+
+Names listed in `{section}Cookies` are shown to the visitor, and deleted when that section's consent is rejected or withdrawn. A name can end in `*` to match a prefix, e.g. `_ga_*`.
+
+### Options
+
+| Option           | Default                                  | Description                                                                 |
+| ---------------- | ---------------------------------------- | --------------------------------------------------------------------------- |
+| `sections`       | `['essential']`                          | Section names, see [Sections](#sections)                                     |
+| `title`          | `'Your privacy matters'`                 | Banner title                                                                |
+| `message`        | `'We use cookies'`                       | Banner message                                                              |
+| `linkText`       |                                          | Text of the link that replaces `{link}` in any string                        |
+| `linkURL`        |                                          | Where that link goes                                                        |
+| `info`           | `''`                                     | Longer text at the top of the settings modal, one paragraph per line         |
+| `enableMore`     | `true`                                   | Hide all but the first line of `info` behind a "show more" link              |
+| `accept`         | `'Accept All'`                           | Accept button text                                                          |
+| `reject`         | `'Reject All'`                           | Reject button text                                                          |
+| `settings`       | `'Settings'`                             | Settings button text                                                        |
+| `settingsTitle`  | `'My Consent Settings'`                  | Settings modal title                                                        |
+| `save`           | `'Save My Settings'`                     | Save button text, in the modal                                              |
+| `close`          | `'Close'`                                | Accessible name of the modal's close button                                 |
+| `more`           | `'Show more'`                            | "Show more" link text                                                       |
+| `noCookies`      | `'No cookies to display'`                | Shown in an expanded section that lists no cookies                          |
+| `force`          | `false`                                  | Open the settings modal straight away and keep it open until a choice is made |
+| `key`            | `'myconsent'`                            | `localStorage` key the choices are stored under                             |
+| `global`         | `'Consent'`                              | Name of the global object the choices are exposed on                        |
+| `dialogPolyfill` | `'/dist/dialog-polyfill.withcss.min.js'` | URL of the [dialog polyfill](#dialog-polyfill), or `false` to never load it |
+| `acceptNonEU`    | `false`                                  | Experimental, see below                                                     |
+
+### `acceptNonEU` (experimental)
+
+When this is on, a first-time visitor whose browser reports a timezone outside Europe is given full consent automatically and never sees the banner. It exists for sites that want as much analytics data as they can collect where a consent prompt is not required.
+
+- "Europe" means any `Europe/…` timezone, EU and EEA territory elsewhere (the Azores, Madeira, the Canary Islands, Iceland, the Faroe Islands, Svalbard, Ceuta, Cyprus and the French overseas regions), and timezones that name no place at UTC to UTC+3, such as `UTC` or `CET`.
+- A visitor who has already made a choice keeps it.
+- Browsers that cannot report a timezone (IE 11, Firefox before 52, Safari before 10) always get the banner.
+
+This is a guess from the device's clock, not a check of where someone is or which laws apply to them. Other places have consent rules too. Biscuitman is a tool, not legal advice: whether a setup meets your obligations is for you to decide.
 
 ## ESM version
 
@@ -181,12 +165,7 @@ With a bundler, the package exposes:
 </script>
 ```
 
-`biscuitman.create(options)` returns a single instance (calling it again returns the same one) with:
-
-- `on(event, callback)` / `off(event, callback)` – listen for the [events](#events) below, without the `bm:` prefix
-- `consent(sectionName)` – `true` if that section is consented
-- `update()` – open the settings modal
-- `invalidate()` – delete stored consent and show the banner again
+`biscuitman.create(options)` returns a single instance; calling it again returns the same one. Its methods are listed under [ESM instance](#esm-instance).
 
 ## Theme CSS
 
@@ -242,7 +221,7 @@ Biscuitman is written in modern Javascript and built with `swc`. The included di
 - Safari (inc iOS): 15.4+ (released March 2022)
 - Samsung Internet: 14+ (released April 2021)
 
-### \<Dialog\> polyfill
+### Dialog polyfill
 
 To support older than the browsers above, a polyfill for `<dialog>` is required. Biscuitman checks for this automatically and loads a [polyfill for dialog](https://github.com/GoogleChrome/dialog-polyfill) on-demand (if it is not already loaded), and then correctly binds the UI.
 
@@ -269,7 +248,9 @@ This legacy version is transpiled to ES5 and includes required polyfills to make
 
 In these extremely old browsers, the functionality is intact and the UI is usable but it may look slightly janky as the browser is missing CSS features like `gap` resulting in missing gaps between buttons.
 
-## Globals
+## API
+
+### Globals
 
 - `biscuitman` – configuration object, must be `window.biscuitman`
     - `biscuitman.create(options)` for the ESM version
@@ -292,13 +273,22 @@ In these extremely old browsers, the functionality is intact and the UI is usabl
 - `bmUpdate()` – Opens My Consent Settings modal (you might want to link this on your Privacy policy or footer nav)
     - example usage: `<a href="javascript:bmUpdate();"> Update my consent settings</a>`
 
-## CSS Classes
+### ESM instance
+
+Returned by `biscuitman.create(options)`:
+
+- `on(event, callback)` / `off(event, callback)` – listen for the [events](#events) below, without the `bm:` prefix
+- `consent(sectionName)` – `true` if that section is consented
+- `update()` – open the settings modal
+- `invalidate()` – delete stored consent and show the banner again
+
+### CSS classes
 
 - `biscuitman` on UI container
 - `bm-{sectionName}`, `bm-no-{sectionName}`, `bm-show` and sometimes `bm-dialog-polyfill` on `<html>`
 - `--bm-height` CSS variable written to `<html style="--bm-height:0px;">`
 
-## Events
+### Events
 
 Custom events prefixed with `bm:` are fired on `document`. The easiest way to see how events work is to view the `console.debug()` calls in the [demo](https://replete.github.io/biscuitman).
 
