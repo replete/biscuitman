@@ -130,6 +130,8 @@ testedVersions.forEach((filename) => {
 
 		const testTimezones = [
 			['UTC', false],
+			['UTC+1', false],
+			['Etc/GMT-2', false],
 			['Europe/London', false],
 			['Asia/Tokyo', true],
 			['America/New_York', true],

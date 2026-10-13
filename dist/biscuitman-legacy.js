@@ -914,7 +914,7 @@
 
 	  // Optional Non-EU auto-consent
 	  var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	  var isEuropeTimezone = /^(GMT|UTC)$/.test(tz) || /(Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-1|GMT-2|UTC+1|UTC+2|UTC+3)/.test(tz);
+	  var isEuropeTimezone = /^(GMT|UTC)$/.test(tz) || /(Europe|BST|CEST|CET|EET|IST|WEST|WET|GMT-[12]|UTC\+[123])/.test(tz);
 	  if (o.acceptNonEU && !isEuropeTimezone) {
 	    saveConsents(true);
 	    displayUI(false);
