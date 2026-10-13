@@ -4,6 +4,9 @@ export default defineConfig({
 	testDir: './__tests__',
 	testMatch: '**/*.spec.js',
 
+	// Everything the tests generate lives in __tests__/reports/
+	outputDir: './__tests__/reports/test-results',
+
 	// Every test gets its own isolated context, so they can all run at once
 	fullyParallel: true,
 
@@ -12,8 +15,8 @@ export default defineConfig({
 	retries: process.env.CI ? 2 : 0,
 
 	reporter: process.env.CI
-		? [['github'], ['list'], ['html', { open: 'never' }]]
-		: [['list'], ['html', { open: 'never' }]],
+		? [['github'], ['list'], ['html', { open: 'never', outputFolder: './__tests__/reports/playwright' }]]
+		: [['list'], ['html', { open: 'never', outputFolder: './__tests__/reports/playwright' }]],
 	timeout: 30000,
 
 	use: {

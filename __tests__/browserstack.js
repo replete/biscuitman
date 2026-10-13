@@ -3,7 +3,7 @@
 
 	The Playwright suite covers behaviour in depth but only in Chromium. This
 	checks the basics, and takes screenshots, in browsers Playwright cannot drive.
-	Each run writes one page of screenshots to browserstack-results/browserstack-<run>.html
+	Each run writes one page of screenshots to __tests__/reports/browserstack/browserstack-<run>.html
 
 	npm run test:browserstack                  modern bundle, in the browsers below
 	npm run test:browserstack:legacy           legacy bundle, in the legacy browsers below
@@ -23,7 +23,7 @@ import { Builder, By } from 'selenium-webdriver'
 import browserstack from 'browserstack-local'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const OUTPUT = path.join(ROOT, 'browserstack-results')
+const OUTPUT = path.join(ROOT, '__tests__/reports/browserstack')
 const PARALLEL = 5 // sessions the BrowserStack plan allows at once
 const TIMEOUT = 20000
 const LEGACY = 'biscuitman-legacy.withcss.min.js'

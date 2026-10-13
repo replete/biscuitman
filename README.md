@@ -362,7 +362,7 @@ Then:
 
 #### Real browsers
 
-A smaller smoke test runs on [BrowserStack](https://www.browserstack.com) in the oldest browsers listed under [Browser Support](#browser-support), and saves screenshots to `browserstack-results/`. It needs a BrowserStack account, with `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` set in the environment or a `.env` file.
+A smaller smoke test runs on [BrowserStack](https://www.browserstack.com) in the oldest browsers listed under [Browser Support](#browser-support), and saves screenshots to `__tests__/reports/browserstack/`. It needs a BrowserStack account, with `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` set in the environment or a `.env` file.
 
 `npm run test:browserstack` - modern bundle
 

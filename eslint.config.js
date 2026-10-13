@@ -4,7 +4,7 @@ export default [
 	{
 		// Global ignores: build output and generated reports. An `ignores` key
 		// only acts globally when it is the sole key on a config object.
-		ignores: ['dist/**', 'coverage/**', 'playwright-report/**', 'test-results/**']
+		ignores: ['dist/**', 'coverage/**', '__tests__/reports/**']
 	},
 	{
 		files: ['*.js'],

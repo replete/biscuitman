@@ -445,7 +445,7 @@ export async function serve() {
 			strictPort: true,
 			// https lets the demo delete Secure cookies: npm run makecerts
 			https: certs.every(file => fs.existsSync(file)) ? { key: fs.readFileSync(certs[0]), cert: fs.readFileSync(certs[1]) } : undefined,
-			watch: { ignored: ['**/test-results/**', '**/playwright-report/**', '**/browserstack-results/**'] },
+			watch: { ignored: ['**/__tests__/reports/**'] },
 			fs: { deny: ['.env', '.env.*', '*.{crt,pem,key}', '**/.git/**'] }
 		}
 	})

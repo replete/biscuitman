@@ -45,7 +45,7 @@
 		"report": "node ./run.js report",
 		"test": "playwright test",
 		"test:ui": "playwright test --ui",
-		"test:report": "playwright show-report",
+		"test:report": "playwright show-report ./__tests__/reports/playwright",
 		"test:browserstack": "node --env-file-if-exists=.env ./__tests__/browserstack.js",
 		"test:browserstack:legacy": "node --env-file-if-exists=.env ./__tests__/browserstack.js --legacy",
 		"lint": "eslint",

@@ -21,11 +21,7 @@ node_modules
 
 # Tests
 coverage/*
-test-results/
-playwright-report/
-browserstack-results/
-blob-report/
-.playwright/
+__tests__/reports/
 
 # BrowserStack credentials
 .env
