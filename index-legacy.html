@@ -3,8 +3,140 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Biscuitman.js Sandbox</title>
+	<title>biscuitman.js demo (legacy) – Lightweight Consent Manager</title>
+	<meta name="description" content="Live demo of biscuitman.js, a lightweight privacy consent manager for websites.">
+	<link rel="icon" href="media/favicon.png">
 	<link rel="stylesheet" href="dist/biscuitman-legacy.css"/>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #f5f5f5;
+			font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		}
+		* {
+			box-sizing: border-box;
+		}
+		header {
+			min-height:35vw;
+			display:flex;
+			flex-direction:column;
+			justify-content:flex-end;
+			background: url(media/readmebanner.webp) no-repeat center 50% #7E745D;
+			background-size:cover;
+			background-blend-mode: multiply;
+			color: #fff;
+			padding: 30px 20px;
+			text-align: center;
+			text-shadow: 2px 2px 4px rgba(0,0,0,.75);
+			margin: 0 auto;
+		}
+		header a {
+			color: #fff
+		}
+		h1 {
+			font-size:5vw;
+			margin:0;
+		}
+		header h2 {
+			color: #FAE6AE;
+			font-size:4vw;
+			margin: 0em 0 .4em 0;
+		}
+		.container {
+			max-width: 800px;
+			margin: 20px auto;
+			padding: 0 20px;
+		}
+		p {
+			line-height: 1.6;
+		}
+		img {
+			max-width: 100%;
+			height: auto;
+			display: block;
+			margin: 20px auto;
+		}
+
+		a.img { display:inline-flex; flex-direction: column}
+
+		#cookies, #localstorage {
+			font-family:monospace;
+			background: #ddd;
+			padding:15px;
+			font-size:13px;
+			overflow-y:scroll;
+			white-space: pre;
+		}
+
+		#cssreport {
+			overflow-y:scroll
+		}
+
+		#cssreport table tr :is(td, th):first-of-type {
+			min-width:175px;
+			text-align:left;
+		}
+
+		#cssreport table tr :is(td, th) {
+			border-bottom:1px solid #ccc;
+			padding:6px;
+			text-align:center
+		}
+
+		#cssreport table tr :is(td, th):first-of-type {
+			padding-left:0;
+		}
+
+		.table {
+				font-size:14px;
+			}
+		.table th:first-of-type {
+			text-align:left;
+		}
+
+		.biscuit-selector {
+			display:flex;
+			width:100%;
+			gap:10px;
+			padding:10px;
+		}
+
+		@media (max-width: 600px) {
+			.biscuit-selector {
+				flex-direction:column;
+			}
+		}
+
+		.biscuit-selector button {
+			padding:20px;
+			font-size:18px;
+			border:3px solid #ccc;
+			background: #eee;
+			font-weight:bold;
+			flex-grow:1;
+		}
+
+		.biscuit-selector button:active {
+			border-color:#666;
+			background-color:#aaa;
+		}
+
+		.biscuit-selector button.selected {
+			color: green;
+			background:#00FF0066;
+			border-color:green;
+		}
+
+		.bm-no-functional .biscuit-selector {
+			background: #ccc;
+			pointer-events:none;
+			user-select:none;
+			opacity:0.5;
+			border:1px solid #aaa;
+		}
+	</style>
 </head>
 <body>
 
@@ -30,7 +162,7 @@
 		console.log('Matomo loaded:', !!Matomo) // only available once loaded
 	</script>
 
-	<!-- Jotjar Analytics -->
+	<!-- Hotjar Analytics -->
 	<script type="text/plain" data-consent="analytics" id="js-analytics-hotjar">
 		(function(h,o,t,j,a,r){
 		  h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
@@ -155,8 +287,9 @@
 		</div>
 		<pre id="consents"></pre>
 	</header>
-	<div class="container">
-		<p style="text-align:center"><a class="img" href="https://github.com/replete/biscuitman"><img src="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" style="width:50px;"/>README @ Github repo</a></p>
+	<main class="container">
+		<p style="text-align:center"><a class="img" href="https://github.com/replete/biscuitman"><img src="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" style="width:50px;" alt=""/>README @ Github repo</a></p>
+		<p style="text-align:center">Demos: <a href="index.html">Standard</a> · <a href="index-esm.html">ESM</a> · <strong>Legacy</strong></p>
 
 		<!-- Notices-->
 		<h2>This page uses real analytics scripts with dummy IDs</h2>
@@ -165,7 +298,7 @@
 		<!-- Storages-->
 		<h3>localStorage contents (refreshed once/s):</h3>
 		<div id="localstorage" class="update"></div>
-		<h4>document cookies (refreshed once/s):</h4>
+		<h3>document cookies (refreshed once/s):</h3>
 		<div id="cookies"></div>
 		<script>
 			window.setInterval(function() {
@@ -244,139 +377,7 @@
 		<h3>Jaffa Cakes</h3>
 		<p>While technically not biscuits but often included in biscuit assortments, Jaffa Cakes are a beloved snack consisting of a sponge cake base topped with a layer of orange-flavored jelly and coated in chocolate. The combination of tangy orange and rich chocolate makes Jaffa Cakes a delightful treat for any occasion.</p>
 
-	</div>
+	</main>
 
-	<!-- Page styles -->
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			margin: 0;
-			padding: 0;
-			background-color: #f5f5f5;
-			font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-		}
-		* {
-			box-sizing: border-box;
-		}
-		header {
-			min-height:35vw;
-			display:flex;
-			flex-direction:column;
-			justify-content:flex-end;
-			background: url(media/readmebanner.webp) no-repeat center 50% #7E745D;
-			background-size:cover;
-			background-blend-mode: multiply;
-			color: #fff;
-			padding: 30px 20px;
-			text-align: center;
-			text-shadow: 2px 2px 4px rgba(0,0,0,.75);
-			margin: 0 auto;
-
-			a {
-				color: #fff
-			}
-		}
-		h1 {
-			font-size:5vw;
-			margin:0;
-		}
-		header h2 {
-			color: #FAE6AE;
-			font-size:4vw;
-			margin: 0em 0 .4em 0;
-		}
-		.container {
-			max-width: 800px;
-			margin: 20px auto;
-			padding: 0 20px;
-		}
-		p {
-			line-height: 1.6;
-		}
-		img {
-			max-width: 100%;
-			height: auto;
-			display: block;
-			margin: 20px auto;
-		}
-
-		a.img { display:inline-flex; flex-direction: column}
-
-		#cookies, #localstorage {
-			font-family:monospace;
-			background: #ddd;
-			padding:15px;
-			font-size:13px;
-			overflow-y:scroll;
-			white-space: pre;
-		}
-
-		#cssreport {
-			overflow-y:scroll
-		}
-
-		#cssreport table tr :is(td, th):first-of-type {
-			min-width:175px;
-			text-align:left;
-		}
-
-		#cssreport table tr :is(td, th) {
-			border-bottom:1px solid #ccc;
-			padding:6px;
-			text-align:center
-		}
-
-		#cssreport table tr :is(td, th):first-of-type {
-			padding-left:0;
-		}
-
-		.table {
-				font-size:14px;
-			}
-		.table th:first-of-type {
-			text-align:left;
-		}
-
-		.biscuit-selector {
-			display:flex;
-			width:100%;
-			gap:10px;
-			padding:10px;
-		}
-
-		@media (max-width: 600px) {
-			.biscuit-selector {
-				flex-direction:column;
-			}
-		}
-
-		.biscuit-selector button {
-			padding:20px;
-			font-size:18px;
-			border:3px solid #ccc;
-			background: #eee;
-			font-weight:bold;
-			flex-grow:1;
-		}
-
-		.biscuit-selector button:active {
-			border-color:#666;
-			background-color:#aaa;
-		}
-
-		.biscuit-selector button.selected {
-			color: green;
-			background:#00FF0066;
-			border-color:green;
-		}
-
-		.bm-no-functional .biscuit-selector {
-			background: #ccc;
-			pointer-events:none;
-			user-select:none;
-			opacity:0.5;
-			border:1px solid #aaa;
-		}
-	</style>
 </body>
 </html>
