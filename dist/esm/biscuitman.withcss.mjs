@@ -651,6 +651,7 @@ if (typeof BMCSS === 'undefined') {
 
 .biscuitman summary b:after {
   content: "";
+  box-sizing: content-box;
   border: 5px solid rgba(var(--bm-ui),.4);
   border-top-color: #0000;
   border-left-color: #0000;

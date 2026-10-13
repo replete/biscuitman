@@ -304,6 +304,8 @@
 
 .biscuitman summary b:after {
   content: "";
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
   border: 5px solid rgba(0,0,0,.4);
   border-top-color: rgba(0, 0, 0, 0);
   border-left-color: rgba(0, 0, 0, 0);

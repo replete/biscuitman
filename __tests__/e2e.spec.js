@@ -171,6 +171,19 @@ testedVersions.forEach((filename) => {
 			expect(await page.evaluate(() => window.syncLayoutReads)).toBe(0)
 		})
 
+		test('should draw the section chevron the same size on a site with a global box-sizing reset', async ({ page }) => {
+			const chevron = () => page.evaluate(() => {
+				const { boxSizing, width, borderTopWidth } = getComputedStyle(document.querySelector('.biscuitman summary b'), '::after')
+				return { boxSizing, width, borderTopWidth }
+			})
+			await page.click('button[data-id=settings]')
+			const before = await chevron()
+
+			// The common reset reaches pseudo-elements, which `.biscuitman *` does not
+			await page.addStyleTag({ content: '*, :before, :after { box-sizing: border-box }' })
+			expect(await chevron()).toEqual(before)
+		})
+
 		test('should close settings modal after clicking close', async ({ page }) => {
 			await page.click('button[data-id=settings]')
 			await page.click('button[data-id=close]')

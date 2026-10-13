@@ -275,6 +275,7 @@
 			&::after {
 				content: '';
 				display: block;
+				box-sizing: content-box; /* sites often reset ::after to border-box, which shrinks this */
 				height: 1em;
 				width: 1em;
 				border: 5px solid rgba(var(--bm-ui),.4);
